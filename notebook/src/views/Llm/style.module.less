@@ -1,0 +1,347 @@
+/* 整体容器 */
+.chatContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #fff;
+  padding-bottom: 40px;
+  padding-top: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px; 
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+}
+
+/* 左侧聊天区域 */
+.chatMain {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+
+  @media (max-width: 768px) {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px;
+    min-height: 60vh;
+  }
+}
+
+/* 聊天记录区域 */
+.chatLog {
+  flex: 1;
+  &::-webkit-scrollbar {
+    width: 8px;
+    &-track {
+      background: #f1f1f1;
+    }
+    &-thumb {
+      background: #888;
+      border-radius: 4px;
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+}
+
+/* 消息项 */
+.message {
+  margin-bottom: 15px;
+  max-width: 90%;
+
+  @media (max-width: 768px) {
+    max-width: 85%;
+  }
+}
+
+/* 消息气泡 */
+.bubble {
+  padding: 12px 18px;
+  border-radius: 20px;
+  line-height: 1.5;
+  word-break: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px; 
+  position: relative;
+
+  &.user {
+    background-color: #007aff;
+    color: white;
+    align-self: flex-end;
+  }
+
+  &.assistant {
+    background-color: #f0f6ff;
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+}
+
+.copyButton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  .bubble:hover & {
+    opacity: 1;
+  }
+}
+
+/* 输入区域 */
+.inputArea {
+  display: flex;
+  flex-shrink: 0;
+  padding: 15px 0;
+  border-top: 1px solid #e0e0e0;
+
+  textarea {
+    flex: 1;
+    resize: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    height: 80px;
+    font-size: 14px; 
+
+    &:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+      outline: none;
+    }
+  }
+
+  .sendButton {
+    background: #007aff;
+    color: white;
+    transition: background 0.2s;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px; 
+    margin-left: 10px;
+    font-size: 14px; 
+
+    &:hover {
+      background: #0056b3;
+    }
+    &:disabled {
+      background: #6c757d;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+
+    textarea {
+      margin: 0 0 10px;
+    }
+    .sendButton {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+}
+
+/* 返回顶部按钮 */
+.backToTop {
+  position: absolute;
+  right: 20px;
+  bottom: 100px; /* 确保回到顶部按钮不会被底部导航栏遮挡 */
+  background: #007aff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    right: 15px;
+    bottom: 90px;
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* 移动端设置触发按钮 */
+.mobileSettingsButton {
+  position: fixed; /* 使用 fixed 定位，使其悬浮在页面上 */
+  top: 50px; /* 距离页面顶部 20px */
+  right: 10px; /* 距离页面左侧 20px */
+  background: #007aff;
+  color: white;
+  transition: background 0.2s;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px; 
+  font-size: 14px; 
+
+  &:hover {
+    background: #0056b3;
+  }
+
+  @media (max-width: 768px) {
+    top: 50px;
+    right: 10px;
+  }
+}
+
+/* 移动端设置弹出层 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settingsModal {
+  background: white;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  font-size: 14px; 
+  display: flex;
+  flex-direction: column;
+
+  .modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    h3 {
+      margin: 0;
+    }
+
+    .closeButton {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #333;
+      cursor: pointer;
+
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+
+  .settingItem {
+    margin-bottom: 15px;
+
+    button {
+      background: #007aff;
+      color: white;
+      transition: background 0.2s;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px; 
+      font-size: 14px; 
+      margin-right: 10px;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px; 
+
+      &:focus {
+        border-color: #007aff;
+        box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+        outline: none;
+      }
+    }
+  }
+
+  .conversationList {
+    .convItem {
+      padding: 10px;
+      transition: background 0.2s;
+      border-radius: 4px;
+      font-size: 14px; 
+
+      &:hover {
+        background: #e9ecef;
+      }
+
+      .deleteButton {
+        color: #dc3545;
+        background: none;
+        border: none;
+        font-size: 18px; 
+        margin-left: 10px;
+
+        &:hover {
+          color: #c82333;
+        }
+      }
+      button {
+        background: #007aff;
+        color: white;
+        transition: background 0.2s;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px; 
+        font-size: 14px; 
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+    }
+  }
+}
+
+/* 横屏优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chatContainer {
+    flex-direction: row;
+  }
+  .settingsModal {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+    
