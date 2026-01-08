@@ -1,0 +1,114 @@
+.user-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 40rpx;
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-right: 30rpx;
+  background-color: #fff;
+}
+
+.info {
+  flex: 1;
+  color: #fff;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.phone {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.login-btn {
+  width: 200rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #fff;
+  color: #667eea;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+}
+
+/* 余额卡片 */
+.balance-card {
+  background-color: #fff;
+  padding: 30rpx 40rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.balance-card .label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.balance-card .amount {
+  font-size: 40rpx;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+/* 订单统计 */
+.order-stats {
+  background-color: #fff;
+  padding: 30rpx 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.order-stats .title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.stats-list {
+  display: flex;
+  justify-content: space-around;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+}
+
+.stat-item .icon {
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.stat-item .count {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 5rpx;
+}
+
+.stat-item .label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 功能菜单 - Vant 样式 */
+.cell-icon {
+  margin-right: 20rpx;
+  font-size: 40rpx;
+}
+

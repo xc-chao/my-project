@@ -1,0 +1,82 @@
+# ==========================================
+# ScanShop 项目 Git 忽略文件
+# ==========================================
+
+# ========== Node.js ==========
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ========== 环境变量 ==========
+.env
+.env.local
+.env.*.local
+
+# ========== 日志文件 ==========
+logs/
+*.log
+
+# ========== 操作系统 ==========
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ========== IDE / 编辑器 ==========
+# VSCode
+.vscode/
+*.code-workspace
+
+# WebStorm / IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ========== 微信小程序 ==========
+# 微信开发者工具生成的文件
+project.private.config.json
+
+# ========== 数据库 ==========
+*.sql.backup
+*.db
+*.sqlite
+
+# ========== 临时文件 ==========
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+
+# ========== 构建产物 ==========
+dist/
+build/
+*.tgz
+
+# ========== 测试覆盖率 ==========
+coverage/
+.nyc_output/
+
+# ========== 其他 ==========
+.cache/
+.temp/
+

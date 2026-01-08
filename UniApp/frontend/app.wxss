@@ -1,0 +1,16 @@
+.container {
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+}
+
+button {
+  background-color: #1296db;
+  color: white;
+  border-radius: 8rpx;
+}
+
+.price {
+  color: #e4393c;
+  font-weight: bold;
+}
