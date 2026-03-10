@@ -1,0 +1,319 @@
+# ==========================================
+# ScanShop API 测试文件
+# 使用 VSCode REST Client 插件运行
+# 或者复制到 Postman 使用
+# ==========================================
+
+### 变量定义
+@baseUrl = http://localhost:3000/api
+@token = 
+
+### ========== 健康检查 ==========
+
+### 1. 服务器健康检查
+GET http://localhost:3000/health
+
+### ========== 认证相关接口 ==========
+
+### 2. 手机号注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "phone": "13800138888",
+  "password": "123456",
+  "nickname": "测试用户888"
+}
+
+### 3. 手机号登录
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "phone": "13800138888",
+  "password": "123456"
+}
+
+### 4. 微信小程序登录
+POST {{baseUrl}}/auth/wechat-login
+Content-Type: application/json
+
+{
+  "code": "test_code_12345",
+  "nickname": "微信用户",
+  "avatar": "https://thirdwx.qlogo.cn/mmopen/vi_32/default.jpg"
+}
+
+### 5. 获取用户信息（需要 token）
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{token}}
+
+### 6. 更新用户信息（需要 token）
+PUT {{baseUrl}}/auth/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nickname": "新昵称",
+  "avatar": "https://new-avatar-url.jpg"
+}
+
+### 7. 修改密码（需要 token）
+PUT {{baseUrl}}/auth/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "123456",
+  "newPassword": "654321"
+}
+
+### 8. 绑定手机号（需要 token）
+POST {{baseUrl}}/auth/bind-phone
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "phone": "13900139999",
+  "password": "123456"
+}
+
+### 9. 查询余额（需要 token）
+GET {{baseUrl}}/auth/balance
+Authorization: Bearer {{token}}
+
+### ========== 测试错误情况 ==========
+
+### 10. 测试：手机号格式错误
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "phone": "12345",
+  "password": "123456"
+}
+
+### 11. 测试：密码强度不足
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "phone": "13800138777",
+  "password": "123"
+}
+
+### 12. 测试：手机号已注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "phone": "13800138888",
+  "password": "123456"
+}
+
+### 13. 测试：密码错误
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "phone": "13800138888",
+  "password": "wrong_password"
+}
+
+### 14. 测试：未提供 token
+GET {{baseUrl}}/auth/profile
+
+### 15. 测试：无效的 token
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer invalid_token_string
+
+### ========== 购物车相关接口 ==========
+
+### 16. 获取购物车列表
+GET {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+
+### 17. 添加商品到购物车
+POST {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 2
+}
+
+### 18. 获取购物车数量
+GET {{baseUrl}}/cart/count
+Authorization: Bearer {{token}}
+
+### 19. 更新购物车商品数量
+# 替换 :id 为实际的购物车项 ID
+PUT {{baseUrl}}/cart/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### 20. 取消选中商品
+PUT {{baseUrl}}/cart/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "selected": false
+}
+
+### 21. 全选购物车
+PUT {{baseUrl}}/cart/select-all
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "selected": true
+}
+
+### 22. 取消全选
+PUT {{baseUrl}}/cart/select-all
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "selected": false
+}
+
+### 23. 删除单个商品
+DELETE {{baseUrl}}/cart/1
+Authorization: Bearer {{token}}
+
+### 24. 批量删除商品
+DELETE {{baseUrl}}/cart/batch
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ids": [1, 2, 3]
+}
+
+### 25. 清空购物车
+DELETE {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+
+### ========== 测试错误情况（购物车） ==========
+
+### 26. 测试：添加不存在的商品
+POST {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 99999,
+  "quantity": 1
+}
+
+### 27. 测试：添加超过库存的数量
+POST {{baseUrl}}/cart
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 99999
+}
+
+### 28. 测试：未登录访问购物车
+GET {{baseUrl}}/cart
+
+### ========== 订单相关接口 ==========
+
+### 29. 创建订单（从购物车）
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### 30. 获取订单列表（分页）
+GET {{baseUrl}}/orders?page=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 31. 按状态筛选订单（待支付）
+GET {{baseUrl}}/orders?status=0
+Authorization: Bearer {{token}}
+
+### 32. 获取订单详情（替换订单ID）
+GET {{baseUrl}}/orders/1
+Authorization: Bearer {{token}}
+
+### 33. 根据订单号查询
+GET {{baseUrl}}/orders/by-order-no/SN202512300001
+Authorization: Bearer {{token}}
+
+### 34. 获取订单统计
+GET {{baseUrl}}/orders/stats
+Authorization: Bearer {{token}}
+
+### 35. 取消订单
+PUT {{baseUrl}}/orders/1/cancel
+Authorization: Bearer {{token}}
+
+### ========== 支付相关接口 ==========
+
+### 36. 创建微信支付订单
+POST {{baseUrl}}/payments/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": 1,
+  "paymentMethod": "wechat"
+}
+
+### 37. 创建余额支付订单
+POST {{baseUrl}}/payments/create
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "orderId": 1,
+  "paymentMethod": "balance"
+}
+
+### 38. 模拟支付成功（开发环境）
+POST {{baseUrl}}/payments/mock-pay
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentNo": "PAY17035000001234"
+}
+
+### 39. 查询支付状态
+GET {{baseUrl}}/payments/PAY17035000001234
+Authorization: Bearer {{token}}
+
+### 40. 微信支付回调（模拟）
+POST {{baseUrl}}/payments/callback
+Content-Type: application/json
+
+{
+  "out_trade_no": "PAY17035000001234",
+  "transaction_id": "4200001234567890",
+  "total_fee": 1550,
+  "result_code": "SUCCESS"
+}
+
+### ========== 说明 ==========
+# 使用方法：
+# 1. 安装 VSCode 插件：REST Client
+# 2. 点击请求上方的 "Send Request"
+# 3. 查看右侧的响应结果
+#
+# 变量使用：
+# - 修改 @baseUrl 为你的服务器地址
+# - 登录后，复制返回的 token 到 @token 变量
+# - 或者在每个请求中直接替换 {{token}}
+

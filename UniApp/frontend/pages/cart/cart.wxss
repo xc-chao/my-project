@@ -1,0 +1,182 @@
+/* 购物车页面样式 - 使用 Vant Weapp */
+
+.container {
+  background-color: #f7f8fa;
+  min-height: 100vh;
+  padding-bottom: 100rpx;
+}
+
+/* 原生结算栏样式 */
+.submit-bar {
+  position: fixed;
+  bottom: 100rpx;
+  left: 0;
+  right: 0;
+  min-height: 100rpx;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.15);
+  z-index: 9999;
+  border-top: 1rpx solid #ebedf0;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+.bar-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 10rpx;
+}
+
+.bar-right {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+  margin-left: 20rpx;
+}
+
+.price-section {
+  display: flex;
+  align-items: baseline;
+  margin-right: 100rpx;
+}
+
+.price-section .label {
+  font-size: 28rpx;
+  color: #323233;
+  font-weight: 500;
+}
+
+.price-section .price {
+  font-size: 44rpx;
+  color: #ee0a24;
+  font-weight: bold;
+  margin-left: 8rpx;
+  line-height: 1;
+}
+
+.submit-button {
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 40rpx;
+  background: linear-gradient(to right, #ff6034, #ee0a24);
+  color: #ffffff;
+  border-radius: 40rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4rpx 12rpx rgba(238, 10, 36, 0.3);
+  flex-shrink: 0;
+}
+
+.submit-button[disabled] {
+  background: #dcdee0 !important;
+  color: #c8c9cc !important;
+  box-shadow: none;
+}
+
+/* 确保内容不被结算栏遮挡 */
+.cart-content,
+.cart-list {
+  padding-bottom: 120rpx;
+}
+
+/* 空状态按钮 */
+.empty-btn {
+  margin-top: 40rpx;
+}
+
+/* 顶部工具栏 */
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.toolbar-actions .van-button {
+  height: 60rpx !important;
+  line-height: 60rpx !important;
+  font-size: 24rpx !important;
+}
+
+/* 购物车列表 */
+.cart-list {
+  padding: 20rpx 0;
+}
+
+/* 商品项容器 - 复选框和卡片在一行 */
+.cart-item-container {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 20rpx;
+  margin: 0 20rpx 20rpx;
+  border-radius: 16rpx;
+}
+
+/* 复选框包装 */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+/* 商品卡片包装 - 可点击 */
+.card-wrapper {
+  flex: 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card-wrapper:active {
+  opacity: 0.8;
+}
+
+.cart-card {
+  border: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+/* 加大文字 */
+.van-card__title {
+  font-size: 25rpx !important;
+  font-weight: 500 !important;
+  color: #323233 !important;
+}
+
+.van-card__price {
+  font-size:30rpx !important;
+  font-weight: bold !important;
+  color: #ee0a24 !important;
+}
+
+/* 步进器右对齐 */
+.stepper-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+/* 左滑删除按钮 */
+.delete-button {
+  width: 65px;
+  height: 100%;
+  background-color: #ee0a24;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}

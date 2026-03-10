@@ -1,0 +1,15 @@
+<view class="container">
+  <view class="order-list">
+    <view class="order-item" wx:for="{{orders}}" wx:key="id">
+      <view class="order-header">
+        <text class="sn">单号: {{item.orderSn}}</text>
+        <text class="status">{{item.status === 1 ? '已支付' : '待支付'}}</text>
+      </view>
+      <view class="order-body">
+        <text class="total">总额: ￥{{item.totalPrice}}</text>
+        <text class="time">{{item.createdAt}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+

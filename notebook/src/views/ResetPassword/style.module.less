@@ -1,0 +1,28 @@
+.auth {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  .head {
+    height: 100px;
+  }
+  .tab {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 30px 0;
+  }
+  .form {
+    padding: 0 20px;
+    :global {
+      .za-cell {
+        background-color: transparent;
+        &::after {
+          border-top: none;
+        }
+      }
+    }
+  }
+  .operation {
+    padding: 20px;
+  }
+}
