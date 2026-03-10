@@ -1,7 +1,0 @@
-<!-- 自定义 TabBar - 使用 Vant 图标 -->
-<van-tabbar active="{{ active }}" bind:change="onChange">
-  <van-tabbar-item icon="wap-home-o">首页</van-tabbar-item>
-  <van-tabbar-item icon="cart-o" info="{{cartCount > 0 ? cartCount : ''}}">购物车</van-tabbar-item>
-  <van-tabbar-item icon="user-o">我的</van-tabbar-item>
-</van-tabbar>
-
