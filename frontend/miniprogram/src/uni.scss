@@ -1,0 +1,27 @@
+$brand-dark: #111111;
+$brand-gray: #6e7380;
+$brand-muted: #8c93a1;
+$brand-bg: #f7f7fa;
+$brand-surface: #ffffff;
+$brand-border: #e7e9ee;
+$brand-blue: #3b82f6;
+$brand-danger: #e94b45;
+
+page {
+  background: $brand-bg;
+  color: $brand-dark;
+  font-family: 'Inter', sans-serif;
+}
+
+.page-shell {
+  min-height: 100vh;
+  background: $brand-bg;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

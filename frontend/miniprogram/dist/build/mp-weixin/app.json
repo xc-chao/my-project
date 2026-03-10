@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/auth/login",
+    "pages/home/index",
+    "pages/product/detail",
+    "pages/search/index",
+    "pages/chat/index",
+    "pages/cart/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "智能购物小程序",
+    "navigationBarBackgroundColor": "#F7F7FA",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F7F7FA"
+  },
+  "tabBar": {
+    "color": "#8C93A1",
+    "selectedColor": "#111111",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/cart/index",
+        "text": "购物车"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

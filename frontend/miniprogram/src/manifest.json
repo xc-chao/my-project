@@ -1,0 +1,14 @@
+{
+  "name": "智能购物小程序",
+  "appid": "__UNI__SHOPPENCIL",
+  "description": "基于 uni-app、Express.js 和 AI 客服能力的购物小程序。",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "touristappid",
+    "setting": {
+      "urlCheck": false
+    }
+  }
+}

@@ -1,0 +1,1 @@
+"use strict";const e=require("./request.js");exports.getProductDetail=function(t){return e.request(`/products/${t}`)},exports.getProductList=function(){return e.request("/products")},exports.searchProducts=function(t){return e.request(`/search?keyword=${encodeURIComponent(t)}`)};

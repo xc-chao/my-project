@@ -1,0 +1,52 @@
+page.data-v-b6ed46dc {
+  background: #f7f7fa;
+  color: #111111;
+  font-family: "Inter", sans-serif;
+}
+.page-shell.data-v-b6ed46dc {
+  min-height: 100vh;
+  background: #f7f7fa;
+}
+.safe-top.data-v-b6ed46dc {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom.data-v-b6ed46dc {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabbar.data-v-b6ed46dc {
+  position: fixed;
+  left: 42rpx;
+  right: 42rpx;
+  bottom: 20rpx;
+  z-index: 20;
+}
+.pill.data-v-b6ed46dc {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 8rpx;
+  height: 124rpx;
+  border-radius: 72rpx;
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+}
+.pill-item.data-v-b6ed46dc {
+  flex: 1;
+  height: 100%;
+  border-radius: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pill-item.active.data-v-b6ed46dc {
+  background: #17181c;
+}
+.pill-label.data-v-b6ed46dc {
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  color: #8c93a1;
+}
+.pill-item.active .pill-label.data-v-b6ed46dc {
+  color: #ffffff;
+}

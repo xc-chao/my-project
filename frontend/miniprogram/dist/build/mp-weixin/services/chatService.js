@@ -1,0 +1,1 @@
+"use strict";const e=require("./request.js");exports.createChatSession=function(s){return e.request("/chat/sessions",{method:"POST",data:{productId:s}})},exports.sendChatMessage=function(s,t){return e.request("/chat/messages",{method:"POST",data:{sessionId:s,question:t}})};

@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "packages": {
+    "@sanjeed5/express#cursor": {
+      "version": "1.0.0",
+      "resolved": "https://registry.prpm.dev/api/v1/packages/%40sanjeed5%2Fexpress/1.0.0.tar.gz",
+      "integrity": "sha256-144fde0cae300aeeda64dcc858ab636fbcb68428c9963604c4d8155d6956c573",
+      "format": "cursor",
+      "subtype": "rule",
+      "sourceFormat": "cursor",
+      "sourceSubtype": "rule",
+      "installedPath": ".cursor/rules/express.mdc"
+    },
+    "@camoneart/creating-skills#cursor": {
+      "version": "1.0.0",
+      "resolved": "https://registry.prpm.dev/api/v1/packages/%40camoneart%2Fcreating-skills/1.0.0.tar.gz",
+      "integrity": "sha256-8cd887c15b84964d98fa94053d915bc015346f26a2a22b15035252dfdc9a535a",
+      "format": "cursor",
+      "subtype": "agent",
+      "sourceFormat": "claude",
+      "sourceSubtype": "agent",
+      "installedPath": ".openagents/creating-skills/AGENT.md",
+      "progressiveDisclosure": {
+        "mode": "progressive",
+        "resourceDir": ".openagents/creating-skills",
+        "manifestPath": "AGENTS.md",
+        "resourceName": "creating-skills",
+        "resourceType": "agent",
+        "skillsDir": ".openagents/creating-skills",
+        "skillName": "creating-skills",
+        "eager": false
+      }
+    },
+    "@harperaa/secure-claude-skills-rate-limiting#agents.md": {
+      "version": "1.0.0",
+      "resolved": "https://registry.prpm.dev/api/v1/packages/%40harperaa%2Fsecure-claude-skills-rate-limiting/1.0.0.tar.gz",
+      "integrity": "sha256-6b8b90d02439be46a40f0b0ec5b9b830f5b475de05f9332702e0626b9c0f87af",
+      "format": "agents.md",
+      "subtype": "skill",
+      "sourceFormat": "claude",
+      "sourceSubtype": "skill",
+      "installedPath": ".openskills/secure-claude-skills-rate-limiting/SKILL.md",
+      "progressiveDisclosure": {
+        "mode": "progressive",
+        "resourceDir": ".openskills/secure-claude-skills-rate-limiting",
+        "manifestPath": "AGENTS.md",
+        "resourceName": "secure-claude-skills-rate-limiting",
+        "resourceType": "skill",
+        "skillsDir": ".openskills/secure-claude-skills-rate-limiting",
+        "skillName": "secure-claude-skills-rate-limiting",
+        "eager": false
+      }
+    }
+  },
+  "generated": "2026-03-10T05:14:05.703Z"
+}

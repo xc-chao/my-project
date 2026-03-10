@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "product-card": "../../components/ProductCard",
+    "pill-tab-bar": "../../components/PillTabBar"
+  }
+}

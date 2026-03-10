@@ -1,0 +1,70 @@
+page.data-v-a4cce9c2 {
+  background: #f7f7fa;
+  color: #111111;
+  font-family: "Inter", sans-serif;
+}
+.page-shell.data-v-a4cce9c2 {
+  min-height: 100vh;
+  background: #f7f7fa;
+}
+.safe-top.data-v-a4cce9c2 {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom.data-v-a4cce9c2 {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.card.data-v-a4cce9c2 {
+  width: 100%;
+  border-radius: 28rpx;
+  background: #ffffff;
+  overflow: hidden;
+}
+.card-cover.data-v-a4cce9c2 {
+  width: 100%;
+  height: 320rpx;
+  background: #eef0f4;
+}
+.card-body.data-v-a4cce9c2 {
+  padding: 20rpx;
+}
+.badge-row.data-v-a4cce9c2 {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 12rpx;
+}
+.badge.data-v-a4cce9c2 {
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: #f2f4f8;
+  color: #6e7380;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+.title.data-v-a4cce9c2 {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.subtitle.data-v-a4cce9c2 {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #6e7380;
+}
+.price-row.data-v-a4cce9c2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+.price.data-v-a4cce9c2 {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.origin.data-v-a4cce9c2 {
+  font-size: 24rpx;
+  color: #9aa0aa;
+  text-decoration: line-through;
+}
