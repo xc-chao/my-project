@@ -10,6 +10,7 @@ const loading = ref(false);
 const products = ref<ProductItem[]>([]);
 const categories = ref<string[]>([]);
 const currentCategory = ref('推荐');
+const displayCategories = computed(() => ['推荐', ...categories.value.filter((item) => item !== '推荐')]);
 
 const filteredProducts = computed(() => {
   if (currentCategory.value === '推荐') {
@@ -43,6 +44,12 @@ function openSearch() {
   });
 }
 
+function openAgent() {
+  uni.navigateTo({
+    url: '/pages/chat/index?productId=p_001&title=%E6%99%BA%E8%83%BD%E8%B4%AD%E7%89%A9%E5%8A%A9%E6%89%8B'
+  });
+}
+
 onMounted(loadData);
 
 onShow(() => {
@@ -53,10 +60,6 @@ onShow(() => {
 <template>
   <view class="page-shell">
     <view class="header">
-      <view class="status-row">
-        <text class="time">9:41</text>
-        <text class="signal">5G 100%</text>
-      </view>
       <view class="top-copy">
         <text class="eyebrow">校园精选</text>
         <text class="title">得物风格精选</text>
@@ -68,15 +71,18 @@ onShow(() => {
 
     <scroll-view scroll-y class="content">
       <view class="hero-card">
-        <text class="hero-badge">AIGC 导购</text>
-        <text class="hero-title">浏览、咨询、下单一体化</text>
-        <text class="hero-desc">商品详情页支持直接发起 AI 咨询，后续接入真实 Agent 对话链路。</text>
+        <image class="hero-image" src="/static/banners/home-hero.svg" mode="aspectFill" />
+        <view class="hero-copy">
+          <text class="hero-badge">AIGC 导购</text>
+          <text class="hero-title">浏览、咨询、下单一体化</text>
+          <text class="hero-desc">商品详情页支持直接发起 AI 咨询，搜索、购物车与订单链路也已接通。</text>
+        </view>
       </view>
 
       <scroll-view scroll-x class="category-scroll" show-scrollbar="false">
         <view class="category-row">
           <view
-            v-for="item in ['推荐', ...categories]"
+            v-for="item in displayCategories"
             :key="item"
             :class="['category-pill', { active: currentCategory === item }]"
             @tap="currentCategory = item"
@@ -100,7 +106,7 @@ onShow(() => {
         />
       </view>
 
-      <view class="agent-fab">
+      <view class="agent-fab" @tap="openAgent">
         <text class="agent-label">AI 购物助手</text>
       </view>
     </scroll-view>
@@ -111,28 +117,13 @@ onShow(() => {
 
 <style scoped lang="scss">
 .header {
-  padding: 0 40rpx 20rpx;
+  padding: 20rpx 40rpx 20rpx;
 }
 
-.status-row,
 .section-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.status-row {
-  height: 62px;
-}
-
-.time {
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.signal {
-  font-size: 24rpx;
-  font-weight: 600;
 }
 
 .top-copy {
@@ -175,10 +166,22 @@ onShow(() => {
 .hero-card {
   display: flex;
   flex-direction: column;
+  border-radius: 56rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f8 60%, #eeeafb 100%);
+}
+
+.hero-image {
+  width: 100%;
+  height: 360rpx;
+  background: #eef0f4;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
   gap: 16rpx;
   padding: 40rpx;
-  border-radius: 56rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f3f4f8 60%, #eeeafb 100%);
 }
 
 .hero-badge {

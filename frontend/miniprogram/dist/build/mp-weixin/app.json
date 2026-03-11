@@ -5,6 +5,10 @@
     "pages/product/detail",
     "pages/search/index",
     "pages/chat/index",
+    "pages/order/confirm",
+    "pages/order/list",
+    "pages/address/index",
+    "pages/after-sale/index",
     "pages/cart/index",
     "pages/profile/index"
   ],

@@ -2,16 +2,20 @@
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
-import { createChatSession, sendChatMessage } from '../../services/chatService';
+import ChatBubble from '../../components/common/ChatBubble.vue';
+import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
+import { createChatSession, getChatHistory, sendChatMessage } from '../../services/chatService';
 import { useUserStore } from '../../store';
 
 const userStore = useUserStore();
+const mode = ref<'chat' | 'history'>('chat');
 const sessionId = ref('');
 const productId = ref('');
 const productTitle = ref('当前商品');
 const inputValue = ref('');
 const sending = ref(false);
 const messages = ref<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+const history = ref<Array<{ id: string; title: string; messages: Array<{ role: 'user' | 'assistant'; content: string }> }>>([]);
 
 const quickQuestions = computed(() => [
   '这款商品怎么选尺码？',
@@ -20,13 +24,17 @@ const quickQuestions = computed(() => [
 ]);
 
 async function ensureSession() {
-  if (!productId.value || sessionId.value) {
+  if (mode.value === 'history' || !productId.value || sessionId.value) {
     return;
   }
 
   const session = await createChatSession(productId.value);
   sessionId.value = session.id;
   messages.value = session.messages;
+}
+
+async function loadHistory() {
+  history.value = await getChatHistory();
 }
 
 async function handleSend(question?: string) {
@@ -55,12 +63,21 @@ onLoad(async (query) => {
     return;
   }
 
+  if (query?.mode === 'history') {
+    mode.value = 'history';
+  }
+
   if (typeof query?.productId === 'string') {
     productId.value = query.productId;
   }
 
   if (typeof query?.title === 'string') {
     productTitle.value = decodeURIComponent(query.title);
+  }
+
+  if (mode.value === 'history') {
+    await loadHistory();
+    return;
   }
 
   await ensureSession();
@@ -73,12 +90,14 @@ onLoad(async (query) => {
 
     <view class="body">
       <view class="intro-card">
-        <text class="intro-badge">商品上下文已接入</text>
+        <text class="intro-badge">{{ mode === 'history' ? '会话记录' : '商品上下文已接入' }}</text>
         <text class="intro-title">{{ productTitle }}</text>
-        <text class="intro-text">你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。</text>
+        <text class="intro-text">
+          {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' }}
+        </text>
       </view>
 
-      <scroll-view scroll-x class="quick-scroll" show-scrollbar="false">
+      <scroll-view v-if="mode === 'chat'" scroll-x class="quick-scroll" show-scrollbar="false">
         <view class="quick-row">
           <view
             v-for="item in quickQuestions"
@@ -91,20 +110,31 @@ onLoad(async (query) => {
         </view>
       </scroll-view>
 
-      <scroll-view scroll-y class="msg-scroll">
+      <scroll-view v-if="mode === 'chat'" scroll-y class="msg-scroll">
         <view class="msg-list">
-          <view
+          <ChatBubble
             v-for="(item, index) in messages"
             :key="`${item.role}-${index}`"
-            :class="['msg-bubble', item.role]"
-          >
-            <text>{{ item.content }}</text>
-          </view>
+            :role="item.role"
+            :content="item.content"
+          />
         </view>
       </scroll-view>
+
+      <view v-else class="history-list">
+        <view v-if="history.length" v-for="item in history" :key="item.id" class="history-card">
+          <text class="history-title">{{ item.title }}</text>
+          <text class="history-desc">{{ item.messages[item.messages.length - 1]?.content || '暂无消息' }}</text>
+        </view>
+        <EmptyStateCard
+          v-else
+          title="还没有 AI 咨询记录"
+          desc="从首页或商品详情进入 AI 助手提问后，会在这里看到最近的会话摘要。"
+        />
+      </view>
     </view>
 
-    <view class="input-bar">
+    <view v-if="mode === 'chat'" class="input-bar">
       <input
         v-model="inputValue"
         class="chat-input"
@@ -184,24 +214,32 @@ onLoad(async (query) => {
   padding-bottom: 24rpx;
 }
 
-.msg-bubble {
-  max-width: 82%;
-  padding: 24rpx;
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+
+.history-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding: 28rpx;
   border-radius: 36rpx;
   background: #ffffff;
-  font-size: 26rpx;
-  line-height: 1.7;
+}
+
+.history-title {
+  font-size: 28rpx;
+  font-weight: 700;
   color: #111111;
 }
 
-.msg-bubble.user {
-  align-self: flex-end;
-  background: #17181c;
-  color: #ffffff;
-}
-
-.msg-bubble.assistant {
-  align-self: flex-start;
+.history-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
 }
 
 .input-bar {

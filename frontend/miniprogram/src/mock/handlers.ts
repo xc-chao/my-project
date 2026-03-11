@@ -1,4 +1,12 @@
-import { mockCart, mockCategories, mockProducts, mockUser } from './data';
+import {
+  mockAddresses,
+  mockAfterSales,
+  mockCart,
+  mockCategories,
+  mockOrders,
+  mockProducts,
+  mockUser
+} from './data';
 
 const mockChatSessions: Array<{
   id: string;
@@ -36,6 +44,20 @@ function getCartPayload() {
     totalCount: list.reduce((sum, item) => sum + item.quantity, 0),
     totalAmount: list.reduce((sum, item) => sum + item.quantity * (item.product?.price || 0), 0)
   };
+}
+
+function getOrderPayload() {
+  return mockOrders.map((order) => {
+    return {
+      ...order,
+      items: order.items.map((item) => {
+        return {
+          ...item,
+          product: mockProducts.find((productItem) => productItem.id === item.productId)
+        };
+      })
+    };
+  });
 }
 
 export function handleMockRequest({ method, url, data = {} }: MockRequest) {
@@ -81,6 +103,22 @@ export function handleMockRequest({ method, url, data = {} }: MockRequest) {
     return success(getCartPayload());
   }
 
+  if (method === 'GET' && url === '/orders/preview') {
+    const cart = getCartPayload();
+    const address = mockAddresses.find((item) => item.isDefault) || mockAddresses[0];
+
+    return success({
+      address,
+      items: cart.list,
+      summary: {
+        goodsAmount: cart.totalAmount,
+        shippingFee: cart.list.length ? 12 : 0,
+        discountAmount: cart.list.length ? 20 : 0,
+        payableAmount: Math.max(cart.totalAmount + (cart.list.length ? 12 : 0) - (cart.list.length ? 20 : 0), 0)
+      }
+    });
+  }
+
   if (method === 'POST' && url === '/cart/items') {
     const existing = mockCart.find(
       (item) => item.productId === data.productId && item.size === data.size
@@ -120,6 +158,106 @@ export function handleMockRequest({ method, url, data = {} }: MockRequest) {
     }
 
     return success(getCartPayload(), '已移除商品');
+  }
+
+  if (method === 'POST' && url === '/orders') {
+    const cart = getCartPayload();
+    const payableAmount = Math.max(cart.totalAmount + (cart.list.length ? 12 : 0) - (cart.list.length ? 20 : 0), 0);
+
+    const newOrder = {
+      id: `order_${Date.now()}`,
+      status: 'pending_payment' as const,
+      amount: payableAmount,
+      createdAt: new Date().toLocaleString('zh-CN', { hour12: false }),
+      items: mockCart.map((item) => ({ ...item }))
+    };
+
+    mockOrders.unshift(newOrder);
+    mockCart.splice(0, mockCart.length);
+
+    return success(newOrder, '订单已创建');
+  }
+
+  if (method === 'GET' && url === '/orders') {
+    return success(getOrderPayload());
+  }
+
+  if (method === 'GET' && /^\/orders\/.+/.test(url)) {
+    const id = url.split('/').pop();
+    return success(getOrderPayload().find((item) => item.id === id));
+  }
+
+  if (method === 'GET' && url === '/addresses') {
+    return success(mockAddresses);
+  }
+
+  if (method === 'POST' && url === '/addresses') {
+    const created = {
+      id: `addr_${Date.now()}`,
+      name: data.name,
+      phone: data.phone,
+      region: data.region,
+      detail: data.detail,
+      isDefault: Boolean(data.isDefault)
+    };
+
+    if (created.isDefault) {
+      mockAddresses.forEach((item) => {
+        item.isDefault = false;
+      });
+    }
+
+    mockAddresses.unshift(created);
+    return success(mockAddresses, '地址已新增');
+  }
+
+  if (method === 'PUT' && /^\/addresses\/.+/.test(url)) {
+    const id = url.split('/').pop();
+    const target = mockAddresses.find((item) => item.id === id);
+
+    if (target) {
+      if (data.isDefault) {
+        mockAddresses.forEach((item) => {
+          item.isDefault = false;
+        });
+      }
+
+      target.name = data.name;
+      target.phone = data.phone;
+      target.region = data.region;
+      target.detail = data.detail;
+      target.isDefault = Boolean(data.isDefault);
+    }
+
+    return success(mockAddresses, '地址已更新');
+  }
+
+  if (method === 'DELETE' && /^\/addresses\/.+/.test(url)) {
+    const id = url.split('/').pop();
+    const index = mockAddresses.findIndex((item) => item.id === id);
+
+    if (index > -1) {
+      mockAddresses.splice(index, 1);
+    }
+
+    return success(mockAddresses, '地址已删除');
+  }
+
+  if (method === 'GET' && url === '/after-sales') {
+    return success(mockAfterSales);
+  }
+
+  if (method === 'POST' && url === '/after-sales') {
+    const created = {
+      id: `after_${Date.now()}`,
+      orderId: data.orderId,
+      productTitle: data.productTitle,
+      reason: data.reason,
+      status: 'submitted' as const
+    };
+
+    mockAfterSales.unshift(created);
+    return success(created, '售后申请已提交');
   }
 
   if (method === 'POST' && url === '/chat/sessions') {

@@ -5,6 +5,9 @@ export const productService = {
   listProducts() {
     return productRepository.findAll();
   },
+  searchProducts(keyword) {
+    return productRepository.search(keyword);
+  },
   getProductDetail(id) {
     const product = productRepository.findById(id);
 
@@ -15,6 +18,6 @@ export const productService = {
     return product;
   },
   listCategories() {
-    return productRepository.listCategories();
+    return ['推荐', ...productRepository.listCategories()];
   }
 };

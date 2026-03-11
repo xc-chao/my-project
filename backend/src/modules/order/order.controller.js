@@ -3,8 +3,11 @@ import { AppError } from '../../common/errors/AppError.js';
 import { orderService } from './order.service.js';
 
 export const orderController = {
+  preview(req, res) {
+    return ok(res, orderService.getPreview(req.user.userId));
+  },
   create(req, res) {
-    return ok(res, orderService.createOrder(req.user.userId), '订单已创建');
+    return ok(res, orderService.createOrder(req.user.userId, req.body), '订单已创建');
   },
   list(req, res) {
     return ok(res, orderService.listOrders(req.user.userId));

@@ -10,6 +10,10 @@ async function handleLogin() {
     url: '/pages/home/index'
   });
 }
+
+function handlePhoneLogin() {
+  handleLogin();
+}
 </script>
 
 <template>
@@ -28,7 +32,7 @@ async function handleLogin() {
       <button class="primary-btn" :loading="userStore.loading" @tap="handleLogin">
         微信一键登录
       </button>
-      <button class="secondary-btn">手机号验证码登录</button>
+      <button class="secondary-btn" @tap="handlePhoneLogin">手机号验证码登录</button>
 
       <view class="tips-card">
         <text class="tips-title">登录后可获得</text>

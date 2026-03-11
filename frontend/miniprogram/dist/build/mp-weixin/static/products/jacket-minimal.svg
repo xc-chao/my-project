@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">
+  <rect width="640" height="640" rx="48" fill="#EEF2F7"/>
+  <path d="M220 180l62-44 38 44h0l38-44 62 44 58 126-56 30-24-50v196H242V286l-24 50-56-30 58-126z" fill="#313946"/>
+  <path d="M282 136h76l22 44-60 58-60-58 22-44z" fill="#1F2937"/>
+  <rect x="278" y="270" width="24" height="118" rx="12" fill="#4B5563"/>
+  <rect x="338" y="270" width="24" height="118" rx="12" fill="#4B5563"/>
+  <text x="320" y="546" text-anchor="middle" fill="#111111" font-size="34" font-family="Arial, sans-serif" font-weight="700">Minimal Jacket</text>
+</svg>

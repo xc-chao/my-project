@@ -2,6 +2,8 @@
 import { onMounted } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
+import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
+import QuantityStepper from '../../components/common/QuantityStepper.vue';
 import { useCartStore, useUserStore } from '../../store';
 
 const cartStore = useCartStore();
@@ -21,6 +23,22 @@ function goLogin() {
   });
 }
 
+function goCheckout() {
+  if (!cartStore.list.length) {
+    return;
+  }
+
+  uni.navigateTo({
+    url: '/pages/order/confirm'
+  });
+}
+
+function goHome() {
+  uni.switchTab({
+    url: '/pages/home/index'
+  });
+}
+
 onMounted(loadCart);
 onShow(() => {
   uni.hideTabBar();
@@ -31,22 +49,19 @@ onShow(() => {
 <template>
   <view class="page-shell">
     <view class="header">
-      <view class="status-row">
-        <text class="time">9:41</text>
-        <text class="signal">5G 100%</text>
-      </view>
       <view class="title-row">
         <text class="title">购物车</text>
         <text class="title-sub">{{ cartStore.totalCount }} 件商品</text>
       </view>
     </view>
 
-    <view v-if="!userStore.isLoggedIn" class="empty-card">
-      <text class="empty-title">登录后查看购物车</text>
-      <text class="empty-desc">已接好登录链路，登录后可继续“首页 → 详情 → 加购”的首条流程。</text>
-      <view class="login-btn" @tap="goLogin">
-        <text>去登录</text>
-      </view>
+    <view v-if="!userStore.isLoggedIn" class="empty-wrap">
+      <EmptyStateCard
+        title="登录后查看购物车"
+        desc="登录后可继续首页、详情、加购、确认订单的完整链路。"
+        action-text="去登录"
+        @action="goLogin"
+      />
     </view>
 
     <scroll-view v-else scroll-y class="cart-scroll">
@@ -58,23 +73,23 @@ onShow(() => {
             <text class="cart-sub">尺码 {{ item.size }}</text>
             <text class="cart-price">¥{{ item.product?.price }}</text>
             <view class="qty-row">
-              <view class="qty-btn" @tap="cartStore.changeQuantity(item.id, item.quantity - 1)">
-                <text>-</text>
-              </view>
-              <text class="qty-value">{{ item.quantity }}</text>
-              <view class="qty-btn" @tap="cartStore.changeQuantity(item.id, item.quantity + 1)">
-                <text>+</text>
-              </view>
+              <QuantityStepper
+                :model-value="item.quantity"
+                @update:model-value="cartStore.changeQuantity(item.id, $event)"
+              />
               <text class="remove" @tap="cartStore.remove(item.id)">移除</text>
             </view>
           </view>
         </view>
       </view>
 
-      <view v-else class="empty-card">
-        <text class="empty-title">购物车还是空的</text>
-        <text class="empty-desc">可以先去首页浏览商品，点击任意商品进入详情页完成加购。</text>
-      </view>
+      <EmptyStateCard
+        v-else
+        title="购物车还是空的"
+        desc="可以先去首页浏览商品，点击任意商品进入详情页完成加购。"
+        action-text="去首页"
+        @action="goHome"
+      />
     </scroll-view>
 
     <view v-if="userStore.isLoggedIn" class="bottom-bar">
@@ -82,7 +97,7 @@ onShow(() => {
         <text class="total-label">合计</text>
         <text class="total-price">¥{{ cartStore.totalAmount }}</text>
       </view>
-      <view class="checkout-btn">
+      <view class="checkout-btn" @tap="goCheckout">
         <text>去结算</text>
       </view>
     </view>
@@ -93,29 +108,14 @@ onShow(() => {
 
 <style scoped lang="scss">
 .header {
-  padding: 0 40rpx 20rpx;
+  padding: 20rpx 40rpx 20rpx;
 }
 
-.status-row,
 .title-row,
 .qty-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.status-row {
-  height: 62px;
-}
-
-.time {
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.signal {
-  font-size: 24rpx;
-  font-weight: 600;
 }
 
 .title {
@@ -139,8 +139,7 @@ onShow(() => {
   gap: 24rpx;
 }
 
-.cart-card,
-.empty-card {
+.cart-card {
   display: flex;
   gap: 24rpx;
   padding: 24rpx;
@@ -148,9 +147,8 @@ onShow(() => {
   background: #ffffff;
 }
 
-.empty-card {
+.empty-wrap {
   margin: 0 40rpx;
-  flex-direction: column;
 }
 
 .cart-cover {
@@ -167,15 +165,13 @@ onShow(() => {
   gap: 10rpx;
 }
 
-.cart-title,
-.empty-title {
+.cart-title {
   font-size: 30rpx;
   font-weight: 700;
   color: #111111;
 }
 
-.cart-sub,
-.empty-desc {
+.cart-sub {
   font-size: 24rpx;
   line-height: 1.6;
   color: #6e7380;
@@ -192,23 +188,6 @@ onShow(() => {
   justify-content: flex-start;
   gap: 20rpx;
   margin-top: auto;
-}
-
-.qty-btn {
-  width: 60rpx;
-  height: 60rpx;
-  border-radius: 30rpx;
-  background: #f3f4f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.qty-value {
-  width: 40rpx;
-  text-align: center;
-  font-size: 26rpx;
-  font-weight: 700;
 }
 
 .remove {

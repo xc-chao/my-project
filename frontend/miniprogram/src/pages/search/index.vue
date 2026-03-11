@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
+import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import ProductCard from '../../components/ProductCard.vue';
 import { getProductList, searchProducts } from '../../services/productService';
 import type { ProductItem } from '../../mock/data';
@@ -30,6 +31,12 @@ async function loadSearch() {
 function openDetail(id: string) {
   uni.navigateTo({
     url: `/pages/product/detail?id=${id}`
+  });
+}
+
+function goHome() {
+  uni.switchTab({
+    url: '/pages/home/index'
   });
 }
 
@@ -75,10 +82,13 @@ onLoad((query) => {
           />
         </view>
 
-        <view v-else class="empty-card">
-          <text class="empty-title">暂无匹配商品</text>
-          <text class="empty-text">可以尝试更换关键词，或者返回首页查看推荐商品。</text>
-        </view>
+        <EmptyStateCard
+          v-else
+          title="暂无匹配商品"
+          desc="可以尝试更换关键词，或者返回首页查看推荐商品。"
+          action-text="回首页"
+          @action="goHome"
+        />
       </scroll-view>
     </view>
   </view>
@@ -148,25 +158,4 @@ onLoad((query) => {
   padding-bottom: 40rpx;
 }
 
-.empty-card {
-  margin-top: 20rpx;
-  padding: 40rpx 32rpx;
-  border-radius: 40rpx;
-  background: #ffffff;
-}
-
-.empty-title {
-  display: block;
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #111111;
-}
-
-.empty-text {
-  display: block;
-  margin-top: 16rpx;
-  font-size: 24rpx;
-  line-height: 1.6;
-  color: #6e7380;
-}
 </style>

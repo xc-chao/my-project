@@ -1,0 +1,1 @@
+"use strict";const e=require("./request.js");exports.createOrder=function(r){return e.request("/orders",{method:"POST",data:r})},exports.getOrderList=function(){return e.request("/orders")},exports.getOrderPreview=function(){return e.request("/orders/preview")};

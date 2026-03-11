@@ -37,10 +37,6 @@ function handleAction() {
 
 <template>
   <view class="header-wrap">
-    <view class="status-row">
-      <text class="status-time">9:41</text>
-      <text class="status-signal">5G 100%</text>
-    </view>
     <view class="nav-row">
       <view class="nav-btn" @tap="props.back ? handleBack() : undefined">
         <text v-if="props.back" class="nav-btn-text">&lt;</text>
@@ -55,28 +51,13 @@ function handleAction() {
 
 <style scoped lang="scss">
 .header-wrap {
-  padding: 0 20rpx;
+  padding: 20rpx 20rpx 0;
 }
 
-.status-row,
 .nav-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.status-row {
-  height: 62px;
-}
-
-.status-time {
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.status-signal {
-  font-size: 24rpx;
-  font-weight: 600;
 }
 
 .nav-row {
@@ -108,7 +89,7 @@ function handleAction() {
 }
 
 .nav-title {
-  font-size: 56rpx;
+  font-size: 48rpx;
   font-weight: 700;
   color: #111111;
 }

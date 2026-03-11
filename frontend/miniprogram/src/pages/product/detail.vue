@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
+import QuantityStepper from '../../components/common/QuantityStepper.vue';
 import { getProductDetail } from '../../services/productService';
 import { useCartStore, useUserStore } from '../../store';
 import type { ProductItem } from '../../mock/data';
@@ -55,11 +56,15 @@ async function handleAddToCart() {
   });
 }
 
-function handleBuyNow() {
-  handleAddToCart().then(() => {
-    uni.switchTab({
-      url: '/pages/cart/index'
-    });
+async function handleBuyNow() {
+  await handleAddToCart();
+
+  if (!userStore.isLoggedIn) {
+    return;
+  }
+
+  uni.navigateTo({
+    url: '/pages/order/confirm'
   });
 }
 
@@ -134,15 +139,7 @@ function openChat() {
 
       <view class="card quantity-card">
         <text class="section-title">购买数量</text>
-        <view class="quantity-row">
-          <view class="qty-btn" @tap="quantity = Math.max(1, quantity - 1)">
-            <text>-</text>
-          </view>
-          <text class="qty-value">{{ quantity }}</text>
-          <view class="qty-btn" @tap="quantity = quantity + 1">
-            <text>+</text>
-          </view>
-        </view>
+        <QuantityStepper v-model="quantity" />
       </view>
     </scroll-view>
 
@@ -263,31 +260,6 @@ function openChat() {
   font-size: 24rpx;
   font-weight: 700;
   color: #ffffff;
-}
-
-.quantity-row {
-  display: flex;
-  align-items: center;
-  gap: 24rpx;
-}
-
-.qty-btn {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 36rpx;
-  background: #f3f4f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30rpx;
-  font-weight: 700;
-}
-
-.qty-value {
-  min-width: 40rpx;
-  text-align: center;
-  font-size: 30rpx;
-  font-weight: 700;
 }
 
 .bottom-bar {

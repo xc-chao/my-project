@@ -3,7 +3,7 @@ import { handleMockRequest } from '../mock/handlers';
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
 
-type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface RequestOptions {
   method?: HttpMethod;

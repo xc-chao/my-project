@@ -1,0 +1,1 @@
+<view class="stepper data-v-08b530a2"><view class="btn data-v-08b530a2" bindtap="{{a}}"><text class="data-v-08b530a2">-</text></view><text class="value data-v-08b530a2">{{b}}</text><view class="btn data-v-08b530a2" bindtap="{{c}}"><text class="data-v-08b530a2">+</text></view></view>

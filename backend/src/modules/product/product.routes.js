@@ -7,4 +7,4 @@ export const productRouter = Router();
 productRouter.get('/products', productController.list);
 productRouter.get('/products/:id', productController.detail);
 productRouter.get('/categories', productController.categories);
-productRouter.get('/search', createRateLimitMiddleware('search'), productController.list);
+productRouter.get('/search', createRateLimitMiddleware('search'), productController.search);

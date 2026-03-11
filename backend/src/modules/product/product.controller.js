@@ -6,8 +6,16 @@ export const productController = {
     const list = productService.listProducts();
     return ok(res, {
       list,
+      categories: productService.listCategories(),
       page: Number(req.query.page || 1),
       pageSize: Number(req.query.pageSize || list.length)
+    });
+  },
+  search(req, res) {
+    const keyword = String(req.query.keyword || '');
+    return ok(res, {
+      keyword,
+      list: productService.searchProducts(keyword)
     });
   },
   detail(req, res) {

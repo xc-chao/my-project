@@ -5,6 +5,7 @@ import { orderController } from './order.controller.js';
 export const orderRouter = Router();
 
 orderRouter.use(requireAuth);
+orderRouter.get('/preview', orderController.preview);
 orderRouter.post('/', orderController.create);
 orderRouter.get('/', orderController.list);
 orderRouter.get('/:id', orderController.detail);

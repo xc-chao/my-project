@@ -11,6 +11,8 @@ import { productRouter } from './modules/product/product.routes.js';
 import { cartRouter } from './modules/cart/cart.routes.js';
 import { orderRouter } from './modules/order/order.routes.js';
 import { chatRouter } from './modules/chat/chat.routes.js';
+import { addressRouter } from './modules/address/address.routes.js';
+import { afterSaleRouter } from './modules/afterSale/afterSale.routes.js';
 
 export function createApp() {
   const app = express();
@@ -47,6 +49,8 @@ export function createApp() {
   app.use('/api/cart', cartRouter);
   app.use('/api/orders', orderRouter);
   app.use('/api/chat', chatRouter);
+  app.use('/api/addresses', addressRouter);
+  app.use('/api/after-sales', afterSaleRouter);
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

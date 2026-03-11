@@ -1,6 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "pill-tab-bar": "../../components/PillTabBar"
+    "pill-tab-bar": "../../components/PillTabBar",
+    "empty-state-card": "../../components/common/EmptyStateCard",
+    "quantity-stepper": "../../components/common/QuantityStepper"
   }
 }
