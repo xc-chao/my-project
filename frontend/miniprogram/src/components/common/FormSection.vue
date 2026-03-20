@@ -19,8 +19,8 @@ defineProps<{
 .section {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
   padding: 28rpx;
+  margin-bottom: 20rpx;
   border-radius: 40rpx;
   background: #ffffff;
 }

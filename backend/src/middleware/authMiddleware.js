@@ -38,3 +38,17 @@ export function requireAuth(req, _res, next) {
     next(new AppError(401, 'INVALID_TOKEN', '登录状态已失效，请重新登录'));
   }
 }
+
+export function requireAdmin(req, _res, next) {
+  if (!req.user) {
+    next(new AppError(401, 'UNAUTHORIZED', '请先登录'));
+    return;
+  }
+
+  if (req.user.role !== 'admin') {
+    next(new AppError(403, 'FORBIDDEN', '仅管理员可访问'));
+    return;
+  }
+
+  next();
+}

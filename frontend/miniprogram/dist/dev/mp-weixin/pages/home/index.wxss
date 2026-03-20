@@ -14,44 +14,17 @@ page.data-v-2c5296db {
   padding-bottom: env(safe-area-inset-bottom);
 }
 .header.data-v-2c5296db {
-  padding: 0 40rpx 20rpx;
+  padding: 20rpx 40rpx 20rpx;
 }
-.status-row.data-v-2c5296db,
 .section-row.data-v-2c5296db {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.status-row.data-v-2c5296db {
-  height: 62px;
-}
-.time.data-v-2c5296db {
-  font-size: 30rpx;
-  font-weight: 700;
-}
-.signal.data-v-2c5296db {
-  font-size: 24rpx;
-  font-weight: 600;
-}
-.top-copy.data-v-2c5296db {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-.eyebrow.data-v-2c5296db {
-  color: #8c93a1;
-  font-size: 24rpx;
-  font-weight: 600;
-}
-.title.data-v-2c5296db {
-  font-size: 56rpx;
-  font-weight: 700;
-}
 .search-bar.data-v-2c5296db {
   display: flex;
   align-items: center;
   height: 104rpx;
-  margin-top: 24rpx;
   padding: 0 36rpx;
   border-radius: 52rpx;
   background: #ffffff;
@@ -64,57 +37,78 @@ page.data-v-2c5296db {
   height: calc(100vh - 220rpx);
   padding: 0 40rpx 180rpx;
 }
-.hero-card.data-v-2c5296db {
+.hero-copy.data-v-2c5296db {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  padding: 40rpx;
-  border-radius: 56rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f3f4f8 60%, #eeeafb 100%);
+  gap: 8rpx;
+  padding: 8rpx 0 0;
+}
+.hero-panel.data-v-2c5296db {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 .hero-badge.data-v-2c5296db {
   align-self: flex-start;
-  padding: 10rpx 18rpx;
-  border-radius: 999rpx;
-  background: #ffffff;
-  color: #6e7380;
+  color: #f25a52;
   font-size: 22rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 .hero-title.data-v-2c5296db {
-  font-size: 44rpx;
+  font-size: 46rpx;
   font-weight: 700;
+  line-height: 1.2;
 }
 .hero-desc.data-v-2c5296db {
   color: #6e7380;
-  font-size: 26rpx;
+  margin-top: 10rpx;
+  font-size: 22rpx;
   line-height: 1.6;
 }
-.category-scroll.data-v-2c5296db {
-  margin-top: 32rpx;
-  white-space: nowrap;
+.hero-visual.data-v-2c5296db {
+  display: flex;
+  gap: 16rpx;
+  height: 340rpx;
 }
-.category-row.data-v-2c5296db {
-  display: inline-flex;
+.hero-main.data-v-2c5296db,
+.hero-sub.data-v-2c5296db {
+  background: #eef0f4;
+}
+.hero-main.data-v-2c5296db {
+  flex: 1.3;
+  border-radius: 40rpx;
+}
+.hero-side.data-v-2c5296db {
+  width: 210rpx;
+  display: flex;
+  flex-direction: column;
   gap: 16rpx;
 }
-.category-pill.data-v-2c5296db {
-  padding: 18rpx 28rpx;
-  border-radius: 999rpx;
+.hero-sub.data-v-2c5296db {
+  flex: 1;
+  border-radius: 32rpx;
+}
+.metric-row.data-v-2c5296db {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 26rpx;
+}
+.metric-card.data-v-2c5296db {
+  min-width: 128rpx;
+  padding: 12rpx 16rpx;
+  border-radius: 18rpx;
   background: #ffffff;
-  color: #6e7380;
-  font-size: 24rpx;
+}
+.metric-value.data-v-2c5296db {
+  font-size: 20rpx;
+  color: #111111;
   font-weight: 600;
 }
-.category-pill.active.data-v-2c5296db {
-  background: #17181c;
-  color: #ffffff;
-}
 .section-row.data-v-2c5296db {
-  margin-top: 36rpx;
+  margin-top: 28rpx;
 }
 .section-title.data-v-2c5296db {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 700;
 }
 .section-link.data-v-2c5296db {
@@ -123,9 +117,10 @@ page.data-v-2c5296db {
 }
 .product-grid.data-v-2c5296db {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 24rpx;
-  margin-top: 20rpx;
+  margin-top: 18rpx;
 }
 .agent-fab.data-v-2c5296db {
   position: fixed;

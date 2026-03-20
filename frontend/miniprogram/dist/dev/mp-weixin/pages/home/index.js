@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const services_productService = require("../../services/productService.js");
+const mock_pageImageMap = require("../../mock/page-image-map.js");
 if (!Math) {
   (ProductCard + PillTabBar)();
 }
@@ -11,20 +12,17 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   setup(__props) {
     const loading = common_vendor.ref(false);
     const products = common_vendor.ref([]);
-    const categories = common_vendor.ref([]);
-    const currentCategory = common_vendor.ref("推荐");
-    const filteredProducts = common_vendor.computed(() => {
-      if (currentCategory.value === "推荐") {
-        return products.value;
-      }
-      return products.value.filter((item) => item.category === currentCategory.value);
-    });
+    const heroShots = [
+      mock_pageImageMap.pageImageMap.home.heroPrimary,
+      mock_pageImageMap.pageImageMap.home.heroSecondary,
+      mock_pageImageMap.pageImageMap.home.heroAccent
+    ];
     async function loadData() {
       loading.value = true;
       try {
         const result = await services_productService.getProductList();
+        console.log("result", result);
         products.value = result.list;
-        categories.value = result.categories;
       } finally {
         loading.value = false;
       }
@@ -35,8 +33,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       });
     }
     function openSearch() {
-      common_vendor.index.navigateTo({
+      common_vendor.index.switchTab({
         url: "/pages/search/index"
+      });
+    }
+    function openAgent() {
+      common_vendor.index.navigateTo({
+        url: "/pages/chat/index?productId=p_001&title=%E6%99%BA%E8%83%BD%E8%B4%AD%E7%89%A9%E5%8A%A9%E6%89%8B"
       });
     }
     common_vendor.onMounted(loadData);
@@ -46,18 +49,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       return {
         a: common_vendor.o(openSearch),
-        b: common_vendor.f(["推荐", ...categories.value], (item, k0, i0) => {
-          return {
-            a: common_vendor.t(item),
-            b: item,
-            c: common_vendor.n({
-              active: currentCategory.value === item
-            }),
-            d: common_vendor.o(($event) => currentCategory.value = item, item)
-          };
-        }),
-        c: common_vendor.o(openSearch),
-        d: common_vendor.f(filteredProducts.value, (item, k0, i0) => {
+        b: heroShots[0],
+        c: heroShots[1],
+        d: heroShots[2],
+        e: common_vendor.o(openSearch),
+        f: common_vendor.f(products.value, (item, k0, i0) => {
           return {
             a: item.id,
             b: common_vendor.o(($event) => openDetail(item.id), item.id),
@@ -67,7 +63,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             })
           };
         }),
-        e: common_vendor.p({
+        g: common_vendor.o(openAgent),
+        h: common_vendor.p({
           current: "home"
         })
       };

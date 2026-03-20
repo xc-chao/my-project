@@ -4,9 +4,13 @@ const common_vendor = require("./common/vendor.js");
 if (!Math) {
   "./pages/auth/login.js";
   "./pages/home/index.js";
-  "./pages/product/detail.js";
   "./pages/search/index.js";
+  "./pages/product/detail.js";
   "./pages/chat/index.js";
+  "./pages/order/confirm.js";
+  "./pages/order/list.js";
+  "./pages/address/index.js";
+  "./pages/after-sale/index.js";
   "./pages/cart/index.js";
   "./pages/profile/index.js";
 }

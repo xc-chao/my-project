@@ -1,4 +1,6 @@
 import {
+  mockAdminOverview,
+  mockAdminUser,
   mockAddresses,
   mockAfterSales,
   mockCart,
@@ -27,6 +29,14 @@ function success(data: unknown, message = 'ok') {
     message,
     data
   };
+}
+
+function ensureAdminPermission() {
+  const currentUser = uni.getStorageSync('shopping_user_profile') as { role?: string } | null;
+
+  if (currentUser?.role !== 'admin') {
+    throw new Error('仅管理员可访问该页面');
+  }
 }
 
 function getCartPayload() {
@@ -60,12 +70,57 @@ function getOrderPayload() {
   });
 }
 
+function getAdminOverviewPayload() {
+  const hotProducts = mockProducts
+    .slice()
+    .sort((left, right) => right.sales - left.sales)
+    .slice(0, 3)
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      sales: item.sales,
+      stock: item.stock
+    }));
+  const pendingFeedbackCount = mockAdminOverview.feedbacks.filter((item) => item.status === 'pending').length;
+
+  return {
+    ...mockAdminOverview,
+    metrics: [
+      mockAdminOverview.metrics[0],
+      mockAdminOverview.metrics[1],
+      {
+        ...mockAdminOverview.metrics[2],
+        value: `${mockProducts.length}`
+      },
+      {
+        ...mockAdminOverview.metrics[3],
+        value: `${pendingFeedbackCount}`
+      }
+    ],
+    modules: [
+      {
+        ...mockAdminOverview.modules[0],
+        value: `${mockProducts.length} 款在列`
+      },
+      mockAdminOverview.modules[1],
+      {
+        ...mockAdminOverview.modules[2],
+        hint: `今日 Agent 调用 ${mockAdminOverview.monitor.todayCalls} 次`
+      }
+    ],
+    hotProducts,
+    feedbacks: mockAdminOverview.feedbacks
+  };
+}
+
 export function handleMockRequest({ method, url, data = {} }: MockRequest) {
   if (method === 'POST' && url === '/auth/wechat-login') {
+    const user = data.identity === 'admin' ? mockAdminUser : mockUser;
+
     return success(
       {
-        user: mockUser,
-        accessToken: 'mock_access_token'
+        user,
+        accessToken: data.identity === 'admin' ? 'mock_admin_access_token' : 'mock_access_token'
       },
       '登录成功'
     );
@@ -303,6 +358,97 @@ export function handleMockRequest({ method, url, data = {} }: MockRequest) {
 
   if (method === 'GET' && url === '/chat/history') {
     return success(mockChatSessions);
+  }
+
+  if (method === 'GET' && url === '/admin/overview') {
+    ensureAdminPermission();
+    return success(getAdminOverviewPayload());
+  }
+
+  if (method === 'GET' && url === '/admin/products') {
+    ensureAdminPermission();
+    return success(mockProducts);
+  }
+
+  if (method === 'PATCH' && /^\/admin\/products\/.+/.test(url)) {
+    ensureAdminPermission();
+    const id = url.split('/').pop();
+    const target = mockProducts.find((item) => item.id === id);
+
+    if (!target) {
+      throw new Error('商品不存在');
+    }
+
+    const nextSaleStatus = data.saleStatus;
+
+    if (nextSaleStatus === 'on_sale' || nextSaleStatus === 'off_shelf') {
+      target.saleStatus = nextSaleStatus;
+    }
+
+    if (typeof data.stock === 'number') {
+      target.stock = data.stock;
+    }
+
+    if (typeof data.price === 'number') {
+      target.price = data.price;
+    }
+
+    return success(target, '商品信息已更新');
+  }
+
+  if (method === 'GET' && url === '/admin/orders') {
+    ensureAdminPermission();
+    return success(getOrderPayload());
+  }
+
+  if (method === 'PATCH' && /^\/admin\/orders\/.+\/status$/.test(url)) {
+    ensureAdminPermission();
+    const parts = url.split('/');
+    const id = parts[3];
+    const target = mockOrders.find((item) => item.id === id);
+
+    if (!target) {
+      throw new Error('订单不存在');
+    }
+
+    const nextOrderStatus = data.status;
+
+    if (
+      nextOrderStatus === 'pending_payment' ||
+      nextOrderStatus === 'pending_shipping' ||
+      nextOrderStatus === 'shipped' ||
+      nextOrderStatus === 'completed' ||
+      nextOrderStatus === 'cancelled'
+    ) {
+      target.status = nextOrderStatus;
+    }
+
+    return success(
+      getOrderPayload().find((item) => item.id === id),
+      '订单状态已更新'
+    );
+  }
+
+  if (method === 'GET' && url === '/admin/feedback') {
+    ensureAdminPermission();
+    return success(mockAdminOverview.feedbacks);
+  }
+
+  if (method === 'PATCH' && /^\/admin\/feedback\/.+\/status$/.test(url)) {
+    ensureAdminPermission();
+    const parts = url.split('/');
+    const id = parts[3];
+    const target = mockAdminOverview.feedbacks.find((item) => item.id === id);
+
+    if (!target) {
+      throw new Error('反馈不存在');
+    }
+
+    if (data.status === 'pending' || data.status === 'resolved') {
+      target.status = data.status;
+    }
+
+    return success(target, '反馈状态已更新');
   }
 
   throw new Error(`未实现的 mock 接口: ${method} ${url}`);

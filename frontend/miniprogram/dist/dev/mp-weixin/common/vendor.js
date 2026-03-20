@@ -8023,6 +8023,7 @@ exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onShow = onShow;
 exports.p = p;
+exports.reactive = reactive;
 exports.ref = ref;
 exports.t = t;
 exports.unref = unref;

@@ -13,6 +13,7 @@ import { orderRouter } from './modules/order/order.routes.js';
 import { chatRouter } from './modules/chat/chat.routes.js';
 import { addressRouter } from './modules/address/address.routes.js';
 import { afterSaleRouter } from './modules/afterSale/afterSale.routes.js';
+import { adminRouter } from './modules/admin/admin.routes.js';
 
 export function createApp() {
   const app = express();
@@ -51,6 +52,7 @@ export function createApp() {
   app.use('/api/chat', chatRouter);
   app.use('/api/addresses', addressRouter);
   app.use('/api/after-sales', afterSaleRouter);
+  app.use('/api/admin', adminRouter);
 
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);

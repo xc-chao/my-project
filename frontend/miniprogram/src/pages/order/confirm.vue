@@ -4,6 +4,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import AddressCard from '../../components/common/AddressCard.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
+import { pageImageMap } from '../../mock/page-image-map';
 import { createOrder, getOrderPreview, type OrderPreviewResponse } from '../../services/orderService';
 
 const preview = ref<OrderPreviewResponse | null>(null);
@@ -63,6 +64,17 @@ onMounted(loadPreview);
 
     <scroll-view scroll-y class="body">
       <template v-if="hasItems && preview">
+        <view class="hero-card">
+          <view class="hero-copy">
+            <text class="hero-title">确认这次下单</text>
+            <text class="hero-desc">核对地址、商品与优惠信息后即可提交订单。</text>
+          </view>
+          <view class="hero-images">
+            <image class="hero-main" :src="pageImageMap.orderConfirm.banner" mode="aspectFill" />
+            <image class="hero-accent" :src="pageImageMap.orderConfirm.accent" mode="aspectFill" />
+          </view>
+        </view>
+
         <FormSection title="收货地址" desc="默认地址会自动带入，也可在地址管理中调整">
           <AddressCard
             v-if="preview.address"
@@ -138,6 +150,53 @@ onMounted(loadPreview);
   display: flex;
   flex-direction: column;
   gap: 24rpx;
+}
+
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding: 24rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.hero-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.hero-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.hero-images {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.hero-main,
+.hero-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.hero-main {
+  flex: 1;
+}
+
+.hero-accent {
+  width: 180rpx;
 }
 
 .link-btn,

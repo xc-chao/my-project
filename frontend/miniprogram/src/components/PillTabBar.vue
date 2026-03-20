@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { onShow } from '@dcloudio/uni-app';
+import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
 
 const props = defineProps<{
-  current: 'home' | 'cart' | 'profile';
+  current: 'home' | 'search' | 'cart' | 'profile';
 }>();
 
 const tabs = [
-  { key: 'home', label: '首页', url: '/pages/home/index' },
-  { key: 'cart', label: '购物车', url: '/pages/cart/index' },
-  { key: 'profile', label: '我的', url: '/pages/profile/index' }
+  { key: 'home', label: '首页', icon: 'home', activeIcon: 'home-filled', url: '/pages/home/index' },
+  { key: 'search', label: '搜索', icon: 'search', activeIcon: 'search', url: '/pages/search/index' },
+  { key: 'cart', label: '购物车', icon: 'cart', activeIcon: 'cart-filled', url: '/pages/cart/index' },
+  { key: 'profile', label: '我的', icon: 'person', activeIcon: 'person-filled', url: '/pages/profile/index' }
 ] as const;
 
 function switchPage(url: string) {
@@ -29,7 +31,14 @@ onShow(() => {
         :class="['pill-item', { active: props.current === tab.key }]"
         @tap="switchPage(tab.url)"
       >
-        <text class="pill-label">{{ tab.label }}</text>
+        <view class="pill-content">
+          <UniIcons
+            :type="props.current === tab.key ? tab.activeIcon : tab.icon"
+            :size="20"
+            :color="props.current === tab.key ? '#ffffff' : '#8c93a1'"
+          />
+          <text class="pill-label">{{ tab.label }}</text>
+        </view>
       </view>
     </view>
   </view>
@@ -48,7 +57,7 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: 8rpx;
-  padding: 8rpx;
+  padding: 8rpx 10rpx;
   height: 124rpx;
   border-radius: 72rpx;
   background: #ffffff;
@@ -64,14 +73,22 @@ onShow(() => {
   justify-content: center;
 }
 
+.pill-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+}
+
 .pill-item.active {
   background: #17181c;
 }
 
 .pill-label {
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 700;
-  letter-spacing: 2rpx;
+  letter-spacing: 0;
   color: #8c93a1;
 }
 

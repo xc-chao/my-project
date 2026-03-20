@@ -4,6 +4,7 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import OrderCard from '../../components/common/OrderCard.vue';
+import { pageImageMap } from '../../mock/page-image-map';
 import { getOrderList } from '../../services/orderService';
 
 const highlightId = ref('');
@@ -60,6 +61,13 @@ onMounted(loadOrders);
     <AppHeader title="历史订单" back />
 
     <view class="body">
+      <view class="hero-strip">
+        <view class="hero-copy">
+          <text class="hero-title">订单与物流</text>
+          <text class="hero-desc">统一查看支付、发货、签收与售后入口，流程更连贯。</text>
+        </view>
+      </view>
+
       <view class="tabs">
         <view
           v-for="item in tabs"
@@ -103,6 +111,53 @@ onMounted(loadOrders);
   padding: 8rpx 40rpx 40rpx;
 }
 
+.hero-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding: 24rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.hero-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.hero-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.hero-images {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.hero-main,
+.hero-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.hero-main {
+  flex: 1;
+}
+
+.hero-accent {
+  width: 180rpx;
+}
+
 .tabs,
 .tab-pill {
   display: flex;
@@ -111,6 +166,7 @@ onMounted(loadOrders);
 
 .tabs {
   gap: 16rpx;
+  margin-top: 20rpx;
 }
 
 .tab-pill {

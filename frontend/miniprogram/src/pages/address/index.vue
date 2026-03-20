@@ -4,6 +4,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import AddressCard from '../../components/common/AddressCard.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
+import { pageImageMap } from '../../mock/page-image-map';
 import {
   createAddress,
   deleteAddress,
@@ -23,6 +24,7 @@ const form = reactive({
 });
 
 const submitLabel = computed(() => (editingId.value ? '保存地址' : '新增地址'));
+const defaultAddress = computed(() => list.value.find((item) => item.isDefault) || list.value[0] || null);
 
 function fillForm(item?: AddressItem) {
   form.name = item?.name || '';
@@ -81,6 +83,19 @@ onMounted(async () => {
     <AppHeader title="地址管理" back />
 
     <scroll-view scroll-y class="body">
+      <view class="hero-card">
+        <view class="hero-copy">
+          <text class="hero-title">地址与配送偏好</text>
+          <text class="hero-desc">默认地址会自动带入确认订单，也方便后续统一查看与修改。</text>
+        </view>
+      </view>
+
+      <view v-if="defaultAddress" class="default-card">
+        <text class="default-label">默认地址</text>
+        <text class="default-name">{{ defaultAddress.name }} {{ defaultAddress.phone }}</text>
+        <text class="default-detail">{{ defaultAddress.region }} {{ defaultAddress.detail }}</text>
+      </view>
+
       <view v-if="list.length" class="card-list">
         <AddressCard
           v-for="item in list"
@@ -122,10 +137,66 @@ onMounted(async () => {
   padding: 8rpx 40rpx 40rpx;
 }
 
+.hero-card,
+.default-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 24rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+
+.default-card {
+  margin-top: 20rpx;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.hero-title,
+.default-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.hero-desc,
+.default-detail,
+.default-label {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.hero-images {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.hero-main,
+.hero-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.hero-main {
+  flex: 1;
+}
+
+.hero-accent {
+  width: 180rpx;
+}
+
 .card-list {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+  margin-top: 20rpx;
 }
 
 .field {

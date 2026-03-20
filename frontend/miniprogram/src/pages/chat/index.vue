@@ -4,6 +4,8 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import ChatBubble from '../../components/common/ChatBubble.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
+import { mockProducts } from '../../mock/data';
+import { pageImageMap } from '../../mock/page-image-map';
 import { createChatSession, getChatHistory, sendChatMessage } from '../../services/chatService';
 import { useUserStore } from '../../store';
 
@@ -22,6 +24,13 @@ const quickQuestions = computed(() => [
   '这款适合日常通勤吗？',
   '多久可以发货？'
 ]);
+const currentProduct = computed(() => {
+  return mockProducts.find((item) => item.id === productId.value) || null;
+});
+
+function getHistoryThumb(title: string) {
+  return mockProducts.find((item) => item.title === title)?.cover || pageImageMap.chat.historyThumb;
+}
 
 async function ensureSession() {
   if (mode.value === 'history' || !productId.value || sessionId.value) {
@@ -90,11 +99,19 @@ onLoad(async (query) => {
 
     <view class="body">
       <view class="intro-card">
-        <text class="intro-badge">{{ mode === 'history' ? '会话记录' : '商品上下文已接入' }}</text>
-        <text class="intro-title">{{ productTitle }}</text>
-        <text class="intro-text">
-          {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' }}
-        </text>
+        <view class="intro-top">
+          <view class="intro-copy">
+            <text class="intro-badge">{{ mode === 'history' ? '会话记录' : '商品上下文已接入' }}</text>
+            <text class="intro-title">{{ productTitle }}</text>
+            <text class="intro-text">
+              {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' }}
+            </text>
+          </view>
+          <view class="intro-visual">
+            <image class="intro-main" :src="currentProduct?.cover || pageImageMap.chat.banner" mode="aspectFill" />
+            <image class="intro-accent" :src="pageImageMap.chat.accent" mode="aspectFill" />
+          </view>
+        </view>
       </view>
 
       <scroll-view v-if="mode === 'chat'" scroll-x class="quick-scroll" show-scrollbar="false">
@@ -123,8 +140,11 @@ onLoad(async (query) => {
 
       <view v-else class="history-list">
         <view v-if="history.length" v-for="item in history" :key="item.id" class="history-card">
-          <text class="history-title">{{ item.title }}</text>
-          <text class="history-desc">{{ item.messages[item.messages.length - 1]?.content || '暂无消息' }}</text>
+          <image class="history-thumb" :src="getHistoryThumb(item.title)" mode="aspectFill" />
+          <view class="history-copy">
+            <text class="history-title">{{ item.title }}</text>
+            <text class="history-desc">{{ item.messages[item.messages.length - 1]?.content || '暂无消息' }}</text>
+          </view>
         </view>
         <EmptyStateCard
           v-else
@@ -163,6 +183,18 @@ onLoad(async (query) => {
   background: #ffffff;
 }
 
+.intro-top {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.intro-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
 .intro-badge {
   align-self: flex-start;
   padding: 10rpx 18rpx;
@@ -182,6 +214,26 @@ onLoad(async (query) => {
   font-size: 24rpx;
   line-height: 1.6;
   color: #6e7380;
+}
+
+.intro-visual {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.intro-main,
+.intro-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.intro-main {
+  flex: 1;
+}
+
+.intro-accent {
+  width: 180rpx;
 }
 
 .quick-scroll {
@@ -223,11 +275,24 @@ onLoad(async (query) => {
 
 .history-card {
   display: flex;
-  flex-direction: column;
-  gap: 10rpx;
+  gap: 18rpx;
   padding: 28rpx;
   border-radius: 36rpx;
   background: #ffffff;
+}
+
+.history-thumb {
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 24rpx;
+  background: #eef0f4;
+}
+
+.history-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
 }
 
 .history-title {

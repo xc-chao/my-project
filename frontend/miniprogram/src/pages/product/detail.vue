@@ -11,6 +11,7 @@ const product = ref<ProductItem | null>(null);
 const selectedSize = ref('');
 const quantity = ref(1);
 const loading = ref(false);
+const previewImage = ref('');
 const cartStore = useCartStore();
 const userStore = useUserStore();
 
@@ -26,6 +27,7 @@ async function loadDetail(id: string) {
     if (result) {
       product.value = result;
       selectedSize.value = result.sizes[0];
+      previewImage.value = result.gallery?.[0] || result.cover;
     }
   } finally {
     loading.value = false;
@@ -104,7 +106,18 @@ function openChat() {
     />
 
     <scroll-view scroll-y class="detail-scroll" v-if="product">
-      <image class="cover" :src="product.cover" mode="aspectFill" />
+      <image class="cover" :src="previewImage || product.cover" mode="aspectFill" />
+
+      <view class="thumb-row" v-if="product.gallery?.length">
+        <image
+          v-for="item in product.gallery"
+          :key="item"
+          :class="['thumb-image', { active: previewImage === item }]"
+          :src="item"
+          mode="aspectFill"
+          @tap="previewImage = item"
+        />
+      </view>
 
       <view class="card">
         <text class="title">{{ product.title }}</text>
@@ -134,6 +147,19 @@ function openChat() {
         <text class="desc">销量 {{ product.sales }}，支持 7 天无理由退货与 AI 商品咨询。</text>
         <view class="ai-entry" @tap="openChat">
           <text class="ai-entry-text">问问 AI：尺码、材质、发货、售后</text>
+        </view>
+      </view>
+
+      <view class="card" v-if="product.gallery?.length">
+        <text class="section-title">细节展示</text>
+        <view class="detail-gallery">
+          <image
+            v-for="item in product.gallery"
+            :key="`detail-${item}`"
+            class="detail-image"
+            :src="item"
+            mode="aspectFill"
+          />
         </view>
       </view>
 
@@ -171,6 +197,25 @@ function openChat() {
   height: 640rpx;
   border-radius: 56rpx;
   background: #eef0f4;
+}
+
+.thumb-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.thumb-image {
+  width: calc((100% - 32rpx) / 3);
+  height: 160rpx;
+  border-radius: 28rpx;
+  background: #eef0f4;
+  opacity: 0.72;
+}
+
+.thumb-image.active {
+  opacity: 1;
+  box-shadow: 0 0 0 4rpx rgba(17, 17, 17, 0.08);
 }
 
 .card {
@@ -260,6 +305,19 @@ function openChat() {
   font-size: 24rpx;
   font-weight: 700;
   color: #ffffff;
+}
+
+.detail-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.detail-image {
+  width: 100%;
+  height: 360rpx;
+  border-radius: 32rpx;
+  background: #eef0f4;
 }
 
 .bottom-bar {

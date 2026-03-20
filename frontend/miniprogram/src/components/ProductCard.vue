@@ -29,66 +29,77 @@ const emit = defineEmits<{
 
 <style scoped lang="scss">
 .card {
-  width: 100%;
-  border-radius: 28rpx;
+  width: calc(50% - 12rpx);
+  border-radius: 24rpx;
   background: #ffffff;
   overflow: hidden;
 }
 
 .card-cover {
   width: 100%;
-  height: 320rpx;
+  height: 220rpx;
   background: #eef0f4;
 }
 
 .card-body {
-  padding: 20rpx;
+  padding: 18rpx 16rpx 20rpx;
 }
 
 .badge-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 10rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 10rpx;
 }
 
 .badge {
   padding: 6rpx 12rpx;
   border-radius: 999rpx;
-  background: #f2f4f8;
+  background: #f5f6f8;
   color: #6e7380;
-  font-size: 22rpx;
+  font-size: 18rpx;
   font-weight: 600;
 }
 
 .title {
-  display: block;
-  font-size: 30rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: 72rpx;
+  font-size: 24rpx;
   font-weight: 700;
+  line-height: 1.5;
   color: #111111;
 }
 
 .subtitle {
   display: block;
-  margin-top: 8rpx;
-  font-size: 24rpx;
+  margin-top: 6rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #6e7380;
 }
 
 .price-row {
   display: flex;
   align-items: baseline;
-  gap: 12rpx;
-  margin-top: 16rpx;
+  gap: 8rpx;
+  margin-top: 14rpx;
+  flex-wrap: wrap;
 }
 
 .price {
-  font-size: 36rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #111111;
+  color: #f25a52;
 }
 
 .origin {
-  font-size: 24rpx;
+  font-size: 18rpx;
   color: #9aa0aa;
   text-decoration: line-through;
 }

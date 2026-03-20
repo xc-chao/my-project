@@ -1,0 +1,39 @@
+page.data-v-f9120129 {
+  background: #f7f7fa;
+  color: #111111;
+  font-family: "Inter", sans-serif;
+}
+.page-shell.data-v-f9120129 {
+  min-height: 100vh;
+  background: #f7f7fa;
+}
+.safe-top.data-v-f9120129 {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom.data-v-f9120129 {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.stepper.data-v-f9120129 {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.btn.data-v-f9120129 {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 34rpx;
+  background: #f3f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+.value.data-v-f9120129 {
+  min-width: 40rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #111111;
+}

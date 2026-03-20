@@ -9,6 +9,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const props = __props;
     const tabs = [
       { key: "home", label: "首页", url: "/pages/home/index" },
+      { key: "search", label: "搜索", url: "/pages/search/index" },
       { key: "cart", label: "购物车", url: "/pages/cart/index" },
       { key: "profile", label: "我的", url: "/pages/profile/index" }
     ];

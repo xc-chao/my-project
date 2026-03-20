@@ -4,6 +4,7 @@ import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import QuantityStepper from '../../components/common/QuantityStepper.vue';
+import { pageImageMap } from '../../mock/page-image-map';
 import { useCartStore, useUserStore } from '../../store';
 
 const cartStore = useCartStore();
@@ -48,13 +49,6 @@ onShow(() => {
 
 <template>
   <view class="page-shell">
-    <view class="header">
-      <view class="title-row">
-        <text class="title">购物车</text>
-        <text class="title-sub">{{ cartStore.totalCount }} 件商品</text>
-      </view>
-    </view>
-
     <view v-if="!userStore.isLoggedIn" class="empty-wrap">
       <EmptyStateCard
         title="登录后查看购物车"
@@ -65,6 +59,16 @@ onShow(() => {
     </view>
 
     <scroll-view v-else scroll-y class="cart-scroll">
+      <view class="cart-banner">
+        <view class="banner-copy">
+          <text class="banner-title">待结算清单</text>
+          <text class="banner-desc">把喜欢的球鞋与穿搭先收进购物车，再统一挑尺码和下单。</text>
+        </view>
+        <view class="banner-images">
+          <image class="banner-main" :src="pageImageMap.cart.banner" mode="aspectFill" />
+        </view>
+      </view>
+
       <view v-if="cartStore.list.length" class="cart-list">
         <view v-for="item in cartStore.list" :key="item.id" class="cart-card">
           <image class="cart-cover" :src="item.product?.cover" mode="aspectFill" />
@@ -83,20 +87,22 @@ onShow(() => {
         </view>
       </view>
 
-      <EmptyStateCard
-        v-else
-        title="购物车还是空的"
-        desc="可以先去首页浏览商品，点击任意商品进入详情页完成加购。"
-        action-text="去首页"
-        @action="goHome"
-      />
+      <view v-else class="empty-card-wrap">
+        <EmptyStateCard
+          title="购物车还是空的"
+          desc="先去首页挑几双球鞋或几件穿搭，加入购物车后就能在这里统一结算。"
+          action-text="去首页"
+          @action="goHome"
+        />
+      </view>
     </scroll-view>
 
-    <view v-if="userStore.isLoggedIn" class="bottom-bar">
+    <view v-if="userStore.isLoggedIn && cartStore.list.length" class="bottom-bar">
       <view class="total-wrap">
-        <text class="total-label">合计</text>
+        <text class="total-label">合计:</text>
         <text class="total-price">¥{{ cartStore.totalAmount }}</text>
       </view>
+      <text class="title-sub">{{ cartStore.totalCount }} 件商品</text>
       <view class="checkout-btn" @tap="goCheckout">
         <text>去结算</text>
       </view>
@@ -107,8 +113,9 @@ onShow(() => {
 </template>
 
 <style scoped lang="scss">
-.header {
-  padding: 20rpx 40rpx 20rpx;
+
+.page-shell {
+  padding-top: 20rpx;
 }
 
 .title-row,
@@ -129,8 +136,8 @@ onShow(() => {
 }
 
 .cart-scroll {
-  height: calc(100vh - 340rpx);
-  padding: 0 40rpx 180rpx;
+  height: calc(100vh - 270rpx);
+  padding: 0 30rpx 180rpx;
 }
 
 .cart-list {
@@ -139,16 +146,99 @@ onShow(() => {
   gap: 24rpx;
 }
 
-.cart-card {
+.page-title {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.page-desc {
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.count-pill {
+  min-width: 104rpx;
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
   display: flex;
-  gap: 24rpx;
+  align-items: center;
+  justify-content: center;
+  background: rgba(219, 106, 61, 0.1);
+  color: #db6a3d;
+  font-size: 20rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cart-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  height: 330px;
+  margin-bottom: 24rpx;
   padding: 24rpx;
   border-radius: 40rpx;
   background: #ffffff;
 }
 
+.banner-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.banner-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.banner-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.banner-images {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.banner-main,
+.banner-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.banner-main {
+  flex: 1;
+}
+
+.banner-accent {
+  width: 180rpx;
+}
+
+.cart-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  padding: 24rpx;
+  border-radius: 32rpx;
+  background: #ffffff;
+  border: 1px solid #eef0f4;
+  box-shadow: 0 10rpx 28rpx rgba(17, 17, 17, 0.04);
+}
+
 .empty-wrap {
   margin: 0 40rpx;
+}
+
+.empty-card-wrap {
+  padding-bottom: 40rpx;
 }
 
 .cart-cover {
@@ -166,6 +256,11 @@ onShow(() => {
 }
 
 .cart-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
   font-size: 30rpx;
   font-weight: 700;
   color: #111111;
@@ -179,9 +274,9 @@ onShow(() => {
 
 .cart-price,
 .total-price {
-  font-size: 36rpx;
+ font-size: 28rpx;
   font-weight: 700;
-  color: #111111;
+  color: #f25a52;
 }
 
 .qty-row {
@@ -198,8 +293,8 @@ onShow(() => {
 
 .login-btn,
 .checkout-btn {
-  height: 96rpx;
-  border-radius: 56rpx;
+  height: 64rpx;
+  border-radius: 32rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,24 +311,26 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: 24rpx;
-  padding: 24rpx 40rpx 32rpx;
+  padding: 12rpx 32rpx;
   background: #f7f7fa;
+  border-top: 1px solid #eceef2;
 }
 
 .total-wrap {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-end;
   gap: 6rpx;
   flex: 1;
 }
 
 .total-label {
-  font-size: 24rpx;
-  color: #8c93a1;
+  font-size: 32rpx;
+  color: #111111;
+  font-weight: 600;
 }
 
 .checkout-btn {
-  min-width: 220rpx;
   padding: 0 40rpx;
   background: #17181c;
   color: #ffffff;

@@ -3,25 +3,35 @@ import { computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
+import { pageImageMap } from '../../mock/page-image-map';
 import { useUserStore } from '../../store';
 
 const userStore = useUserStore();
+const profileBanner = pageImageMap.profile.banner;
 
 const shortcuts = computed(() => [
   {
     label: '地址管理',
+    desc: pageImageMap.profile.services[0].desc,
+    image: pageImageMap.profile.services[0].image,
     path: '/pages/address/index'
   },
   {
     label: '历史订单',
+    desc: pageImageMap.profile.services[1].desc,
+    image: pageImageMap.profile.services[1].image,
     path: '/pages/order/list'
   },
   {
     label: 'AI 咨询记录',
+    desc: pageImageMap.profile.services[2].desc,
+    image: pageImageMap.profile.services[2].image,
     path: '/pages/chat/index?mode=history&productId=p_001&title=%E5%92%A8%E8%AF%A2%E8%AE%B0%E5%BD%95'
   },
   {
     label: '售后申请',
+    desc: pageImageMap.profile.services[3].desc,
+    image: pageImageMap.profile.services[3].image,
     path: '/pages/after-sale/index'
   }
 ]);
@@ -45,12 +55,9 @@ onShow(() => {
 
 <template>
   <view class="page-shell">
-    <view class="header">
-      <text class="title">我的</text>
-    </view>
-
     <view class="content">
       <view class="profile-card" v-if="userStore.profile">
+        <image class="profile-cover" :src="profileBanner" mode="aspectFill" />
         <image class="avatar" :src="userStore.profile.avatar" mode="aspectFill" />
         <view class="meta">
           <text class="nickname">{{ userStore.profile.nickname }}</text>
@@ -71,15 +78,16 @@ onShow(() => {
 
       <view class="shortcut-card">
         <text class="section-title">常用服务</text>
-        <view class="shortcut-list">
+        <view class="service-grid">
           <view
             v-for="item in shortcuts"
             :key="item.label"
-            class="shortcut-item"
+            class="service-card"
             @tap="openShortcut(item.path)"
           >
-            <text>{{ item.label }}</text>
-            <text class="arrow">&gt;</text>
+            <image class="service-image" :src="item.image" mode="aspectFill" />
+            <text class="service-title">{{ item.label }}</text>
+            <text class="service-desc">{{ item.desc }}</text>
           </view>
         </view>
       </view>
@@ -97,6 +105,32 @@ onShow(() => {
           </view>
         </view>
       </view>
+
+      <view v-if="userStore.isAdmin" class="shortcut-card admin-entry-card" @tap="openShortcut('/pages/admin/index')">
+        <view class="admin-entry-head">
+          <view class="admin-entry-copy">
+            <text class="section-title">后台信息管理</text>
+            <text class="admin-entry-desc">仅管理员可见，集中查看商品管理、订单处理、用户反馈与数据看板。</text>
+          </view>
+          <view class="admin-entry-pill">
+            <text>管理员</text>
+          </view>
+        </view>
+        <view class="admin-preview-list">
+          <view class="admin-preview-item">
+            <text class="admin-preview-title">商品管理</text>
+            <text class="admin-preview-copy">新增商品、上下架、库存维护与图文描述。</text>
+          </view>
+          <view class="admin-preview-item">
+            <text class="admin-preview-title">订单处理</text>
+            <text class="admin-preview-copy">发货审核、状态流转、售后审批与日志记录。</text>
+          </view>
+          <view class="admin-preview-item">
+            <text class="admin-preview-title">用户反馈与数据看板</text>
+            <text class="admin-preview-copy">查看评价反馈、热销排行、订单趋势与 Agent 调用监控。</text>
+          </view>
+        </view>
+      </view>
     </view>
 
     <PillTabBar current="profile" />
@@ -104,8 +138,8 @@ onShow(() => {
 </template>
 
 <style scoped lang="scss">
-.header {
-  padding: 20rpx 40rpx 20rpx;
+.page-shell {
+  padding: 20rpx 0rpx 20rpx;
 }
 
 .title {
@@ -132,6 +166,15 @@ onShow(() => {
   align-items: center;
   gap: 24rpx;
   flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.profile-cover {
+  width: calc(100% + 64rpx);
+  height: 220rpx;
+  margin: -32rpx -32rpx 0;
+  border-radius: 40rpx;
+  background: #eef0f4;
 }
 
 .avatar {
@@ -139,6 +182,8 @@ onShow(() => {
   height: 120rpx;
   border-radius: 60rpx;
   background: #eef0f4;
+  margin-top: -56rpx;
+  border: 6rpx solid #ffffff;
 }
 
 .meta {
@@ -171,24 +216,37 @@ onShow(() => {
   font-weight: 700;
 }
 
-.shortcut-list {
+.service-grid {
   display: flex;
-  flex-direction: column;
-  gap: 16rpx;
+  flex-wrap: wrap;
+  gap: 18rpx;
   margin-top: 18rpx;
 }
 
-.shortcut-item {
+.service-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22rpx 0;
-  border-bottom: 1px solid #f1f2f4;
+  flex-direction: column;
+  gap: 10rpx;
+  width: calc(50% - 9rpx);
+  padding: 18rpx;
+  border-radius: 28rpx;
+  background: #f7f7fa;
+}
+
+.service-image {
+  width: 100%;
+  height: 150rpx;
+  border-radius: 22rpx;
+  background: #eef0f4;
+}
+
+.service-title {
   font-size: 26rpx;
+  font-weight: 700;
   color: #111111;
 }
 
-.arrow,
+.service-desc,
 .order-desc {
   font-size: 24rpx;
   color: #8c93a1;
@@ -211,6 +269,62 @@ onShow(() => {
 }
 
 .order-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.admin-entry-card {
+  gap: 20rpx;
+}
+
+.admin-entry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.admin-entry-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.admin-entry-desc,
+.admin-preview-copy {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.admin-entry-pill {
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: #17181c;
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.admin-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+
+.admin-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: #f7f7fa;
+}
+
+.admin-preview-title {
   font-size: 28rpx;
   font-weight: 700;
   color: #111111;

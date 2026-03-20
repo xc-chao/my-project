@@ -102,8 +102,18 @@ function formatStatus(status: string) {
   color: #6e7380;
 }
 
+.status {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #f3f4f8;
+  font-weight: 700;
+}
+
 .goods-row {
   gap: 18rpx;
+  padding: 18rpx;
+  border-radius: 28rpx;
+  background: #f7f7fa;
 }
 
 .cover {

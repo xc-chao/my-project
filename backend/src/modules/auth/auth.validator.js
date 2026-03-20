@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const wechatLoginSchema = z.object({
   body: z.object({
     code: z.string().min(1),
-    nickname: z.string().min(1).max(20).optional()
+    nickname: z.string().min(1).max(20).optional(),
+    identity: z.enum(['user', 'admin']).optional()
   }),
   query: z.any(),
   params: z.any()
@@ -20,7 +21,8 @@ export const smsCodeSchema = z.object({
 export const smsLoginSchema = z.object({
   body: z.object({
     phone: z.string().regex(/^1\d{10}$/),
-    code: z.string().length(6)
+    code: z.string().length(6),
+    identity: z.enum(['user', 'admin']).optional()
   }),
   query: z.any(),
   params: z.any()

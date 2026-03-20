@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">
+  <rect width="640" height="640" rx="48" fill="#F3F4F6"/>
+  <rect x="108" y="320" width="420" height="118" rx="54" fill="#FFFFFF"/>
+  <path d="M168 334c52-52 112-86 178-86 46 0 92 14 144 42 26 14 43 40 46 70l4 36H168v-62z" fill="#FCFCFD"/>
+  <path d="M226 304l26 28M272 284l24 30M318 274l20 32M366 274l18 32M412 286l14 28" stroke="#C7CDD7" stroke-width="12" stroke-linecap="round"/>
+  <rect x="176" y="396" width="334" height="16" rx="8" fill="#E5E7EB"/>
+  <text x="320" y="530" text-anchor="middle" fill="#111111" font-size="34" font-family="Arial, sans-serif" font-weight="700">Retro Sneaker</text>
+</svg>

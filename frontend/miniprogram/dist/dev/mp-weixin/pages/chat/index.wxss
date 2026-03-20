@@ -67,22 +67,29 @@ page.data-v-da04a0a0 {
   gap: 18rpx;
   padding-bottom: 24rpx;
 }
-.msg-bubble.data-v-da04a0a0 {
-  max-width: 82%;
-  padding: 24rpx;
+.history-list.data-v-da04a0a0 {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+.history-card.data-v-da04a0a0 {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding: 28rpx;
   border-radius: 36rpx;
   background: #ffffff;
-  font-size: 26rpx;
-  line-height: 1.7;
+}
+.history-title.data-v-da04a0a0 {
+  font-size: 28rpx;
+  font-weight: 700;
   color: #111111;
 }
-.msg-bubble.user.data-v-da04a0a0 {
-  align-self: flex-end;
-  background: #17181c;
-  color: #ffffff;
-}
-.msg-bubble.assistant.data-v-da04a0a0 {
-  align-self: flex-start;
+.history-desc.data-v-da04a0a0 {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
 }
 .input-bar.data-v-da04a0a0 {
   display: flex;

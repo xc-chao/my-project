@@ -17,5 +17,9 @@ function sendChatMessage(sessionId, question) {
     }
   });
 }
+function getChatHistory() {
+  return services_request.request("/chat/history");
+}
 exports.createChatSession = createChatSession;
+exports.getChatHistory = getChatHistory;
 exports.sendChatMessage = sendChatMessage;

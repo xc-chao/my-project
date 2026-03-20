@@ -1,5 +1,5 @@
 import { request } from './request';
-import type { UserProfile } from '../mock/data';
+import type { UserProfile, UserRole } from '../mock/data';
 
 interface LoginResponse {
   user: UserProfile;
@@ -7,6 +7,13 @@ interface LoginResponse {
 }
 
 export function loginWithWechat(payload: { code: string; nickname?: string }) {
+  return request<LoginResponse>('/auth/wechat-login', {
+    method: 'POST',
+    data: payload
+  });
+}
+
+export function loginWithIdentity(payload: { code: string; nickname?: string; identity?: UserRole }) {
   return request<LoginResponse>('/auth/wechat-login', {
     method: 'POST',
     data: payload

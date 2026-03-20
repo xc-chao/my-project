@@ -4,6 +4,8 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
+import { mockProducts } from '../../mock/data';
+import { pageImageMap } from '../../mock/page-image-map';
 import { createAfterSale, getAfterSaleList, type AfterSaleItem } from '../../services/afterSaleService';
 
 const list = ref<AfterSaleItem[]>([]);
@@ -49,6 +51,10 @@ function formatStatus(status: string) {
   );
 }
 
+function getProductCover(title: string) {
+  return mockProducts.find((item) => item.title === title)?.cover || pageImageMap.afterSale.accent;
+}
+
 onLoad((query) => {
   if (typeof query?.orderId === 'string') {
     form.orderId = query.orderId;
@@ -67,6 +73,13 @@ onMounted(loadList);
     <AppHeader title="售后申请" back />
 
     <scroll-view scroll-y class="body">
+      <view class="hero-card">
+        <view class="hero-copy">
+          <text class="hero-title">售后与进度追踪</text>
+          <text class="hero-desc">支持提交原因说明，并统一查看审核结果与处理状态。</text>
+        </view>
+      </view>
+
       <FormSection title="发起申请" desc="支持填写订单号、商品名称与售后原因">
         <input v-model="form.orderId" class="field" placeholder="订单号" />
         <input v-model="form.productTitle" class="field" placeholder="商品名称" />
@@ -82,12 +95,15 @@ onMounted(loadList);
 
       <view v-if="hasSeedData" class="list">
         <view v-for="item in list" :key="item.id" class="record-card">
-          <view class="record-row">
-            <text class="title">{{ item.productTitle }}</text>
-            <text class="status">{{ formatStatus(item.status) }}</text>
+          <image class="record-cover" :src="getProductCover(item.productTitle)" mode="aspectFill" />
+          <view class="record-content">
+            <view class="record-row">
+              <text class="title">{{ item.productTitle }}</text>
+              <text class="status">{{ formatStatus(item.status) }}</text>
+            </view>
+            <text class="meta">订单 {{ item.orderId }}</text>
+            <text class="reason">{{ item.reason }}</text>
           </view>
-          <text class="meta">订单 {{ item.orderId }}</text>
-          <text class="reason">{{ item.reason }}</text>
         </view>
       </view>
 
@@ -109,10 +125,57 @@ onMounted(loadList);
   gap: 24rpx;
 }
 
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.hero-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.hero-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+
+.hero-images {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+
+.hero-main,
+.hero-accent {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+
+.hero-main {
+  flex: 1;
+}
+
+.hero-accent {
+  width: 180rpx;
+}
+
 .field {
   width: 100%;
-  height: 92rpx;
-  padding: 0 24rpx;
+  height: 82rpx;
+  padding: 0 10rpx;
   border-radius: 24rpx;
   background: #f7f7fa;
   font-size: 24rpx;
@@ -120,7 +183,7 @@ onMounted(loadList);
 
 .textarea {
   min-height: 180rpx;
-  padding: 24rpx;
+  padding: 10rpx;
 }
 
 .submit-btn {
@@ -143,11 +206,24 @@ onMounted(loadList);
 
 .record-card {
   display: flex;
-  flex-direction: column;
-  gap: 12rpx;
+  gap: 18rpx;
   padding: 28rpx;
   border-radius: 40rpx;
   background: #ffffff;
+}
+
+.record-cover {
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 24rpx;
+  background: #eef0f4;
+}
+
+.record-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .record-row {
@@ -168,6 +244,13 @@ onMounted(loadList);
 .reason {
   font-size: 24rpx;
   color: #6e7380;
+}
+
+.status {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #f3f4f8;
+  font-weight: 700;
 }
 
 .reason {

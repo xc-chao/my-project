@@ -1,7 +1,8 @@
 {
   "navigationStyle": "custom",
   "usingComponents": {
-    "app-header": "../../components/AppHeader",
+    "empty-state-card": "../../components/common/EmptyStateCard",
+    "pill-tab-bar": "../../components/PillTabBar",
     "product-card": "../../components/ProductCard"
   }
 }

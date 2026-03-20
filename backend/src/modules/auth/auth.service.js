@@ -18,14 +18,15 @@ function buildToken(user) {
 
 export const authService = {
   loginWithWechat(payload) {
-    const user = authRepository.findDefaultUser();
+    const user = authRepository.findByRole(payload.identity || 'user');
+    const profile = {
+      ...user,
+      nickname: payload.nickname || user.nickname
+    };
 
     return {
-      user: {
-        ...user,
-        nickname: payload.nickname || user.nickname
-      },
-      accessToken: buildToken(user),
+      user: profile,
+      accessToken: buildToken(profile),
       session: {
         expiresIn: '7d'
       }
@@ -37,8 +38,8 @@ export const authService = {
       codeSent: true
     };
   },
-  loginWithSms() {
-    const user = authRepository.findDefaultUser();
+  loginWithSms(payload) {
+    const user = authRepository.findByRole(payload.identity || 'user');
 
     return {
       user,
@@ -49,11 +50,11 @@ export const authService = {
     };
   },
   getProfile(userPayload) {
-    const user = authRepository.findDefaultUser();
+    const user =
+      authRepository.findById(userPayload.userId) ||
+      authRepository.findByRole(userPayload.role) ||
+      authRepository.findDefaultUser();
 
-    return {
-      ...user,
-      id: userPayload.userId
-    };
+    return user;
   }
 };
