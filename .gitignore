@@ -1,0 +1,23 @@
+# 环境变量（含密钥）
+.env
+*.env.local
+
+# 依赖
+node_modules/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 构建产物
+dist/
+build/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# UniApp 构建
+frontend/miniprogram/dist/
+frontend/miniprogram/unpackage/
