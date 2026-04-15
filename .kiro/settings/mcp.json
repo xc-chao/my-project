@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "pencil": {
+      "command": "/Users/qq/.pencil/mcp/kiro/out/mcp-server-darwin-arm64",
+      "args": [
+        "--app",
+        "kiro"
+      ],
+      "env": {},
+      "autoApprove": [
+        "find_empty_space_on_canvas",
+        "batch_design"
+      ]
+    }
+  }
+}
