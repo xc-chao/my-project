@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
-import { pageImageMap } from '../../mock/page-image-map';
+import { pageImageMap } from '../../constants/page-image-map';
 import { useUserStore } from '../../store';
 
 const userStore = useUserStore();
@@ -48,6 +48,17 @@ function openShortcut(path: string) {
   });
 }
 
+function openProfileAccount() {
+  if (!userStore.profile) {
+    handleLogin();
+    return;
+  }
+
+  uni.navigateTo({
+    url: '/pages/profile/account'
+  });
+}
+
 onShow(() => {
   uni.hideTabBar();
 });
@@ -56,15 +67,15 @@ onShow(() => {
 <template>
   <view class="page-shell">
     <view class="content">
-      <view class="profile-card" v-if="userStore.profile">
+      <view class="profile-card" v-if="userStore.profile" @tap="openProfileAccount">
         <image class="profile-cover" :src="profileBanner" mode="aspectFill" />
         <image class="avatar" :src="userStore.profile.avatar" mode="aspectFill" />
         <view class="meta">
           <text class="nickname">{{ userStore.profile.nickname }}</text>
-          <text class="phone">{{ userStore.profile.phone }}</text>
+          <text class="profile-tip">点击头像或资料卡，进入个人信息管理</text>
         </view>
         <view class="status-pill">
-          <text>会员成长中</text>
+          <text>{{ userStore.isAdmin ? '管理员身份' : '会员成长中' }}</text>
         </view>
       </view>
 
@@ -102,6 +113,16 @@ onShow(() => {
           <view class="order-pill" @tap="openShortcut('/pages/after-sale/index')">
             <text class="order-title">售后进度</text>
             <text class="order-desc">查看处理结果与备注</text>
+          </view>
+        </view>
+      </view>
+
+      <view v-if="userStore.profile" class="shortcut-card">
+        <text class="section-title">账号与安全</text>
+        <view class="order-grid">
+          <view class="order-pill" @tap="openProfileAccount">
+            <text class="order-title">个人信息管理</text>
+            <text class="order-desc">修改昵称、演示身份、头像与退出当前登录</text>
           </view>
         </view>
       </view>
@@ -167,6 +188,7 @@ onShow(() => {
   gap: 24rpx;
   flex-wrap: wrap;
   overflow: hidden;
+  position: relative;
 }
 
 .profile-cover {
@@ -204,6 +226,11 @@ onShow(() => {
   color: #6e7380;
 }
 
+.profile-tip {
+  font-size: 22rpx;
+  color: #8c93a1;
+}
+
 .status-pill {
   padding: 12rpx 18rpx;
   border-radius: 999rpx;
@@ -212,6 +239,15 @@ onShow(() => {
   justify-content: center;
   background: #f3f4f8;
   color: #111111;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.profile-action {
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: #17181c;
+  color: #ffffff;
   font-size: 22rpx;
   font-weight: 700;
 }

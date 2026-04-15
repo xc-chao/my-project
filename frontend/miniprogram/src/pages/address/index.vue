@@ -4,7 +4,6 @@ import AppHeader from '../../components/AppHeader.vue';
 import AddressCard from '../../components/common/AddressCard.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
-import { pageImageMap } from '../../mock/page-image-map';
 import {
   createAddress,
   deleteAddress,
@@ -197,12 +196,14 @@ onMounted(async () => {
   flex-direction: column;
   gap: 20rpx;
   margin-top: 20rpx;
+  margin-bottom: 20rpx;
 }
 
 .field {
-  width: 100%;
+  width: auto;
   height: 92rpx;
   padding: 0 24rpx;
+  margin-bottom: 16rpx;
   border-radius: 24rpx;
   background: #f7f7fa;
   font-size: 24rpx;
@@ -222,6 +223,7 @@ onMounted(async () => {
 
 .toggle-row {
   justify-content: space-between;
+  margin-bottom: 16rpx;
 }
 
 .toggle-label {

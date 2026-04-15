@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useUserStore } from '../../store';
 import AppHeader from '../../components/AppHeader.vue';
-import { pageImageMap } from '../../mock/page-image-map';
-import type { UserRole } from '../../mock/data';
+import { pageImageMap } from '../../constants/page-image-map';
+import type { UserRole } from '../../types/domain';
 
 const userStore = useUserStore();
 const supportVisuals = pageImageMap.auth.support;

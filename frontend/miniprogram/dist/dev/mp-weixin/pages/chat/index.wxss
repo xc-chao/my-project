@@ -24,6 +24,16 @@ page.data-v-da04a0a0 {
   border-radius: 48rpx;
   background: #ffffff;
 }
+.intro-top.data-v-da04a0a0 {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+.intro-copy.data-v-da04a0a0 {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
 .intro-badge.data-v-da04a0a0 {
   align-self: flex-start;
   padding: 10rpx 18rpx;
@@ -42,6 +52,22 @@ page.data-v-da04a0a0 {
   line-height: 1.6;
   color: #6e7380;
 }
+.intro-visual.data-v-da04a0a0 {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+.intro-main.data-v-da04a0a0,
+.intro-accent.data-v-da04a0a0 {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+.intro-main.data-v-da04a0a0 {
+  flex: 1;
+}
+.intro-accent.data-v-da04a0a0 {
+  width: 180rpx;
+}
 .quick-scroll.data-v-da04a0a0 {
   white-space: nowrap;
   margin-top: 20rpx;
@@ -58,7 +84,7 @@ page.data-v-da04a0a0 {
   color: #111111;
 }
 .msg-scroll.data-v-da04a0a0 {
-  height: calc(100vh - 520rpx);
+  height: calc(100vh - 750rpx);
   margin-top: 20rpx;
 }
 .msg-list.data-v-da04a0a0 {
@@ -75,11 +101,22 @@ page.data-v-da04a0a0 {
 }
 .history-card.data-v-da04a0a0 {
   display: flex;
-  flex-direction: column;
-  gap: 10rpx;
+  gap: 18rpx;
   padding: 28rpx;
   border-radius: 36rpx;
   background: #ffffff;
+}
+.history-thumb.data-v-da04a0a0 {
+  width: 132rpx;
+  height: 132rpx;
+  border-radius: 24rpx;
+  background: #eef0f4;
+}
+.history-copy.data-v-da04a0a0 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
 }
 .history-title.data-v-da04a0a0 {
   font-size: 28rpx;

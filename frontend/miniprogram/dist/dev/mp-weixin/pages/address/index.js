@@ -21,6 +21,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       isDefault: true
     });
     const submitLabel = common_vendor.computed(() => editingId.value ? "保存地址" : "新增地址");
+    const defaultAddress = common_vendor.computed(() => list.value.find((item) => item.isDefault) || list.value[0] || null);
     function fillForm(item) {
       form.name = (item == null ? void 0 : item.name) || "";
       form.phone = (item == null ? void 0 : item.phone) || "";
@@ -69,9 +70,16 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           title: "地址管理",
           back: true
         }),
-        b: list.value.length
+        b: defaultAddress.value
+      }, defaultAddress.value ? {
+        c: common_vendor.t(defaultAddress.value.name),
+        d: common_vendor.t(defaultAddress.value.phone),
+        e: common_vendor.t(defaultAddress.value.region),
+        f: common_vendor.t(defaultAddress.value.detail)
+      } : {}, {
+        g: list.value.length
       }, list.value.length ? {
-        c: common_vendor.f(list.value, (item, k0, i0) => {
+        h: common_vendor.f(list.value, (item, k0, i0) => {
           return {
             a: item.id,
             b: common_vendor.o(handleEdit, item.id),
@@ -83,26 +91,26 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {
-        d: common_vendor.p({
+        i: common_vendor.p({
           title: "还没有地址",
           desc: "新增一个常用收货地址后，确认订单页会自动带入默认地址。"
         })
       }, {
-        e: form.name,
-        f: common_vendor.o(($event) => form.name = $event.detail.value),
-        g: form.phone,
-        h: common_vendor.o(($event) => form.phone = $event.detail.value),
-        i: form.region,
-        j: common_vendor.o(($event) => form.region = $event.detail.value),
-        k: form.detail,
-        l: common_vendor.o(($event) => form.detail = $event.detail.value),
-        m: common_vendor.n({
+        j: form.name,
+        k: common_vendor.o(($event) => form.name = $event.detail.value),
+        l: form.phone,
+        m: common_vendor.o(($event) => form.phone = $event.detail.value),
+        n: form.region,
+        o: common_vendor.o(($event) => form.region = $event.detail.value),
+        p: form.detail,
+        q: common_vendor.o(($event) => form.detail = $event.detail.value),
+        r: common_vendor.n({
           active: form.isDefault
         }),
-        n: common_vendor.o(($event) => form.isDefault = !form.isDefault),
-        o: common_vendor.t(submitLabel.value),
-        p: common_vendor.o(handleSubmit),
-        q: common_vendor.p({
+        s: common_vendor.o(($event) => form.isDefault = !form.isDefault),
+        t: common_vendor.t(submitLabel.value),
+        v: common_vendor.o(handleSubmit),
+        w: common_vendor.p({
           title: "编辑地址",
           desc: "支持新增、修改和设置默认地址"
         })

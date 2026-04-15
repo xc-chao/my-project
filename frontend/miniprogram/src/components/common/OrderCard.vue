@@ -7,9 +7,11 @@ const props = defineProps<{
     createdAt: string;
     items: Array<{
       id: string;
+      productId: string;
       quantity: number;
       size: string;
       product?: {
+        id?: string;
         title: string;
         cover: string;
       };
@@ -33,15 +35,30 @@ function formatStatus(status: string) {
     }[status] || status
   );
 }
+
+function openGoodsDetail(productId?: string) {
+  if (!productId) {
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/product/detail?id=${productId}`
+  });
+}
 </script>
 
 <template>
   <view class="card">
     <view class="top-row">
       <text class="order-id">订单 {{ item.id }}</text>
-      <text class="status">{{ formatStatus(item.status) }}</text>
+      <text :key="`status-${item.id}-${item.status}`" class="status">{{ formatStatus(item.status) }}</text>
     </view>
-    <view v-for="goods in item.items" :key="goods.id" class="goods-row">
+    <view
+      v-for="goods in item.items"
+      :key="goods.id"
+      class="goods-row"
+      @tap="openGoodsDetail(goods.product?.id || goods.productId)"
+    >
       <image class="cover" :src="goods.product?.cover" mode="aspectFill" />
       <view class="goods-info">
         <text class="title">{{ goods.product?.title }}</text>
@@ -52,7 +69,12 @@ function formatStatus(status: string) {
       <text class="time">{{ item.createdAt }}</text>
       <view class="price-wrap">
         <text class="price">¥{{ item.amount }}</text>
-        <view v-if="actionText" class="action-btn" @tap="emit('action', props.item.id)">
+        <view
+          v-if="actionText"
+          :key="`action-${item.id}-${item.status}`"
+          class="action-btn"
+          @tap="emit('action', props.item.id)"
+        >
           <text>{{ actionText }}</text>
         </view>
       </view>

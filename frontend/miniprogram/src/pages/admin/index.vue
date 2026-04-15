@@ -4,7 +4,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import { getAdminOverview } from '../../services/adminService';
 import { useUserStore } from '../../store';
-import type { AdminOverview } from '../../mock/data';
+import type { AdminOverview } from '../../types/domain';
 import { ensureAdminPageAccess } from '../../utils/admin';
 
 const userStore = useUserStore();

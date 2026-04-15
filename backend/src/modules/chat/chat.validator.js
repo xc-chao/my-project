@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'; // zod 库用于验证请求参数
 
 export const createSessionSchema = z.object({
   body: z.object({

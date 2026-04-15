@@ -9,6 +9,7 @@ export interface ChatSession {
   id: string;
   productId: string;
   title: string;
+  productCover?: string;
   messages: ChatMessage[];
 }
 

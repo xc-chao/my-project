@@ -4,7 +4,7 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import OrderCard from '../../components/common/OrderCard.vue';
-import { pageImageMap } from '../../mock/page-image-map';
+import { pageImageMap } from '../../constants/page-image-map';
 import { getOrderList } from '../../services/orderService';
 
 const highlightId = ref('');

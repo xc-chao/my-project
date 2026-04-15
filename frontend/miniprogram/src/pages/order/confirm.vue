@@ -4,7 +4,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import AddressCard from '../../components/common/AddressCard.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
-import { pageImageMap } from '../../mock/page-image-map';
+import { pageImageMap } from '../../constants/page-image-map';
 import { createOrder, getOrderPreview, type OrderPreviewResponse } from '../../services/orderService';
 
 const preview = ref<OrderPreviewResponse | null>(null);

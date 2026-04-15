@@ -17,15 +17,64 @@ page.data-v-15db8353 {
   height: calc(100vh - 180rpx);
   padding: 8rpx 40rpx 40rpx;
 }
+.hero-card.data-v-15db8353,
+.default-card.data-v-15db8353 {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 24rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+.default-card.data-v-15db8353 {
+  margin-top: 20rpx;
+}
+.hero-copy.data-v-15db8353 {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.hero-title.data-v-15db8353,
+.default-name.data-v-15db8353 {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.hero-desc.data-v-15db8353,
+.default-detail.data-v-15db8353,
+.default-label.data-v-15db8353 {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+.hero-images.data-v-15db8353 {
+  display: flex;
+  gap: 16rpx;
+  height: 220rpx;
+}
+.hero-main.data-v-15db8353,
+.hero-accent.data-v-15db8353 {
+  border-radius: 28rpx;
+  background: #eef0f4;
+}
+.hero-main.data-v-15db8353 {
+  flex: 1;
+}
+.hero-accent.data-v-15db8353 {
+  width: 180rpx;
+}
 .card-list.data-v-15db8353 {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+  margin-top: 20rpx;
+  margin-bottom: 20rpx;
 }
 .field.data-v-15db8353 {
-  width: 100%;
+  width: auto;
   height: 92rpx;
   padding: 0 24rpx;
+  margin-bottom: 16rpx;
   border-radius: 24rpx;
   background: #f7f7fa;
   font-size: 24rpx;
@@ -42,6 +91,7 @@ page.data-v-15db8353 {
 }
 .toggle-row.data-v-15db8353 {
   justify-content: space-between;
+  margin-bottom: 16rpx;
 }
 .toggle-label.data-v-15db8353 {
   font-size: 24rpx;

@@ -1,1 +1,1 @@
-"use strict";const e=require("../../common/vendor.js"),o=e.defineComponent({__name:"ChatBubble",props:{role:{},content:{}},setup:o=>(o,t)=>({a:e.t(o.content),b:e.n(o.role)})}),t=e._export_sfc(o,[["__scopeId","data-v-8506c636"]]);wx.createComponent(t);
+"use strict";const e=require("../../common/vendor.js"),o=e.defineComponent({__name:"ChatBubble",props:{role:{},content:{}},setup:o=>(o,t)=>({a:e.t(o.content),b:e.n(o.role)})}),t=e._export_sfc(o,[["__scopeId","data-v-6d2b8665"]]);wx.createComponent(t);

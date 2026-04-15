@@ -1,5 +1,14 @@
 import { request } from './request';
-import type { ProductItem } from '../mock/data';
+
+export interface CartProductBrief {
+  id: string;
+  title: string;
+  subtitle?: string;
+  price: number;
+  cover: string;
+  category?: string;
+  saleStatus?: string;
+}
 
 export interface CartPayload {
   list: Array<{
@@ -7,7 +16,7 @@ export interface CartPayload {
     productId: string;
     quantity: number;
     size: string;
-    product?: ProductItem;
+    product?: CartProductBrief;
   }>;
   totalCount: number;
   totalAmount: number;

@@ -3,7 +3,12 @@ import { authController } from './auth.controller.js';
 import { validate } from '../../middleware/validateMiddleware.js';
 import { createRateLimitMiddleware } from '../../middleware/rateLimitMiddleware.js';
 import { requireAuth } from '../../middleware/authMiddleware.js';
-import { smsCodeSchema, smsLoginSchema, wechatLoginSchema } from './auth.validator.js';
+import {
+  profileUpdateSchema,
+  smsCodeSchema,
+  smsLoginSchema,
+  wechatLoginSchema
+} from './auth.validator.js';
 
 export const authRouter = Router();
 
@@ -27,3 +32,4 @@ authRouter.post(
 );
 authRouter.post('/logout', authController.logout);
 authRouter.get('/profile', requireAuth, authController.profile);
+authRouter.patch('/profile', requireAuth, validate(profileUpdateSchema), authController.updateProfile);

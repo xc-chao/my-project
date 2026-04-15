@@ -5,8 +5,13 @@ import UniIcons from "@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue";
 import ProductCard from "../../components/ProductCard.vue";
 import PillTabBar from "../../components/PillTabBar.vue";
 import { getProductList } from "../../services/productService";
-import type { ProductItem } from "../../mock/data";
-import { pageImageMap } from "../../mock/page-image-map";
+import type { ProductItem } from "../../types/domain";
+import { pageImageMap } from "../../constants/page-image-map";
+import {
+  saveSearchPreset,
+  type ProductSearchFilterKey,
+  type ProductSearchPreset,
+} from "../../utils/product-search";
 
 const loading = ref(false);
 const products = ref<ProductItem[]>([]);
@@ -23,16 +28,19 @@ const metricCards = computed(() => {
       value: "48h",
       label: "限定上新",
       desc: "暖色精选轮换陈列",
+      filterKey: "newIn48h" as ProductSearchFilterKey,
     },
     {
       value: "95%",
       label: "买手好评",
       desc: "球鞋与服饰稳定回购",
+      filterKey: "buyerFavorite" as ProductSearchFilterKey,
     },
     {
       value: `${products.value.length}`,
       label: "首页在列",
       desc: "连续浏览整组单品",
+      filterKey: "all" as ProductSearchFilterKey,
     },
   ];
 });
@@ -63,8 +71,25 @@ function openHeroDetail(productId?: string) {
 }
 
 function openSearch() {
+  openSearchWithPreset();
+}
+
+function openSearchWithPreset(preset: ProductSearchPreset = {}) {
+  saveSearchPreset({
+    keyword: "",
+    sort: "comprehensive",
+    filterKey: "all",
+    ...preset,
+  });
+
   uni.switchTab({
     url: "/pages/search/index",
+  });
+}
+
+function openMetricSearch(filterKey: ProductSearchFilterKey) {
+  openSearchWithPreset({
+    filterKey,
   });
 }
 
@@ -156,7 +181,12 @@ onShow(() => {
       </view>
 
       <view class="metric-row">
-        <view v-for="item in metricCards" :key="item.label" class="metric-card">
+        <view
+          v-for="item in metricCards"
+          :key="item.label"
+          class="metric-card"
+          @tap="openMetricSearch(item.filterKey)"
+        >
           <view class="metric-card-content">
             <text class="metric-value">{{ item.value }}</text>
             <text class="metric-label">{{ item.label }}</text>
@@ -382,6 +412,10 @@ onShow(() => {
   border-radius: 24rpx;
   background: #ffffff;
   border: 1px solid rgba(219, 106, 61, 0.08);
+}
+
+.metric-card:active {
+  transform: scale(0.98);
 }
 .metric-card-content {
   display: flex;

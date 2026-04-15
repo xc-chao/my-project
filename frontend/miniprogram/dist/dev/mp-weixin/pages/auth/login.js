@@ -1,8 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const store_modules_user = require("../../store/modules/user.js");
-require("../../mock/data.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
+const constants_pageImageMap = require("../../constants/page-image-map.js");
 if (!Math) {
   AppHeader();
 }
@@ -11,23 +10,26 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "login",
   setup(__props) {
     const userStore = store_modules_user.useUserStore();
-    const supportVisuals = mock_pageImageMap.pageImageMap.auth.support;
-    const trustAvatars = mock_pageImageMap.pageImageMap.auth.trustAvatars;
-    async function handleLogin() {
-      await userStore.login();
+    const supportVisuals = constants_pageImageMap.pageImageMap.auth.support;
+    const trustAvatars = constants_pageImageMap.pageImageMap.auth.trustAvatars;
+    async function handleLogin(identity = "user") {
+      await userStore.login(identity);
       common_vendor.index.switchTab({
-        url: "/pages/home/index"
+        url: identity === "admin" ? "/pages/profile/index" : "/pages/home/index"
       });
     }
     function handlePhoneLogin() {
-      handleLogin();
+      handleLogin("user");
+    }
+    function handleAdminLogin() {
+      handleLogin("admin");
     }
     return (_ctx, _cache) => {
       return {
         a: common_vendor.p({
           title: ""
         }),
-        b: common_vendor.unref(mock_pageImageMap.pageImageMap).auth.hero,
+        b: common_vendor.unref(constants_pageImageMap.pageImageMap).auth.hero,
         c: common_vendor.f(common_vendor.unref(supportVisuals), (item, k0, i0) => {
           return {
             a: item,
@@ -41,8 +43,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         }),
         e: common_vendor.unref(userStore).loading,
-        f: common_vendor.o(handleLogin),
-        g: common_vendor.o(handlePhoneLogin)
+        f: common_vendor.o(($event) => handleLogin("user")),
+        g: common_vendor.o(handlePhoneLogin),
+        h: common_vendor.o(handleAdminLogin)
       };
     };
   }

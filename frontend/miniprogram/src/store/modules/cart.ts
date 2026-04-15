@@ -1,13 +1,18 @@
 import { defineStore } from 'pinia';
-import type { ProductItem } from '../../mock/data';
-import { addCartItem, deleteCartItem, getCart, updateCartItem } from '../../services/cartService';
+import {
+  addCartItem,
+  deleteCartItem,
+  getCart,
+  updateCartItem,
+  type CartProductBrief
+} from '../../services/cartService';
 
 interface CartLine {
   id: string;
   productId: string;
   quantity: number;
   size: string;
-  product?: ProductItem;
+  product?: CartProductBrief;
 }
 
 export const useCartStore = defineStore('cart', {

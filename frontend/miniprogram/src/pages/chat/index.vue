@@ -1,49 +1,167 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import ChatBubble from '../../components/common/ChatBubble.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
-import { mockProducts } from '../../mock/data';
-import { pageImageMap } from '../../mock/page-image-map';
-import { createChatSession, getChatHistory, sendChatMessage } from '../../services/chatService';
+import { pageImageMap } from '../../constants/page-image-map';
+import { createChatSession, getChatHistory, sendChatMessage, type ChatSession } from '../../services/chatService';
 import { useUserStore } from '../../store';
 
+type ChatPageMode = 'chat' | 'history';
+
+interface ChatPageQuery {
+  mode: ChatPageMode;
+  productId: string;
+  title: string;
+}
+
 const userStore = useUserStore();
-const mode = ref<'chat' | 'history'>('chat');
+const mode = ref<ChatPageMode>('chat');
 const sessionId = ref('');
 const productId = ref('');
 const productTitle = ref('当前商品');
 const inputValue = ref('');
 const sending = ref(false);
 const messages = ref<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
-const history = ref<Array<{ id: string; title: string; messages: Array<{ role: 'user' | 'assistant'; content: string }> }>>([]);
+const history = ref<ChatSession[]>([]);
+const routeKey = ref('');
+const initialized = ref(false);
+let initTaskId = 0;
 
 const quickQuestions = computed(() => [
   '这款商品怎么选尺码？',
   '这款适合日常通勤吗？',
   '多久可以发货？'
 ]);
-const currentProduct = computed(() => {
-  return mockProducts.find((item) => item.id === productId.value) || null;
-});
-
-function getHistoryThumb(title: string) {
-  return mockProducts.find((item) => item.title === title)?.cover || pageImageMap.chat.historyThumb;
+function getHistoryThumb(session: ChatSession) {
+  return session.productCover || pageImageMap.chat.historyThumb;
 }
 
-async function ensureSession() {
+function decodeTitle(title: unknown) {
+  if (typeof title !== 'string' || !title) {
+    return '';
+  }
+
+  try {
+    return decodeURIComponent(title);
+  } catch (_error) {
+    return title;
+  }
+}
+
+function normalizeQuery(query?: Record<string, any>): ChatPageQuery {
+  const nextMode: ChatPageMode = query?.mode === 'history' ? 'history' : 'chat';
+  const nextTitle = decodeTitle(query?.title) || (nextMode === 'history' ? '咨询记录' : '当前商品');
+
+  return {
+    mode: nextMode,
+    productId: typeof query?.productId === 'string' ? query.productId : '',
+    title: nextTitle
+  };
+}
+
+function buildRouteKey(query: ChatPageQuery) {
+  return `${query.mode}|${query.productId}|${query.title}`;
+}
+
+function resetPageState(query: ChatPageQuery) {
+  mode.value = query.mode;
+  sessionId.value = '';
+  productId.value = query.productId;
+  productTitle.value = query.title;
+  inputValue.value = '';
+  sending.value = false;
+  messages.value = [];
+  history.value = [];
+}
+
+function getCurrentPageQuery() {
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1] as { options?: Record<string, any> } | undefined;
+  return currentPage?.options || {};
+}
+
+function getH5Query() {
+  if (typeof window === 'undefined') {
+    return getCurrentPageQuery();
+  }
+
+  const hash = window.location.hash || '';
+  const [, search = ''] = hash.split('?');
+  return Object.fromEntries(new URLSearchParams(search).entries());
+}
+
+async function ensureSession(taskId: number) {
   if (mode.value === 'history' || !productId.value || sessionId.value) {
     return;
   }
 
   const session = await createChatSession(productId.value);
+
+  if (taskId !== initTaskId) {
+    return;
+  }
+
   sessionId.value = session.id;
   messages.value = session.messages;
 }
 
-async function loadHistory() {
-  history.value = await getChatHistory();
+async function loadHistory(taskId: number) {
+  const nextHistory = await getChatHistory();
+
+  if (taskId !== initTaskId) {
+    return;
+  }
+
+  history.value = nextHistory;
+}
+
+async function initializePage(
+  rawQuery?: Record<string, any>,
+  options: {
+    refreshHistory?: boolean;
+  } = {}
+) {
+  if (!userStore.isLoggedIn) {
+    uni.redirectTo({
+      url: '/pages/auth/login'
+    });
+    return;
+  }
+
+  const nextQuery = normalizeQuery(rawQuery);
+  const nextKey = buildRouteKey(nextQuery);
+  const sameRoute = routeKey.value === nextKey;
+
+  if (!sameRoute) {
+    resetPageState(nextQuery);
+    routeKey.value = nextKey;
+  }
+
+  const taskId = ++initTaskId;
+
+  if (nextQuery.mode === 'history') {
+    if (!sameRoute || options.refreshHistory) {
+      await loadHistory(taskId);
+    }
+
+    initialized.value = true;
+    return;
+  }
+
+  if (!sameRoute) {
+    productTitle.value = nextQuery.title;
+    productId.value = nextQuery.productId;
+  }
+
+  if (sameRoute && sessionId.value) {
+    initialized.value = true;
+    return;
+  }
+
+  await ensureSession(taskId);
+  initialized.value = true;
 }
 
 async function handleSend(question?: string) {
@@ -65,31 +183,43 @@ async function handleSend(question?: string) {
 }
 
 onLoad(async (query) => {
-  if (!userStore.isLoggedIn) {
-    uni.redirectTo({
-      url: '/pages/auth/login'
-    });
+  await initializePage(query);
+});
+
+onShow(() => {
+  if (!initialized.value) {
     return;
   }
 
-  if (query?.mode === 'history') {
-    mode.value = 'history';
-  }
+  void initializePage(getCurrentPageQuery(), {
+    refreshHistory: true
+  });
+});
 
-  if (typeof query?.productId === 'string') {
-    productId.value = query.productId;
-  }
-
-  if (typeof query?.title === 'string') {
-    productTitle.value = decodeURIComponent(query.title);
-  }
-
-  if (mode.value === 'history') {
-    await loadHistory();
+function handleH5HashChange() {
+  if (typeof window === 'undefined' || !window.location.hash.includes('/pages/chat/index')) {
     return;
   }
 
-  await ensureSession();
+  void initializePage(getH5Query(), {
+    refreshHistory: true
+  });
+}
+
+onMounted(() => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.addEventListener('hashchange', handleH5HashChange);
+});
+
+onUnmounted(() => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.removeEventListener('hashchange', handleH5HashChange);
 });
 </script>
 
@@ -106,10 +236,6 @@ onLoad(async (query) => {
             <text class="intro-text">
               {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' }}
             </text>
-          </view>
-          <view class="intro-visual">
-            <image class="intro-main" :src="currentProduct?.cover || pageImageMap.chat.banner" mode="aspectFill" />
-            <image class="intro-accent" :src="pageImageMap.chat.accent" mode="aspectFill" />
           </view>
         </view>
       </view>
@@ -140,7 +266,7 @@ onLoad(async (query) => {
 
       <view v-else class="history-list">
         <view v-if="history.length" v-for="item in history" :key="item.id" class="history-card">
-          <image class="history-thumb" :src="getHistoryThumb(item.title)" mode="aspectFill" />
+          <image class="history-thumb" :src="getHistoryThumb(item)" mode="aspectFill" />
           <view class="history-copy">
             <text class="history-title">{{ item.title }}</text>
             <text class="history-desc">{{ item.messages[item.messages.length - 1]?.content || '暂无消息' }}</text>
@@ -255,7 +381,7 @@ onLoad(async (query) => {
 }
 
 .msg-scroll {
-  height: calc(100vh - 520rpx);
+  height: calc(100vh - 750rpx);
   margin-top: 20rpx;
 }
 

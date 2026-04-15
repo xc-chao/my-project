@@ -1,63 +1,29 @@
-import { mockDb } from '../../data/mockDb.js';
-
-function enrichOrder(order) {
-  return {
-    ...order,
-    items: order.items.map((item) => {
-      return {
-        ...item,
-        product: mockDb.products.find((product) => product.id === item.productId)
-      };
-    })
-  };
-}
+import { AppError } from '../../common/errors/AppError.js';
+import { orderRepository } from './order.repository.js';
 
 export const orderService = {
-  getPreview(userId) {
-    const address = mockDb.addresses.find((item) => item.userId === userId && item.isDefault);
-    const items = mockDb.cartItems.map((item) => {
-      return {
-        ...item,
-        product: mockDb.products.find((product) => product.id === item.productId)
-      };
-    });
-    const goodsAmount = items.reduce((sum, item) => sum + item.quantity * (item.product?.price || 0), 0);
-    const shippingFee = items.length ? 12 : 0;
-    const discountAmount = items.length ? 20 : 0;
-
-    return {
-      address,
-      items,
-      summary: {
-        goodsAmount,
-        shippingFee,
-        discountAmount,
-        payableAmount: Math.max(goodsAmount + shippingFee - discountAmount, 0)
-      }
-    };
+  async getPreview(userId) {
+    return orderRepository.getPreview(userId);
   },
-  createOrder(userId, payload = {}) {
-    const preview = this.getPreview(userId);
-    const order = {
-      id: `order_${Date.now()}`,
-      userId,
-      status: 'pending_payment',
-      items: [...mockDb.cartItems],
-      amount: preview.summary.payableAmount,
-      addressId: payload.addressId || preview.address?.id || '',
-      remark: payload.remark || '',
-      createdAt: new Date().toLocaleString('zh-CN', { hour12: false })
-    };
+  async createOrder(userId, payload = {}) {
+    const preview = await orderRepository.getPreview(userId);
 
-    mockDb.orders.unshift(order);
-    mockDb.cartItems.splice(0, mockDb.cartItems.length);
+    if (!preview.items.length) {
+      throw new AppError(400, 'ORDER_EMPTY', '当前没有待结算商品');
+    }
+
+    const order = await orderRepository.createOrder(userId, payload);
+
+    if (!order) {
+      throw new AppError(500, 'ORDER_CREATE_FAILED', '订单创建失败');
+    }
+
     return order;
   },
-  listOrders(userId) {
-    return mockDb.orders.filter((item) => item.userId === userId).map(enrichOrder);
+  async listOrders(userId) {
+    return orderRepository.listOrders(userId);
   },
-  getOrderDetail(id, userId) {
-    const order = mockDb.orders.find((item) => item.id === id && item.userId === userId) || null;
-    return order ? enrichOrder(order) : null;
+  async getOrderDetail(id, userId) {
+    return orderRepository.getOrderDetail(id, userId);
   }
 };

@@ -1,1 +1,1 @@
-"use strict";const t=require("./request.js");exports.loginWithWechat=function(e){return t.request("/auth/wechat-login",{method:"POST",data:e})};
+"use strict";const t=require("./request.js");exports.getAuthProfile=function(){return t.request("/auth/profile")},exports.loginWithIdentity=function(e){return t.request("/auth/wechat-login",{method:"POST",data:e})},exports.logoutAuth=function(){return t.request("/auth/logout",{method:"POST"})},exports.updateAuthProfile=function(e){return t.request("/auth/profile",{method:"PATCH",data:e})};

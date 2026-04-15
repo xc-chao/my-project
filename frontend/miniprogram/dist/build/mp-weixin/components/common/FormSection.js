@@ -1,1 +1,1 @@
-"use strict";const e=require("../../common/vendor.js"),t=e.defineComponent({__name:"FormSection",props:{title:{},desc:{}},setup:t=>(t,c)=>e.e({a:e.t(t.title),b:t.desc},t.desc?{c:e.t(t.desc)}:{})}),c=e._export_sfc(t,[["__scopeId","data-v-c94d02d2"]]);wx.createComponent(c);
+"use strict";const e=require("../../common/vendor.js"),t=e.defineComponent({__name:"FormSection",props:{title:{},desc:{}},setup:t=>(t,c)=>e.e({a:e.t(t.title),b:t.desc},t.desc?{c:e.t(t.desc)}:{})}),c=e._export_sfc(t,[["__scopeId","data-v-4ec4e7df"]]);wx.createComponent(c);

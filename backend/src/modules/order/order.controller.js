@@ -1,24 +1,25 @@
 import { ok } from '../../common/utils/response.js';
+import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { AppError } from '../../common/errors/AppError.js';
 import { orderService } from './order.service.js';
 
 export const orderController = {
-  preview(req, res) {
-    return ok(res, orderService.getPreview(req.user.userId));
-  },
-  create(req, res) {
-    return ok(res, orderService.createOrder(req.user.userId, req.body), '订单已创建');
-  },
-  list(req, res) {
-    return ok(res, orderService.listOrders(req.user.userId));
-  },
-  detail(req, res) {
-    const order = orderService.getOrderDetail(req.params.id, req.user.userId);
+  preview: asyncHandler(async (req, res) => {
+    return ok(res, await orderService.getPreview(req.user.userId));
+  }),
+  create: asyncHandler(async (req, res) => {
+    return ok(res, await orderService.createOrder(req.user.userId, req.validated.body), '订单已创建');
+  }),
+  list: asyncHandler(async (req, res) => {
+    return ok(res, await orderService.listOrders(req.user.userId));
+  }),
+  detail: asyncHandler(async (req, res) => {
+    const order = await orderService.getOrderDetail(req.validated.params.id, req.user.userId);
 
     if (!order) {
       throw new AppError(404, 'ORDER_NOT_FOUND', '订单不存在');
     }
 
     return ok(res, order);
-  }
+  })
 };

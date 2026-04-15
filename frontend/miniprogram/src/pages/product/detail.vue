@@ -5,7 +5,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import QuantityStepper from '../../components/common/QuantityStepper.vue';
 import { getProductDetail } from '../../services/productService';
 import { useCartStore, useUserStore } from '../../store';
-import type { ProductItem } from '../../mock/data';
+import type { ProductItem } from '../../types/domain';
 
 const product = ref<ProductItem | null>(null);
 const selectedSize = ref('');

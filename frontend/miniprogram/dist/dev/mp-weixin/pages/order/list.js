@@ -1,6 +1,5 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
 const services_orderService = require("../../services/orderService.js");
 if (!Math) {
   (AppHeader + OrderCard + EmptyStateCard)();
@@ -56,9 +55,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           title: "历史订单",
           back: true
         }),
-        b: common_vendor.unref(mock_pageImageMap.pageImageMap).orderList.banner,
-        c: common_vendor.unref(mock_pageImageMap.pageImageMap).orderList.accent,
-        d: common_vendor.f(tabs, (item, k0, i0) => {
+        b: common_vendor.f(tabs, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.label),
             b: item.key,
@@ -68,9 +65,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.o(($event) => statusTab.value = item.key, item.key)
           };
         }),
-        e: filteredOrders.value.length
+        c: filteredOrders.value.length
       }, filteredOrders.value.length ? {
-        f: common_vendor.f(filteredOrders.value, (item, k0, i0) => {
+        d: common_vendor.f(filteredOrders.value, (item, k0, i0) => {
           return {
             a: common_vendor.o(goAfterSale, item.id),
             b: "80f8e5f8-1-" + i0,
@@ -85,8 +82,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {
-        g: common_vendor.o(goHome),
-        h: common_vendor.p({
+        e: common_vendor.o(goHome),
+        f: common_vendor.p({
           title: "还没有订单记录",
           desc: "可以先去首页浏览商品，完成加购和下单后再回来查看。",
           ["action-text"]: "去首页"

@@ -1,34 +1,108 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import PillTabBar from '../../components/PillTabBar.vue';
 import ProductCard from '../../components/ProductCard.vue';
-import { getProductList, searchProducts } from '../../services/productService';
-import type { ProductItem } from '../../mock/data';
-import { pageImageMap } from '../../mock/page-image-map';
+import { getProductList } from '../../services/productService';
+import type { ProductItem } from '../../types/domain';
+import { pageImageMap } from '../../constants/page-image-map';
+import {
+  consumeSearchPreset,
+  getSearchFilterLabel,
+  resolveSearchFilterQuery,
+  type ProductSearchFilterKey,
+  type ProductSearchPreset,
+  type ProductSearchSort
+} from '../../utils/product-search';
 
 const keyword = ref('');
 const list = ref<ProductItem[]>([]);
 const loading = ref(false);
-const filters = ['综合', '价格', '筛选'];
-const currentFilter = ref('综合');
+const initialized = ref(false);
+const sort = ref<ProductSearchSort>('comprehensive');
+const filterKey = ref<ProductSearchFilterKey>('all');
 const inspirationCards = pageImageMap.search.inspiration;
+const filterOptions: Array<{ key: ProductSearchFilterKey; label: string }> = [
+  { key: 'all', label: '全部商品' },
+  { key: 'newIn48h', label: '48h 上新' },
+  { key: 'buyerFavorite', label: '买手好评' },
+  { key: 'onSale', label: '仅看在售' },
+  { key: 'categoryShoes', label: '鞋靴' },
+  { key: 'categoryClothes', label: '服饰' },
+  { key: 'categoryAccessories', label: '配件' }
+];
+
+const filterPills = computed(() => {
+  return [
+    {
+      key: 'comprehensive',
+      label: '综合',
+      active: sort.value === 'comprehensive'
+    },
+    {
+      key: 'price',
+      label:
+        sort.value === 'priceAsc'
+          ? '价格↑'
+          : sort.value === 'priceDesc'
+            ? '价格↓'
+            : '价格',
+      active: sort.value === 'priceAsc' || sort.value === 'priceDesc'
+    },
+    {
+      key: 'filter',
+      label: getSearchFilterLabel(filterKey.value),
+      active: filterKey.value !== 'all'
+    }
+  ] as const;
+});
+
+const activeTags = computed(() => {
+  const tags: string[] = [];
+
+  if (sort.value === 'priceAsc') {
+    tags.push('价格升序');
+  } else if (sort.value === 'priceDesc') {
+    tags.push('价格降序');
+  }
+
+  if (filterKey.value !== 'all') {
+    tags.push(getSearchFilterLabel(filterKey.value));
+  }
+
+  return tags;
+});
+
+const resultTitle = computed(() => {
+  const normalizedKeyword = keyword.value.trim();
+
+  if (normalizedKeyword) {
+    return normalizedKeyword;
+  }
+
+  return filterKey.value === 'all' ? '全部商品' : getSearchFilterLabel(filterKey.value);
+});
+
+function applySearchPreset(preset: ProductSearchPreset) {
+  keyword.value = preset.keyword || '';
+  sort.value = preset.sort || 'comprehensive';
+  filterKey.value = preset.filterKey || 'all';
+}
 
 async function loadSearch() {
   loading.value = true;
 
   try {
-    if (!keyword.value.trim()) {
-      const result = await getProductList();
-      list.value = result.list;
-      return;
-    }
-
-    const result = await searchProducts(keyword.value);
+    const result = await getProductList({
+      keyword: keyword.value.trim(),
+      sort: sort.value,
+      ...resolveSearchFilterQuery(filterKey.value)
+    });
     list.value = result.list;
   } finally {
     loading.value = false;
+    initialized.value = true;
   }
 }
 
@@ -44,18 +118,69 @@ function goHome() {
   });
 }
 
+function resetToComprehensive() {
+  if (sort.value === 'comprehensive') {
+    return;
+  }
+
+  sort.value = 'comprehensive';
+  loadSearch();
+}
+
+function togglePriceSort() {
+  sort.value = sort.value === 'priceAsc' ? 'priceDesc' : 'priceAsc';
+  loadSearch();
+}
+
+function openFilterSheet() {
+  uni.showActionSheet({
+    itemList: filterOptions.map((item) => item.label),
+    success: (result) => {
+      const next = filterOptions[result.tapIndex];
+
+      if (!next) {
+        return;
+      }
+
+      filterKey.value = next.key;
+      loadSearch();
+    },
+    fail: () => {}
+  });
+}
+
+function handlePillTap(key: 'comprehensive' | 'price' | 'filter') {
+  if (key === 'comprehensive') {
+    resetToComprehensive();
+    return;
+  }
+
+  if (key === 'price') {
+    togglePriceSort();
+    return;
+  }
+
+  openFilterSheet();
+}
+
 onLoad((query) => {
   if (typeof query?.keyword === 'string') {
     keyword.value = decodeURIComponent(query.keyword);
   }
-
-  loadSearch();
 });
 
 onShow(() => {
   uni.hideTabBar();
 
-  if (!list.value.length) {
+  const preset = consumeSearchPreset();
+
+  if (preset) {
+    applySearchPreset(preset);
+    loadSearch();
+    return;
+  }
+
+  if (!initialized.value) {
     loadSearch();
   }
 });
@@ -80,25 +205,15 @@ onShow(() => {
 
         <view class="filter-row">
           <view
-            v-for="item in filters"
-            :key="item"
-            :class="['filter-pill', { active: currentFilter === item }]"
-            @tap="currentFilter = item"
+            v-for="item in filterPills"
+            :key="item.key"
+            :class="['filter-pill', { active: item.active }]"
+            @tap="handlePillTap(item.key)"
           >
-            <text>{{ item }}</text>
+            <text>{{ item.label }}</text>
           </view>
         </view>
-        <text class="page-desc">{{ keyword || '全部商品' }} 共 {{ list.length }} 件商品</text>
-
-        <scroll-view scroll-x class="inspiration-scroll" show-scrollbar="false">
-          <view class="inspiration-row">
-            <view v-for="item in inspirationCards" :key="item.title" class="inspiration-card">
-              <image class="inspiration-image" :src="item.image" mode="aspectFill" />
-              <text class="inspiration-title">{{ item.title }}</text>
-              <text class="inspiration-desc">{{ item.desc }}</text>
-            </view>
-          </view>
-        </scroll-view>
+        <text class="page-desc">{{ resultTitle }} 共 {{ list.length }} 件商品</text>
 
         <view v-if="list.length" class="result-list">
           <ProductCard
@@ -149,6 +264,22 @@ onShow(() => {
   margin-top: 14rpx;
   font-size: 22rpx;
   color: #6e7380;
+}
+
+.active-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+.active-tag {
+  padding: 10rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(23, 24, 28, 0.08);
+  color: #17181c;
+  font-size: 20rpx;
+  font-weight: 700;
 }
 
 .search-bar {
@@ -202,46 +333,6 @@ onShow(() => {
 .filter-pill.active {
   background: #17181c;
   color: #ffffff;
-}
-
-.inspiration-scroll {
-  margin-top: 22rpx;
-  white-space: nowrap;
-}
-
-.inspiration-row {
-  display: inline-flex;
-  gap: 18rpx;
-  padding-right: 10rpx;
-}
-
-.inspiration-card {
-  width: 260rpx;
-  padding: 16rpx;
-  border-radius: 32rpx;
-  background: #ffffff;
-}
-
-.inspiration-image {
-  width: 100%;
-  height: 180rpx;
-  border-radius: 24rpx;
-  background: #eef0f4;
-}
-
-.inspiration-title {
-  display: block;
-  margin-top: 16rpx;
-  font-size: 24rpx;
-  font-weight: 700;
-  color: #111111;
-}
-
-.inspiration-desc {
-  display: block;
-  margin-top: 8rpx;
-  font-size: 20rpx;
-  color: #8c93a1;
 }
 
 .result-list {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import OrderCard from '../../components/common/OrderCard.vue';
@@ -49,6 +50,20 @@ const filteredOrders = computed(() => {
   return orders.value.filter((item) => ['completed', 'cancelled'].includes(item.status));
 });
 
+function cloneOrder(order: AdminOrderRecord): AdminOrderRecord {
+  return {
+    ...order,
+    items: order.items.map((goods) => ({
+      ...goods,
+      product: goods.product
+        ? {
+            ...goods.product
+          }
+        : goods.product
+    }))
+  };
+}
+
 async function loadOrders() {
   if (!ensureAdminPageAccess(userStore.isAdmin)) {
     return;
@@ -57,7 +72,8 @@ async function loadOrders() {
   loading.value = true;
 
   try {
-    orders.value = await getAdminOrders();
+    const list = await getAdminOrders();
+    orders.value = list.map(cloneOrder);
   } catch (error) {
     const message = error instanceof Error ? error.message : '订单数据加载失败';
     uni.showToast({
@@ -90,11 +106,7 @@ function getActionText(status: string) {
 }
 
 function applyOrder(updated: AdminOrderRecord) {
-  const index = orders.value.findIndex((item) => item.id === updated.id);
-
-  if (index > -1) {
-    orders.value[index] = updated;
-  }
+  orders.value = orders.value.map((item) => (item.id === updated.id ? cloneOrder(updated) : item));
 }
 
 async function promoteOrder(id: string) {
@@ -134,7 +146,20 @@ function goAdminHome() {
   });
 }
 
-onMounted(loadOrders);
+function openOrderDetail(id: string) {
+  uni.navigateTo({
+    url: `/pages/admin/order-detail?id=${id}`
+  });
+}
+
+function openAfterSales(orderId?: string) {
+  const query = orderId ? `?orderId=${encodeURIComponent(orderId)}` : '';
+  uni.navigateTo({
+    url: `/pages/admin/after-sales${query}`
+  });
+}
+
+onShow(loadOrders);
 </script>
 
 <template>
@@ -144,8 +169,15 @@ onMounted(loadOrders);
     <scroll-view scroll-y class="page-scroll">
       <view class="body">
         <view class="hero-card">
-          <text class="hero-title">订单处理</text>
-          <text class="hero-desc">管理员在这里查看支付确认、发货推进、签收完成与异常订单状态流转。</text>
+          <view class="hero-head">
+            <view class="hero-copy">
+              <text class="hero-title">订单处理</text>
+              <text class="hero-desc">管理员在这里查看支付确认、发货推进、签收完成与异常订单状态流转。</text>
+            </view>
+            <view class="hero-action" @tap="openAfterSales()">
+              <text>售后审批</text>
+            </view>
+          </view>
         </view>
 
         <view class="summary-row">
@@ -167,13 +199,22 @@ onMounted(loadOrders);
         </view>
 
         <view v-if="filteredOrders.length" class="list">
-          <OrderCard
-            v-for="item in filteredOrders"
-            :key="item.id"
-            :item="item"
-            :action-text="getActionText(item.status)"
-            @action="promoteOrder"
-          />
+          <view v-for="item in filteredOrders" :key="`order-${item.id}-${item.status}`" class="order-shell">
+            <OrderCard
+              :key="`order-card-${item.id}-${item.status}`"
+              :item="item"
+              :action-text="getActionText(item.status)"
+              @action="promoteOrder"
+            />
+            <view class="extra-row">
+              <view class="ghost-btn" @tap="openOrderDetail(item.id)">
+                <text>查看详情</text>
+              </view>
+              <view class="ghost-btn" @tap="openAfterSales(item.id)">
+                <text>售后审批</text>
+              </view>
+            </view>
+          </view>
         </view>
 
         <EmptyStateCard
@@ -206,11 +247,25 @@ onMounted(loadOrders);
 }
 
 .hero-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
   padding: 28rpx;
   border-radius: 40rpx;
+}
+
+.hero-head,
+.hero-copy {
+  display: flex;
+}
+
+.hero-head {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.hero-copy {
+  flex: 1;
+  flex-direction: column;
+  gap: 10rpx;
 }
 
 .hero-title {
@@ -271,5 +326,40 @@ onMounted(loadOrders);
 .list {
   flex-direction: column;
   gap: 18rpx;
+}
+
+.order-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.extra-row {
+  display: flex;
+  gap: 12rpx;
+}
+
+.hero-action,
+.ghost-btn {
+  min-width: 148rpx;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.hero-action {
+  background: #17181c;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ghost-btn {
+  background: #ffffff;
+  color: #111111;
 }
 </style>

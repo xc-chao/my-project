@@ -11,8 +11,16 @@ if (!Math) {
   "./pages/order/list.js";
   "./pages/address/index.js";
   "./pages/after-sale/index.js";
+  "./pages/admin/index.js";
+  "./pages/admin/products.js";
+  "./pages/admin/product-form.js";
+  "./pages/admin/orders.js";
+  "./pages/admin/order-detail.js";
+  "./pages/admin/after-sales.js";
+  "./pages/admin/feedback.js";
   "./pages/cart/index.js";
   "./pages/profile/index.js";
+  "./pages/profile/account.js";
 }
 const _sfc_main = {};
 function _sfc_render(_ctx, _cache) {

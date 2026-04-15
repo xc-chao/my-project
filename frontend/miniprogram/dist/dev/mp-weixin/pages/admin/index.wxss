@@ -1,0 +1,204 @@
+page.data-v-f94c733c {
+  background: #f7f7fa;
+  color: #111111;
+  font-family: "Inter", sans-serif;
+}
+.page-shell.data-v-f94c733c {
+  min-height: 100vh;
+  background: #f7f7fa;
+}
+.safe-top.data-v-f94c733c {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom.data-v-f94c733c {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.page-scroll.data-v-f94c733c {
+  height: calc(100vh - 120rpx);
+}
+.body.data-v-f94c733c,
+.empty-wrap.data-v-f94c733c {
+  padding: 8rpx 40rpx 40rpx;
+}
+.body.data-v-f94c733c {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+.hero-card.data-v-f94c733c,
+.section-card.data-v-f94c733c {
+  padding: 30rpx;
+  border-radius: 40rpx;
+  background: #ffffff;
+}
+.hero-card.data-v-f94c733c {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f6fa 55%, #eef1f7 100%);
+}
+.hero-eyebrow.data-v-f94c733c {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #8c93a1;
+  letter-spacing: 2rpx;
+}
+.hero-title.data-v-f94c733c,
+.section-title.data-v-f94c733c {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.hero-desc.data-v-f94c733c,
+.metric-hint.data-v-f94c733c,
+.module-desc.data-v-f94c733c,
+.module-hint.data-v-f94c733c,
+.rank-desc.data-v-f94c733c,
+.feedback-summary.data-v-f94c733c,
+.feedback-time.data-v-f94c733c,
+.monitor-label.data-v-f94c733c {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #6e7380;
+}
+.metric-grid.data-v-f94c733c {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18rpx;
+}
+.metric-card.data-v-f94c733c {
+  width: calc(50% - 9rpx);
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 26rpx;
+  border-radius: 32rpx;
+  background: #ffffff;
+}
+.metric-card.danger .metric-value.data-v-f94c733c {
+  color: #e15b4d;
+}
+.metric-label.data-v-f94c733c {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.metric-value.data-v-f94c733c,
+.monitor-value.data-v-f94c733c {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.section-title.data-v-f94c733c {
+  display: block;
+}
+.module-list.data-v-f94c733c,
+.rank-list.data-v-f94c733c,
+.feedback-list.data-v-f94c733c {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+.module-card.data-v-f94c733c,
+.rank-item.data-v-f94c733c,
+.feedback-item.data-v-f94c733c,
+.monitor-item.data-v-f94c733c {
+  border-radius: 28rpx;
+  background: #f7f7fa;
+}
+.module-card.data-v-f94c733c {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 24rpx;
+}
+.module-main.data-v-f94c733c,
+.module-side.data-v-f94c733c,
+.rank-copy.data-v-f94c733c {
+  display: flex;
+  flex-direction: column;
+}
+.module-main.data-v-f94c733c {
+  flex: 1;
+  gap: 8rpx;
+}
+.module-side.data-v-f94c733c {
+  align-items: flex-end;
+  gap: 8rpx;
+  max-width: 220rpx;
+}
+.module-title.data-v-f94c733c,
+.rank-title.data-v-f94c733c,
+.feedback-user.data-v-f94c733c,
+.feedback-product.data-v-f94c733c {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #111111;
+}
+.module-value.data-v-f94c733c {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #111111;
+  text-align: right;
+}
+.rank-item.data-v-f94c733c {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 24rpx;
+}
+.rank-badge.data-v-f94c733c {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #17181c;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.rank-copy.data-v-f94c733c {
+  gap: 8rpx;
+}
+.feedback-item.data-v-f94c733c {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  padding: 24rpx;
+}
+.feedback-head.data-v-f94c733c {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+.feedback-status.data-v-f94c733c {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(225, 91, 77, 0.12);
+  color: #e15b4d;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+.feedback-status.resolved.data-v-f94c733c {
+  background: rgba(41, 135, 92, 0.12);
+  color: #29875c;
+}
+.monitor-grid.data-v-f94c733c {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 18rpx;
+}
+.monitor-item.data-v-f94c733c {
+  width: calc(50% - 8rpx);
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding: 24rpx;
+}

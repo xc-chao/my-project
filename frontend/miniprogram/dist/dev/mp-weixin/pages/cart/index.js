@@ -1,6 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
+const constants_pageImageMap = require("../../constants/page-image-map.js");
 const store_modules_user = require("../../store/modules/user.js");
 const store_modules_cart = require("../../store/modules/cart.js");
 if (!Math) {
@@ -45,21 +45,19 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.t(common_vendor.unref(cartStore).totalCount),
-        b: !common_vendor.unref(userStore).isLoggedIn
+        a: !common_vendor.unref(userStore).isLoggedIn
       }, !common_vendor.unref(userStore).isLoggedIn ? {
-        c: common_vendor.o(goLogin),
-        d: common_vendor.p({
+        b: common_vendor.o(goLogin),
+        c: common_vendor.p({
           title: "登录后查看购物车",
           desc: "登录后可继续首页、详情、加购、确认订单的完整链路。",
           ["action-text"]: "去登录"
         })
       } : common_vendor.e({
-        e: common_vendor.unref(mock_pageImageMap.pageImageMap).cart.banner,
-        f: common_vendor.unref(mock_pageImageMap.pageImageMap).cart.accent,
-        g: common_vendor.unref(cartStore).list.length
+        d: common_vendor.unref(constants_pageImageMap.pageImageMap).cart.banner,
+        e: common_vendor.unref(cartStore).list.length
       }, common_vendor.unref(cartStore).list.length ? {
-        h: common_vendor.f(common_vendor.unref(cartStore).list, (item, k0, i0) => {
+        f: common_vendor.f(common_vendor.unref(cartStore).list, (item, k0, i0) => {
           var _a, _b, _c;
           return {
             a: (_a = item.product) == null ? void 0 : _a.cover,
@@ -76,19 +74,20 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {
-        i: common_vendor.o(goHome),
-        j: common_vendor.p({
+        g: common_vendor.o(goHome),
+        h: common_vendor.p({
           title: "购物车还是空的",
-          desc: "可以先去首页浏览商品，点击任意商品进入详情页完成加购。",
+          desc: "先去首页挑几双球鞋或几件穿搭，加入购物车后就能在这里统一结算。",
           ["action-text"]: "去首页"
         })
       }), {
-        k: common_vendor.unref(userStore).isLoggedIn
-      }, common_vendor.unref(userStore).isLoggedIn ? {
-        l: common_vendor.t(common_vendor.unref(cartStore).totalAmount),
-        m: common_vendor.o(goCheckout)
+        i: common_vendor.unref(userStore).isLoggedIn && common_vendor.unref(cartStore).list.length
+      }, common_vendor.unref(userStore).isLoggedIn && common_vendor.unref(cartStore).list.length ? {
+        j: common_vendor.t(common_vendor.unref(cartStore).totalAmount),
+        k: common_vendor.t(common_vendor.unref(cartStore).totalCount),
+        l: common_vendor.o(goCheckout)
       } : {}, {
-        n: common_vendor.p({
+        m: common_vendor.p({
           current: "cart"
         })
       });

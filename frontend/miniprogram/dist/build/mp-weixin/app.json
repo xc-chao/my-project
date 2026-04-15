@@ -9,8 +9,16 @@
     "pages/order/list",
     "pages/address/index",
     "pages/after-sale/index",
+    "pages/admin/index",
+    "pages/admin/products",
+    "pages/admin/product-form",
+    "pages/admin/orders",
+    "pages/admin/order-detail",
+    "pages/admin/after-sales",
+    "pages/admin/feedback",
     "pages/cart/index",
-    "pages/profile/index"
+    "pages/profile/index",
+    "pages/profile/account"
   ],
   "window": {
     "navigationBarTitleText": "智能购物小程序",

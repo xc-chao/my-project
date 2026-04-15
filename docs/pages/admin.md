@@ -13,6 +13,8 @@
 
 - `admin-products.md`：商品管理页。
 - `admin-orders.md`：订单处理页。
+- `admin-order-detail.md`：订单详情页。
+- `admin-after-sales.md`：售后审批页。
 - `admin-feedback.md`：反馈与看板页。
 
 ## 权限规则

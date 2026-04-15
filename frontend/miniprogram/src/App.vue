@@ -6,8 +6,6 @@
 </script>
 
 <style lang="scss">
-@import './uni.scss';
-
 view,
 text,
 button,

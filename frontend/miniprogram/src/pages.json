@@ -73,7 +73,25 @@
       }
     },
     {
+      "path": "pages/admin/product-form",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/admin/orders",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/order-detail",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/after-sales",
       "style": {
         "navigationStyle": "custom"
       }
@@ -92,6 +110,12 @@
     },
     {
       "path": "pages/profile/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/account",
       "style": {
         "navigationStyle": "custom"
       }

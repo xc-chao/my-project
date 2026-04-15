@@ -19,26 +19,40 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         cancelled: "已取消"
       }[status] || status;
     }
+    function openGoodsDetail(productId) {
+      if (!productId) {
+        return;
+      }
+      common_vendor.index.navigateTo({
+        url: `/pages/product/detail?id=${productId}`
+      });
+    }
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: common_vendor.t(_ctx.item.id),
         b: common_vendor.t(formatStatus(_ctx.item.status)),
-        c: common_vendor.f(_ctx.item.items, (goods, k0, i0) => {
+        c: `status-${_ctx.item.id}-${_ctx.item.status}`,
+        d: common_vendor.f(_ctx.item.items, (goods, k0, i0) => {
           var _a, _b;
           return {
             a: (_a = goods.product) == null ? void 0 : _a.cover,
             b: common_vendor.t((_b = goods.product) == null ? void 0 : _b.title),
             c: common_vendor.t(goods.size),
             d: common_vendor.t(goods.quantity),
-            e: goods.id
+            e: goods.id,
+            f: common_vendor.o(($event) => {
+              var _a2;
+              return openGoodsDetail(((_a2 = goods.product) == null ? void 0 : _a2.id) || goods.productId);
+            }, goods.id)
           };
         }),
-        d: common_vendor.t(_ctx.item.createdAt),
-        e: common_vendor.t(_ctx.item.amount),
-        f: _ctx.actionText
+        e: common_vendor.t(_ctx.item.createdAt),
+        f: common_vendor.t(_ctx.item.amount),
+        g: _ctx.actionText
       }, _ctx.actionText ? {
-        g: common_vendor.t(_ctx.actionText),
-        h: common_vendor.o(($event) => emit("action", props.item.id))
+        h: common_vendor.t(_ctx.actionText),
+        i: `action-${_ctx.item.id}-${_ctx.item.status}`,
+        j: common_vendor.o(($event) => emit("action", props.item.id))
       } : {});
     };
   }

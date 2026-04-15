@@ -38,11 +38,18 @@ page.data-v-b6ed46dc {
   align-items: center;
   justify-content: center;
 }
+.pill-content.data-v-b6ed46dc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+}
 .pill-item.active.data-v-b6ed46dc {
   background: #17181c;
 }
 .pill-label.data-v-b6ed46dc {
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 700;
   letter-spacing: 0;
   color: #8c93a1;

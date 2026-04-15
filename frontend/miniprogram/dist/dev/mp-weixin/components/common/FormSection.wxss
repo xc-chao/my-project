@@ -16,8 +16,8 @@ page.data-v-03602b2b {
 .section.data-v-03602b2b {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
   padding: 28rpx;
+  margin-bottom: 20rpx;
   border-radius: 40rpx;
   background: #ffffff;
 }

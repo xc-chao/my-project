@@ -27,3 +27,13 @@ export const smsLoginSchema = z.object({
   query: z.any(),
   params: z.any()
 });
+
+export const profileUpdateSchema = z.object({
+  body: z.object({
+    nickname: z.string().min(1).max(20).optional(),
+    avatar: z.string().min(1).optional(),
+    role: z.enum(['user', 'admin']).optional()
+  }),
+  query: z.any(),
+  params: z.any()
+});

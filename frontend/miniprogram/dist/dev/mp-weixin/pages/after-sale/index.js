@@ -1,7 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const mock_data = require("../../mock/data.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
+const constants_pageImageMap = require("../../constants/page-image-map.js");
 const services_afterSaleService = require("../../services/afterSaleService.js");
 if (!Math) {
   (AppHeader + FormSection + EmptyStateCard)();
@@ -46,10 +45,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         rejected: "已驳回"
       }[status] || status;
     }
-    function getProductCover(title) {
-      var _a;
-      return ((_a = mock_data.mockProducts.find((item) => item.title === title)) == null ? void 0 : _a.cover) || mock_pageImageMap.pageImageMap.afterSale.accent;
-    }
     common_vendor.onLoad((query) => {
       if (typeof (query == null ? void 0 : query.orderId) === "string") {
         form.orderId = query.orderId;
@@ -65,24 +60,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           title: "售后申请",
           back: true
         }),
-        b: common_vendor.unref(mock_pageImageMap.pageImageMap).afterSale.banner,
-        c: common_vendor.unref(mock_pageImageMap.pageImageMap).afterSale.accent,
-        d: form.orderId,
-        e: common_vendor.o(($event) => form.orderId = $event.detail.value),
-        f: form.productTitle,
-        g: common_vendor.o(($event) => form.productTitle = $event.detail.value),
-        h: form.reason,
-        i: common_vendor.o(($event) => form.reason = $event.detail.value),
-        j: common_vendor.o(handleSubmit),
-        k: common_vendor.p({
+        b: form.orderId,
+        c: common_vendor.o(($event) => form.orderId = $event.detail.value),
+        d: form.productTitle,
+        e: common_vendor.o(($event) => form.productTitle = $event.detail.value),
+        f: form.reason,
+        g: common_vendor.o(($event) => form.reason = $event.detail.value),
+        h: common_vendor.o(handleSubmit),
+        i: common_vendor.p({
           title: "发起申请",
           desc: "支持填写订单号、商品名称与售后原因"
         }),
-        l: hasSeedData.value
+        j: hasSeedData.value
       }, hasSeedData.value ? {
-        m: common_vendor.f(list.value, (item, k0, i0) => {
+        k: common_vendor.f(list.value, (item, k0, i0) => {
           return {
-            a: getProductCover(item.productTitle),
+            a: item.productCover || common_vendor.unref(constants_pageImageMap.pageImageMap).afterSale.accent,
             b: common_vendor.t(item.productTitle),
             c: common_vendor.t(formatStatus(item.status)),
             d: common_vendor.t(item.orderId),
@@ -91,7 +84,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {
-        n: common_vendor.p({
+        l: common_vendor.p({
           title: "暂无售后记录",
           desc: "提交售后申请后，会在这里看到审核进度与结果。"
         })

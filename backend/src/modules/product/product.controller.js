@@ -1,28 +1,37 @@
 import { ok } from '../../common/utils/response.js';
+import { asyncHandler } from '../../common/utils/asyncHandler.js';
 import { productService } from './product.service.js';
 
 export const productController = {
-  list(req, res) {
-    const list = productService.listProducts();
+  list: asyncHandler(async (req, res) => {
+    const result = await productService.listProducts(req.query);
+    const categories = await productService.listCategories();
+
     return ok(res, {
-      list,
-      categories: productService.listCategories(),
-      page: Number(req.query.page || 1),
-      pageSize: Number(req.query.pageSize || list.length)
+      list: result.list,
+      categories,
+      page: result.page,
+      pageSize: result.pageSize,
+      total: result.total
     });
-  },
-  search(req, res) {
+  }),
+  search: asyncHandler(async (req, res) => {
     const keyword = String(req.query.keyword || '');
+    const result = await productService.searchProducts(keyword, req.query);
+
     return ok(res, {
       keyword,
-      list: productService.searchProducts(keyword)
+      list: result.list,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize
     });
-  },
-  detail(req, res) {
-    const product = productService.getProductDetail(req.params.id);
+  }),
+  detail: asyncHandler(async (req, res) => {
+    const product = await productService.getProductDetail(req.params.id);
     return ok(res, product);
-  },
-  categories(_req, res) {
-    return ok(res, productService.listCategories());
-  }
+  }),
+  categories: asyncHandler(async (_req, res) => {
+    return ok(res, await productService.listCategories());
+  })
 };

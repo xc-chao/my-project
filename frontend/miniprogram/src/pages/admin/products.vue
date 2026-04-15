@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import { getAdminProducts, updateAdminProduct } from '../../services/adminService';
 import { useUserStore } from '../../store';
-import type { ProductItem } from '../../mock/data';
+import type { ProductItem } from '../../types/domain';
 import { ensureAdminPageAccess } from '../../utils/admin';
 
 type ProductFilter = 'all' | 'on_sale' | 'low_stock' | 'off_shelf';
@@ -127,13 +128,25 @@ function openDetail(id: string) {
   });
 }
 
+function openCreate() {
+  uni.navigateTo({
+    url: '/pages/admin/product-form'
+  });
+}
+
+function openEdit(id: string) {
+  uni.navigateTo({
+    url: `/pages/admin/product-form?id=${id}`
+  });
+}
+
 function goAdminHome() {
   uni.redirectTo({
     url: '/pages/admin/index'
   });
 }
 
-onMounted(loadProducts);
+onShow(loadProducts);
 </script>
 
 <template>
@@ -143,8 +156,15 @@ onMounted(loadProducts);
     <scroll-view scroll-y class="page-scroll">
       <view class="body">
         <view class="hero-card">
-          <text class="hero-title">商品管理</text>
-          <text class="hero-desc">查看在售与下架商品，处理低库存，并快速跳转到前台详情页核对展示效果。</text>
+          <view class="hero-head">
+            <view class="hero-copy">
+              <text class="hero-title">商品管理</text>
+              <text class="hero-desc">查看在售与下架商品，处理低库存，并快速跳转到前台详情页核对展示效果。</text>
+            </view>
+            <view class="hero-action" @tap="openCreate">
+              <text>新增商品</text>
+            </view>
+          </view>
         </view>
 
         <view class="summary-row">
@@ -166,7 +186,7 @@ onMounted(loadProducts);
         </view>
 
         <view v-if="filteredProducts.length" class="list">
-          <view v-for="item in filteredProducts" :key="item.id" class="product-card">
+          <view v-for="item in filteredProducts" :key="item.id" class="product-card" @tap="openDetail(item.id)">
             <image class="product-cover" :src="item.cover" mode="aspectFill" />
             <view class="product-main">
               <view class="product-top">
@@ -191,13 +211,13 @@ onMounted(loadProducts);
               </view>
 
               <view class="action-row">
-                <view class="ghost-btn" @tap="replenishStock(item)">
+                <view class="ghost-btn" @tap.stop="openEdit(item.id)">
+                  <text>编辑</text>
+                </view>
+                <view class="ghost-btn" @tap.stop="replenishStock(item)">
                   <text>补库存</text>
                 </view>
-                <view class="ghost-btn" @tap="openDetail(item.id)">
-                  <text>查看详情</text>
-                </view>
-                <view class="primary-btn" @tap="toggleProductStatus(item)">
+                <view class="primary-btn" @tap.stop="toggleProductStatus(item)">
                   <text>{{ getSaleStatus(item) === 'on_sale' ? '下架' : '上架' }}</text>
                 </view>
               </view>
@@ -236,11 +256,22 @@ onMounted(loadProducts);
 }
 
 .hero-card {
+  padding: 28rpx;
+  border-radius: 40rpx;
+}
+
+.hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.hero-copy {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 10rpx;
-  padding: 28rpx;
-  border-radius: 40rpx;
 }
 
 .hero-title,
@@ -274,17 +305,22 @@ onMounted(loadProducts);
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 8rpx;
-  padding: 24rpx;
+  padding: 12rpx;
   border-radius: 28rpx;
 }
 
-.summary-value,
+.summary-value{
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #57b1c5;
+}
 .price {
   font-size: 38rpx;
-  font-weight: 700;
-  color: #111111;
+  font-weight: 600;
+  color: #f25a52;
 }
 
 .filter-row {
@@ -303,6 +339,21 @@ onMounted(loadProducts);
 .filter-pill.active {
   background: #17181c;
   color: #ffffff;
+}
+
+.hero-action {
+  min-width: 152rpx;
+  height: 76rpx;
+  padding: 0 24rpx;
+  border-radius: 38rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #17181c;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .list {
@@ -371,6 +422,15 @@ onMounted(loadProducts);
   align-items: center;
   gap: 12rpx;
   flex-wrap: wrap;
+}
+
+.price-row {
+  align-items: baseline;
+}
+
+.origin {
+  color: #9aa0aa;
+  text-decoration: line-through;
 }
 
 .meta-pill {

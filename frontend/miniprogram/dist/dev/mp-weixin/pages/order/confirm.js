@@ -1,6 +1,6 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
+const constants_pageImageMap = require("../../constants/page-image-map.js");
 const services_orderService = require("../../services/orderService.js");
 if (!Math) {
   (AppHeader + AddressCard + FormSection + EmptyStateCard)();
@@ -63,8 +63,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         b: hasItems.value && preview.value
       }, hasItems.value && preview.value ? common_vendor.e({
-        c: common_vendor.unref(mock_pageImageMap.pageImageMap).orderConfirm.banner,
-        d: common_vendor.unref(mock_pageImageMap.pageImageMap).orderConfirm.accent,
+        c: common_vendor.unref(constants_pageImageMap.pageImageMap).orderConfirm.banner,
+        d: common_vendor.unref(constants_pageImageMap.pageImageMap).orderConfirm.accent,
         e: preview.value.address
       }, preview.value.address ? {
         f: common_vendor.p({

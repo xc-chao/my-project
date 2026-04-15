@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "app-header": "../../components/AppHeader",
+    "form-section": "../../components/common/FormSection"
+  }
+}

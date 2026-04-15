@@ -13,21 +13,6 @@ page {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
-page {
-  background: #f7f7fa;
-  color: #111111;
-  font-family: "Inter", sans-serif;
-}
-.page-shell {
-  min-height: 100vh;
-  background: #f7f7fa;
-}
-.safe-top {
-  padding-top: env(safe-area-inset-top);
-}
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
 view,
 text,
 button,

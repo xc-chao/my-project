@@ -4,7 +4,7 @@ import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import QuantityStepper from '../../components/common/QuantityStepper.vue';
-import { pageImageMap } from '../../mock/page-image-map';
+import { pageImageMap } from '../../constants/page-image-map';
 import { useCartStore, useUserStore } from '../../store';
 
 const cartStore = useCartStore();

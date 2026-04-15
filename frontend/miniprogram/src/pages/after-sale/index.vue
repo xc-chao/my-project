@@ -4,8 +4,7 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
-import { mockProducts } from '../../mock/data';
-import { pageImageMap } from '../../mock/page-image-map';
+import { pageImageMap } from '../../constants/page-image-map';
 import { createAfterSale, getAfterSaleList, type AfterSaleItem } from '../../services/afterSaleService';
 
 const list = ref<AfterSaleItem[]>([]);
@@ -51,10 +50,6 @@ function formatStatus(status: string) {
   );
 }
 
-function getProductCover(title: string) {
-  return mockProducts.find((item) => item.title === title)?.cover || pageImageMap.afterSale.accent;
-}
-
 onLoad((query) => {
   if (typeof query?.orderId === 'string') {
     form.orderId = query.orderId;
@@ -95,7 +90,7 @@ onMounted(loadList);
 
       <view v-if="hasSeedData" class="list">
         <view v-for="item in list" :key="item.id" class="record-card">
-          <image class="record-cover" :src="getProductCover(item.productTitle)" mode="aspectFill" />
+          <image class="record-cover" :src="item.productCover || pageImageMap.afterSale.accent" mode="aspectFill" />
           <view class="record-content">
             <view class="record-row">
               <text class="title">{{ item.productTitle }}</text>
@@ -173,12 +168,13 @@ onMounted(loadList);
 }
 
 .field {
-  width: 100%;
+  width: auto;
   height: 82rpx;
   padding: 0 10rpx;
   border-radius: 24rpx;
   background: #f7f7fa;
   font-size: 24rpx;
+  margin-bottom: 16rpx;
 }
 
 .textarea {

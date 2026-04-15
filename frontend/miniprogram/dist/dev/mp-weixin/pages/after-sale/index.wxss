@@ -23,8 +23,8 @@ page.data-v-c265f4cf {
 .hero-card.data-v-c265f4cf {
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
   padding: 24rpx;
+  margin-bottom: 20rpx;
   border-radius: 40rpx;
   background: #ffffff;
 }
@@ -60,16 +60,17 @@ page.data-v-c265f4cf {
   width: 180rpx;
 }
 .field.data-v-c265f4cf {
-  width: 100%;
-  height: 92rpx;
-  padding: 0 24rpx;
+  width: auto;
+  height: 82rpx;
+  padding: 0 10rpx;
   border-radius: 24rpx;
   background: #f7f7fa;
   font-size: 24rpx;
+  margin-bottom: 16rpx;
 }
 .textarea.data-v-c265f4cf {
   min-height: 180rpx;
-  padding: 24rpx;
+  padding: 10rpx;
 }
 .submit-btn.data-v-c265f4cf {
   height: 92rpx;

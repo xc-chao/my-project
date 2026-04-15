@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProductItem } from '../mock/data';
+import type { ProductItem } from '../types/domain';
 
 defineProps<{
   item: ProductItem;

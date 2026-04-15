@@ -1,20 +1,17 @@
-import { mockDb } from '../../data/mockDb.js';
+import { AppError } from '../../common/errors/AppError.js';
+import { afterSaleRepository } from './afterSale.repository.js';
 
 export const afterSaleService = {
-  list(userId) {
-    return mockDb.afterSales.filter((item) => item.userId === userId);
+  async list(userId) {
+    return afterSaleRepository.listByUserId(userId);
   },
-  create(userId, payload) {
-    const created = {
-      id: `after_${Date.now()}`,
-      userId,
-      orderId: payload.orderId,
-      productTitle: payload.productTitle,
-      reason: payload.reason,
-      status: 'submitted'
-    };
+  async create(userId, payload) {
+    const result = await afterSaleRepository.create(userId, payload);
 
-    mockDb.afterSales.unshift(created);
-    return created;
+    if (!result) {
+      throw new AppError(404, 'ORDER_NOT_FOUND', '订单不存在');
+    }
+
+    return result;
   }
 };

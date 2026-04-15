@@ -2,14 +2,14 @@ import { AppError } from '../../common/errors/AppError.js';
 import { productRepository } from './product.repository.js';
 
 export const productService = {
-  listProducts() {
-    return productRepository.findAll();
+  async listProducts(query = {}) {
+    return productRepository.findAll(query);
   },
-  searchProducts(keyword) {
-    return productRepository.search(keyword);
+  async searchProducts(keyword, query = {}) {
+    return productRepository.search(keyword, query);
   },
-  getProductDetail(id) {
-    const product = productRepository.findById(id);
+  async getProductDetail(id) {
+    const product = await productRepository.findById(id);
 
     if (!product) {
       throw new AppError(404, 'PRODUCT_NOT_FOUND', '商品不存在');
@@ -17,7 +17,8 @@ export const productService = {
 
     return product;
   },
-  listCategories() {
-    return ['推荐', ...productRepository.listCategories()];
+  async listCategories() {
+    const categories = await productRepository.listCategories();
+    return ['推荐', ...categories];
   }
 };

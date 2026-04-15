@@ -1,7 +1,4 @@
-import { handleMockRequest } from '../mock/handlers';
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -11,24 +8,9 @@ interface RequestOptions {
   token?: string;
 }
 
-function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
   const method = options.method || 'GET';
   const token = options.token || uni.getStorageSync('shopping_access_token') || '';
-
-  if (USE_MOCK) {
-    await wait(180);
-    const response = handleMockRequest({
-      method,
-      url,
-      data: options.data
-    });
-
-    return response.data as T;
-  }
 
   return new Promise<T>((resolve, reject) => {
     uni.request({

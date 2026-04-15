@@ -1,9 +1,15 @@
 import { request } from './request';
-import type { UserProfile, UserRole } from '../mock/data';
+import type { UserProfile, UserRole } from '../types/domain';
 
 interface LoginResponse {
   user: UserProfile;
   accessToken: string;
+}
+
+interface ProfileUpdatePayload {
+  nickname?: string;
+  avatar?: string;
+  role?: UserRole;
 }
 
 export function loginWithWechat(payload: { code: string; nickname?: string }) {
@@ -17,5 +23,22 @@ export function loginWithIdentity(payload: { code: string; nickname?: string; id
   return request<LoginResponse>('/auth/wechat-login', {
     method: 'POST',
     data: payload
+  });
+}
+
+export function getAuthProfile() {
+  return request<UserProfile>('/auth/profile');
+}
+
+export function updateAuthProfile(payload: ProfileUpdatePayload) {
+  return request<LoginResponse>('/auth/profile', {
+    method: 'PATCH',
+    data: payload
+  });
+}
+
+export function logoutAuth() {
+  return request<Record<string, never>>('/auth/logout', {
+    method: 'POST'
   });
 }

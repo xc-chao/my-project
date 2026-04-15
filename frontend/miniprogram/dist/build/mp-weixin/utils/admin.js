@@ -1,0 +1,1 @@
+"use strict";const e=require("../common/vendor.js");exports.ensureAdminPageAccess=function(n){return!!n||(e.index.showToast({title:"仅管理员可访问",icon:"none"}),setTimeout(()=>{e.index.switchTab({url:"/pages/profile/index"})},320),!1)};

@@ -1,7 +1,8 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const services_productService = require("../../services/productService.js");
-const mock_pageImageMap = require("../../mock/page-image-map.js");
+const constants_pageImageMap = require("../../constants/page-image-map.js");
+const utils_productSearch = require("../../utils/product-search.js");
 if (!Math) {
   (ProductCard + EmptyStateCard + PillTabBar)();
 }
@@ -14,21 +15,74 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const keyword = common_vendor.ref("");
     const list = common_vendor.ref([]);
     const loading = common_vendor.ref(false);
-    const filters = ["综合", "价格", "筛选"];
-    const currentFilter = common_vendor.ref("综合");
-    const inspirationCards = mock_pageImageMap.pageImageMap.search.inspiration;
+    const initialized = common_vendor.ref(false);
+    const sort = common_vendor.ref("comprehensive");
+    const filterKey = common_vendor.ref("all");
+    constants_pageImageMap.pageImageMap.search.inspiration;
+    const filterOptions = [
+      { key: "all", label: "全部商品" },
+      { key: "newIn48h", label: "48h 上新" },
+      { key: "buyerFavorite", label: "买手好评" },
+      { key: "onSale", label: "仅看在售" },
+      { key: "categoryShoes", label: "鞋靴" },
+      { key: "categoryClothes", label: "服饰" },
+      { key: "categoryAccessories", label: "配件" }
+    ];
+    const filterPills = common_vendor.computed(() => {
+      return [
+        {
+          key: "comprehensive",
+          label: "综合",
+          active: sort.value === "comprehensive"
+        },
+        {
+          key: "price",
+          label: sort.value === "priceAsc" ? "价格↑" : sort.value === "priceDesc" ? "价格↓" : "价格",
+          active: sort.value === "priceAsc" || sort.value === "priceDesc"
+        },
+        {
+          key: "filter",
+          label: utils_productSearch.getSearchFilterLabel(filterKey.value),
+          active: filterKey.value !== "all"
+        }
+      ];
+    });
+    common_vendor.computed(() => {
+      const tags = [];
+      if (sort.value === "priceAsc") {
+        tags.push("价格升序");
+      } else if (sort.value === "priceDesc") {
+        tags.push("价格降序");
+      }
+      if (filterKey.value !== "all") {
+        tags.push(utils_productSearch.getSearchFilterLabel(filterKey.value));
+      }
+      return tags;
+    });
+    const resultTitle = common_vendor.computed(() => {
+      const normalizedKeyword = keyword.value.trim();
+      if (normalizedKeyword) {
+        return normalizedKeyword;
+      }
+      return filterKey.value === "all" ? "全部商品" : utils_productSearch.getSearchFilterLabel(filterKey.value);
+    });
+    function applySearchPreset(preset) {
+      keyword.value = preset.keyword || "";
+      sort.value = preset.sort || "comprehensive";
+      filterKey.value = preset.filterKey || "all";
+    }
     async function loadSearch() {
       loading.value = true;
       try {
-        if (!keyword.value.trim()) {
-          const result2 = await services_productService.getProductList();
-          list.value = result2.list;
-          return;
-        }
-        const result = await services_productService.searchProducts(keyword.value);
+        const result = await services_productService.getProductList({
+          keyword: keyword.value.trim(),
+          sort: sort.value,
+          ...utils_productSearch.resolveSearchFilterQuery(filterKey.value)
+        });
         list.value = result.list;
       } finally {
         loading.value = false;
+        initialized.value = true;
       }
     }
     function openDetail(id) {
@@ -41,47 +95,81 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         url: "/pages/home/index"
       });
     }
+    function resetToComprehensive() {
+      if (sort.value === "comprehensive") {
+        return;
+      }
+      sort.value = "comprehensive";
+      loadSearch();
+    }
+    function togglePriceSort() {
+      sort.value = sort.value === "priceAsc" ? "priceDesc" : "priceAsc";
+      loadSearch();
+    }
+    function openFilterSheet() {
+      common_vendor.index.showActionSheet({
+        itemList: filterOptions.map((item) => item.label),
+        success: (result) => {
+          const next = filterOptions[result.tapIndex];
+          if (!next) {
+            return;
+          }
+          filterKey.value = next.key;
+          loadSearch();
+        },
+        fail: () => {
+        }
+      });
+    }
+    function handlePillTap(key) {
+      if (key === "comprehensive") {
+        resetToComprehensive();
+        return;
+      }
+      if (key === "price") {
+        togglePriceSort();
+        return;
+      }
+      openFilterSheet();
+    }
     common_vendor.onLoad((query) => {
       if (typeof (query == null ? void 0 : query.keyword) === "string") {
         keyword.value = decodeURIComponent(query.keyword);
       }
-      loadSearch();
     });
     common_vendor.onShow(() => {
       common_vendor.index.hideTabBar();
-      if (!list.value.length) {
+      const preset = utils_productSearch.consumeSearchPreset();
+      if (preset) {
+        applySearchPreset(preset);
+        loadSearch();
+        return;
+      }
+      if (!initialized.value) {
         loadSearch();
       }
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.t(keyword.value || "Jordan 1"),
-        b: common_vendor.t(list.value.length || 2184),
-        c: common_vendor.o(loadSearch),
-        d: keyword.value,
-        e: common_vendor.o(($event) => keyword.value = $event.detail.value),
-        f: common_vendor.o(loadSearch),
-        g: common_vendor.f(filters, (item, k0, i0) => {
+        a: common_vendor.o(loadSearch),
+        b: keyword.value,
+        c: common_vendor.o(($event) => keyword.value = $event.detail.value),
+        d: common_vendor.o(loadSearch),
+        e: common_vendor.f(filterPills.value, (item, k0, i0) => {
           return {
-            a: common_vendor.t(item),
-            b: item,
+            a: common_vendor.t(item.label),
+            b: item.key,
             c: common_vendor.n({
-              active: currentFilter.value === item
+              active: item.active
             }),
-            d: common_vendor.o(($event) => currentFilter.value = item, item)
+            d: common_vendor.o(($event) => handlePillTap(item.key), item.key)
           };
         }),
-        h: common_vendor.f(common_vendor.unref(inspirationCards), (item, k0, i0) => {
-          return {
-            a: item.image,
-            b: common_vendor.t(item.title),
-            c: common_vendor.t(item.desc),
-            d: item.title
-          };
-        }),
-        i: list.value.length
+        f: common_vendor.t(resultTitle.value),
+        g: common_vendor.t(list.value.length),
+        h: list.value.length
       }, list.value.length ? {
-        j: common_vendor.f(list.value, (item, k0, i0) => {
+        i: common_vendor.f(list.value, (item, k0, i0) => {
           return {
             a: item.id,
             b: common_vendor.o(($event) => openDetail(item.id), item.id),
@@ -92,14 +180,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {
-        k: common_vendor.o(goHome),
-        l: common_vendor.p({
+        j: common_vendor.o(goHome),
+        k: common_vendor.p({
           title: "暂无匹配商品",
           desc: "可以尝试更换关键词，或者返回首页查看推荐商品。",
           ["action-text"]: "回首页"
         })
       }, {
-        m: common_vendor.p({
+        l: common_vendor.p({
           current: "search"
         })
       });
