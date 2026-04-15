@@ -1,11 +1,18 @@
 #!/bin/bash
 # 启动前后端项目脚本
-# 后端: Express (node --watch)
-# 前端: UniApp 微信小程序 (uni -p mp-weixin)
+# MySQL + 后端 Express + 前端 UniApp
 
 PROJECT_ROOT="/Users/qq/Desktop/UniAppPencil"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 FRONTEND_DIR="$PROJECT_ROOT/frontend/miniprogram"
+MYSQL_BIN="/usr/local/mysql/bin"
+
+# 从 .env 读取数据库密码
+DB_PASSWORD=$(grep '^DB_PASSWORD=' "$BACKEND_DIR/.env" 2>/dev/null | cut -d'=' -f2)
+if [ -z "$DB_PASSWORD" ]; then
+  echo -e "${RED}未找到数据库密码，请检查 backend/.env${NC}"
+  exit 1
+fi
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -23,6 +30,7 @@ cleanup() {
     kill "$FRONTEND_PID" 2>/dev/null
     echo -e "${GREEN}前端已停止${NC}"
   fi
+  # 注意：MySQL 不随脚本停止，保持后台运行
   exit 0
 }
 
@@ -31,6 +39,28 @@ trap cleanup SIGINT SIGTERM
 echo "========================================"
 echo "       UniAppPencil 项目启动脚本"
 echo "========================================"
+echo ""
+
+# 检查并启动 MySQL
+echo -e "${YELLOW}[MySQL] 检查数据库状态...${NC}"
+if "$MYSQL_BIN/mysqladmin" ping -u root -p$DB_PASSWORD &>/dev/null; then
+  echo -e "${GREEN}[MySQL] 已在运行${NC}"
+else
+  echo -e "${YELLOW}[MySQL] 未运行，正在启动...${NC}"
+  sudo /usr/local/mysql/support-files/mysql.server start
+  # 等待 MySQL 就绪
+  for i in $(seq 1 10); do
+    if "$MYSQL_BIN/mysqladmin" ping -u root -p$DB_PASSWORD &>/dev/null; then
+      echo -e "${GREEN}[MySQL] 启动成功${NC}"
+      break
+    fi
+    if [ "$i" -eq 10 ]; then
+      echo -e "${RED}[MySQL] 启动失败，请手动检查${NC}"
+      exit 1
+    fi
+    sleep 1
+  done
+fi
 echo ""
 
 # 检查 node_modules
