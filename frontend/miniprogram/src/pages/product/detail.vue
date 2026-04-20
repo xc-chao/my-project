@@ -4,6 +4,7 @@ import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import QuantityStepper from '../../components/common/QuantityStepper.vue';
 import { getProductDetail } from '../../services/productService';
+import { getProductFeedbacks, type FeedbackItem } from '../../services/feedbackService';
 import { useCartStore, useUserStore } from '../../store';
 import type { ProductItem } from '../../types/domain';
 
@@ -12,6 +13,7 @@ const selectedSize = ref('');
 const quantity = ref(1);
 const loading = ref(false);
 const previewImage = ref('');
+const feedbacks = ref<FeedbackItem[]>([]);
 const cartStore = useCartStore();
 const userStore = useUserStore();
 
@@ -23,15 +25,32 @@ async function loadDetail(id: string) {
   loading.value = true;
 
   try {
-    const result = await getProductDetail(id);
+    const [result, reviews] = await Promise.all([
+      getProductDetail(id),
+      getProductFeedbacks(id)
+    ]);
     if (result) {
       product.value = result;
       selectedSize.value = result.sizes[0];
       previewImage.value = result.gallery?.[0] || result.cover;
     }
+    feedbacks.value = reviews;
   } finally {
     loading.value = false;
   }
+}
+
+function openWriteReview() {
+  if (!product.value) return;
+
+  if (!userStore.isLoggedIn) {
+    uni.navigateTo({ url: '/pages/auth/login' });
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/feedback/index?productId=${product.value.id}&productTitle=${encodeURIComponent(product.value.title)}`
+  });
 }
 
 async function handleAddToCart() {
@@ -167,6 +186,28 @@ function openChat() {
         <text class="section-title">购买数量</text>
         <QuantityStepper v-model="quantity" />
       </view>
+
+      <!-- 用户评价 -->
+      <view class="card reviews-card">
+        <view class="reviews-head">
+          <text class="section-title">用户评价（{{ feedbacks.length }}）</text>
+          <view class="write-review-btn" @tap="openWriteReview">
+            <text>写评价</text>
+          </view>
+        </view>
+
+        <view v-if="feedbacks.length" class="review-list">
+          <view v-for="item in feedbacks" :key="item.id" class="review-item">
+            <view class="review-meta">
+              <text class="review-user">{{ item.userName }}</text>
+              <text class="review-date">{{ item.createdAt }}</text>
+            </view>
+            <text class="review-content">{{ item.summary }}</text>
+          </view>
+        </view>
+
+        <text v-else class="review-empty">暂无评价，快来写第一条吧</text>
+      </view>
     </scroll-view>
 
     <view class="bottom-bar" v-if="product">
@@ -292,6 +333,70 @@ function openChat() {
 
 .quantity-card {
   margin-bottom: 24rpx;
+}
+
+.reviews-card {
+  margin-bottom: 24rpx;
+}
+
+.reviews-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.write-review-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  background: #f3f4f8;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 8rpx;
+}
+
+.review-item {
+  padding: 20rpx;
+  border-radius: 24rpx;
+  background: #f7f7fa;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-user {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.review-date {
+  font-size: 22rpx;
+  color: #9aa0aa;
+}
+
+.review-content {
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: #3a3d45;
+}
+
+.review-empty {
+  font-size: 24rpx;
+  color: #9aa0aa;
+  margin-top: 8rpx;
 }
 
 .ai-entry {

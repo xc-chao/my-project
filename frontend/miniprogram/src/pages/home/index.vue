@@ -95,7 +95,7 @@ function openMetricSearch(filterKey: ProductSearchFilterKey) {
 
 function openAgent() {
   uni.navigateTo({
-    url: "/pages/chat/index?productId=p_001&title=%E6%99%BA%E8%83%BD%E8%B4%AD%E7%89%A9%E5%8A%A9%E6%89%8B",
+    url: "/pages/chat/index",
   });
 }
 

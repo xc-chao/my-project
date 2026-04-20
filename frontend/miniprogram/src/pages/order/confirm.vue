@@ -146,7 +146,7 @@ onMounted(loadPreview);
 <style scoped lang="scss">
 .body {
   height: calc(100vh - 260rpx);
-  padding: 8rpx 40rpx 220rpx;
+  padding: 8rpx 40rpx 20rpx;
   display: flex;
   flex-direction: column;
   gap: 24rpx;
@@ -273,7 +273,7 @@ onMounted(loadPreview);
 }
 
 .remark-input {
-  width: 100%;
+  width: 90%;
   min-height: 180rpx;
   padding: 24rpx;
   border-radius: 28rpx;

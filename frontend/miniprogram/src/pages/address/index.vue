@@ -4,6 +4,7 @@ import AppHeader from '../../components/AppHeader.vue';
 import AddressCard from '../../components/common/AddressCard.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
 import FormSection from '../../components/common/FormSection.vue';
+import RegionPicker from '../../components/common/RegionPicker.vue';
 import {
   createAddress,
   deleteAddress,
@@ -39,21 +40,22 @@ async function loadList() {
 
 async function handleSubmit() {
   if (!form.name || !form.phone || !form.region || !form.detail) {
-    uni.showToast({
-      title: '请完善地址信息',
-      icon: 'none'
-    });
+    uni.showToast({ title: '请完善地址信息', icon: 'none' });
     return;
   }
 
-  if (editingId.value) {
-    list.value = await updateAddress(editingId.value, form);
-  } else {
-    list.value = await createAddress(form);
+  try {
+    if (editingId.value) {
+      list.value = await updateAddress(editingId.value, form);
+    } else {
+      list.value = await createAddress(form);
+    }
+    editingId.value = '';
+    fillForm();
+    uni.showToast({ title: '保存成功', icon: 'success' });
+  } catch (e: any) {
+    uni.showToast({ title: e?.message || '保存失败，请检查填写内容', icon: 'none' });
   }
-
-  editingId.value = '';
-  fillForm();
 }
 
 function handleEdit(id: string) {
@@ -114,7 +116,7 @@ onMounted(async () => {
       <FormSection title="编辑地址" desc="支持新增、修改和设置默认地址">
         <input v-model="form.name" class="field" placeholder="收货人姓名" />
         <input v-model="form.phone" class="field" placeholder="联系电话" />
-        <input v-model="form.region" class="field" placeholder="省市区" />
+        <RegionPicker v-model="form.region" />
         <textarea v-model="form.detail" class="field textarea" placeholder="详细地址" />
         <view class="toggle-row" @tap="form.isDefault = !form.isDefault">
           <text class="toggle-label">设为默认地址</text>
@@ -142,6 +144,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 16rpx;
   padding: 24rpx;
+  margin-bottom: 20px;
   border-radius: 40rpx;
   background: #ffffff;
 }

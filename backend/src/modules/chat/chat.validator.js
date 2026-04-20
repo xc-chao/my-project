@@ -2,7 +2,7 @@ import { z } from 'zod'; // zod 库用于验证请求参数
 
 export const createSessionSchema = z.object({
   body: z.object({
-    productId: z.string().min(1)
+    productId: z.string().min(1).optional()
   }),
   query: z.any(),
   params: z.any()

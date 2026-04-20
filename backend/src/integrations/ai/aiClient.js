@@ -5,32 +5,88 @@ import { query } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
 
 function buildFallbackAnswer({ question, product }) {
-  const shipText = product?.shipWithinHours ? `${product.shipWithinHours} 小时内可发货` : '发货时效需以商家页面为准';
-  const sizeText = product?.sizes?.length ? `可选尺码/规格：${product.sizes.join('、')}` : '可选尺码信息建议回到商品页进一步确认';
-  const serviceText = product?.serviceTags?.length ? product.serviceTags.join('、') : '支持常见售后与配送咨询';
+  if (!product) {
+    return '抱歉，当前网络不太稳定，暂时无法为你查询。你可以稍后再试，或者换个问题我来帮你看看。';
+  }
 
-  return `我先基于当前商品信息给你一个参考答复：关于“${question}”，${product?.title || '当前商品'}目前${shipText}，${sizeText}，并且 ${serviceText}。如果你想更精准，我也可以继续按“尺码建议 / 材质说明 / 发货售后”任一方向细问。`;
+  const parts = [`关于「${product.title}」`];
+
+  if (product.shipWithinHours) {
+    parts.push(`发货时效约 ${product.shipWithinHours} 小时`);
+  }
+  if (product.sizes?.length) {
+    parts.push(`可选规格：${product.sizes.join('、')}`);
+  }
+  if (product.serviceTags?.length) {
+    parts.push(`服务保障：${product.serviceTags.join('、')}`);
+  }
+
+  parts.push('如果你想了解更多细节，可以试试问我尺码推荐、材质详情或售后政策。');
+
+  return parts.join('，');
 }
 
 function buildProductPrompt(product) {
+  const role = [
+    '## 角色',
+    '你是一位专业、热情的电商导购助手，服务于一款购物小程序。',
+    '你的核心职责是帮助用户做出满意的购买决策，同时提供愉快的对话体验。',
+    '',
+    '## 性格',
+    '- 专业但不生硬，像一位懂行的朋友在给建议',
+    '- 诚实守信，不确定的信息会如实说明，绝不编造',
+    '- 有耐心，用户重复提问也保持友好',
+    '- 适度热情，不过度推销'
+  ].join('\n');
+
+  const rules = [
+    '',
+    '## 回答规范',
+    '- 语言：中文',
+    '- 长度：80~200 字，复杂问题可适当延长但不超过 300 字',
+    '- 结构：先给结论，再给理由，必要时分点说明',
+    '- 语气：口语化、亲切自然，避免机械感',
+    '- 禁止编造商品参数、价格、库存等事实性信息',
+    '- 如果商品信息中没有用户问的内容，诚实回答「这个信息商品页暂未提供，建议联系商家客服确认」'
+  ].join('\n');
+
+  const boundaries = [
+    '',
+    '## 话题边界',
+    '- 用户提问与当前商品相关：正常回答，充分利用下方商品信息',
+    '- 用户提问与购物/电商相关但不涉及当前商品（如比价、其他品牌推荐）：简要回应，然后自然引导回当前商品',
+    '- 用户闲聊或提问完全无关话题（如天气、新闻、写代码）：礼貌说明「我是这款商品的专属导购助手，这个问题可能帮不上忙，不过关于这款商品的任何疑问我都很在行，随时问我~」',
+    '- 用户发送不当内容：不回应具体内容，温和引导回购物话题'
+  ].join('\n');
+
   if (!product) {
-    return '当前没有商品上下文，请作为电商导购助手，简洁回答用户问题。';
+    return [
+      role,
+      rules,
+      boundaries,
+      '',
+      '## 当前状态',
+      '当前没有绑定具体商品，请作为通用电商导购助手回答用户的购物相关问题。',
+      '如果用户问到具体商品信息，引导用户从商品详情页进入咨询。'
+    ].join('\n');
   }
 
-  return [
-    '你是电商小程序里的商品导购助手，请只围绕当前商品回答。',
-    '回答风格要求：中文、简洁、具体、避免编造、长度控制在 80~160 字。',
-    `商品标题：${product.title}`,
-    `商品副标题：${product.subtitle || '无'}`,
-    `商品分类：${product.category || '未分类'}`,
-    `商品价格：¥${product.price || 0}`,
-    `商品卖点：${product.detail || '无'}`,
-    `商品徽标：${product.badges?.join('、') || '无'}`,
-    `可选尺码：${product.sizes?.join('、') || '无'}`,
-    `服务标签：${product.serviceTags?.join('、') || '无'}`,
-    `好评率：${product.praiseRate || 0}%`,
-    `发货时效：${product.shipWithinHours || 0} 小时`
+  const productInfo = [
+    '',
+    '## 当前商品信息（以下为事实，回答时据此作答）',
+    `- 商品标题：${product.title}`,
+    `- 副标题：${product.subtitle || '无'}`,
+    `- 分类：${product.category || '未分类'}`,
+    `- 价格：¥${product.price || 0}`,
+    `- 商品卖点：${product.detail || '无'}`,
+    `- 商品徽标：${product.badges?.join('、') || '无'}`,
+    `- 可选尺码/规格：${product.sizes?.join('、') || '无'}`,
+    `- 服务保障：${product.serviceTags?.join('、') || '无'}`,
+    `- 好评率：${product.praiseRate || 0}%`,
+    `- 发货时效：${product.shipWithinHours ? product.shipWithinHours + ' 小时内发货' : '未标注'}`
   ].join('\n');
+
+  return [role, rules, boundaries, productInfo].join('\n');
 }
 
 function getProviderConfig() {

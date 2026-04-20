@@ -61,6 +61,12 @@
       }
     },
     {
+      "path": "pages/feedback/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/admin/index",
       "style": {
         "navigationStyle": "custom"

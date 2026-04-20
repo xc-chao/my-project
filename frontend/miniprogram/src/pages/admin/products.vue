@@ -32,6 +32,12 @@ const summaryCards = computed(() => {
   ];
 });
 
+const stockModal = ref<{ visible: boolean; item: ProductItem | null; value: string }>({
+  visible: false,
+  item: null,
+  value: ''
+});
+
 const filteredProducts = computed(() => {
   if (currentFilter.value === 'all') {
     return products.value;
@@ -102,23 +108,31 @@ async function toggleProductStatus(item: ProductItem) {
   }
 }
 
-async function replenishStock(item: ProductItem) {
-  try {
-    const updated = await updateAdminProduct(item.id, {
-      stock: item.stock + 10
-    });
+function openStockModal(item: ProductItem) {
+  stockModal.value = { visible: true, item, value: '' };
+}
 
+function closeStockModal() {
+  stockModal.value = { visible: false, item: null, value: '' };
+}
+
+async function confirmReplenish() {
+  const item = stockModal.value.item;
+  const addAmount = parseInt(stockModal.value.value, 10);
+
+  if (!item || isNaN(addAmount) || addAmount <= 0) {
+    uni.showToast({ title: '请输入有效的补货数量', icon: 'none' });
+    return;
+  }
+
+  try {
+    const updated = await updateAdminProduct(item.id, { stock: item.stock + addAmount });
     applyProduct(updated);
-    uni.showToast({
-      title: '库存 +10',
-      icon: 'none'
-    });
+    closeStockModal();
+    uni.showToast({ title: `库存 +${addAmount}`, icon: 'none' });
   } catch (error) {
     const message = error instanceof Error ? error.message : '库存更新失败';
-    uni.showToast({
-      title: message,
-      icon: 'none'
-    });
+    uni.showToast({ title: message, icon: 'none' });
   }
 }
 
@@ -214,7 +228,7 @@ onShow(loadProducts);
                 <view class="ghost-btn" @tap.stop="openEdit(item.id)">
                   <text>编辑</text>
                 </view>
-                <view class="ghost-btn" @tap.stop="replenishStock(item)">
+                <view class="ghost-btn" @tap.stop="openStockModal(item)">
                   <text>补库存</text>
                 </view>
                 <view class="primary-btn" @tap.stop="toggleProductStatus(item)">
@@ -234,6 +248,25 @@ onShow(loadProducts);
         />
       </view>
     </scroll-view>
+
+    <!-- 补库存弹窗 -->
+    <view v-if="stockModal.visible" class="modal-mask" @tap.self="closeStockModal">
+      <view class="modal-card">
+        <text class="modal-title">补库存</text>
+        <text class="modal-desc">当前库存：{{ stockModal.item?.stock ?? 0 }}</text>
+        <input
+          class="modal-input"
+          type="number"
+          placeholder="请输入补货数量"
+          :value="stockModal.value"
+          @input="stockModal.value = $event.detail.value"
+        />
+        <view class="modal-actions">
+          <view class="ghost-btn" @tap="closeStockModal"><text>取消</text></view>
+          <view class="primary-btn" @tap="confirmReplenish"><text>确认补货</text></view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -468,5 +501,56 @@ onShow(loadProducts);
 .primary-btn {
   background: #17181c;
   color: #ffffff;
+}
+
+.modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-card {
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 40rpx;
+  padding: 48rpx 40rpx 36rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111111;
+}
+
+.modal-desc {
+  font-size: 26rpx;
+  color: #6e7380;
+}
+
+.modal-input {
+  height: 88rpx;
+  padding: 0 28rpx;
+  border-radius: 28rpx;
+  background: #f3f4f8;
+  font-size: 28rpx;
+  color: #111111;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 8rpx;
+}
+
+.modal-actions .ghost-btn,
+.modal-actions .primary-btn {
+  flex: 1;
 }
 </style>

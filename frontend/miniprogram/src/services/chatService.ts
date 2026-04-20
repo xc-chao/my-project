@@ -13,12 +13,10 @@ export interface ChatSession {
   messages: ChatMessage[];
 }
 
-export function createChatSession(productId: string) {
+export function createChatSession(productId?: string) {
   return request<ChatSession>('/chat/sessions', {
     method: 'POST',
-    data: {
-      productId
-    }
+    data: productId ? { productId } : {}
   });
 }
 

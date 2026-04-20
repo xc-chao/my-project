@@ -29,11 +29,11 @@ const routeKey = ref('');
 const initialized = ref(false);
 let initTaskId = 0;
 
-const quickQuestions = computed(() => [
-  '这款商品怎么选尺码？',
-  '这款适合日常通勤吗？',
-  '多久可以发货？'
-]);
+const quickQuestions = computed(() =>
+  productId.value
+    ? ['这款商品怎么选尺码？', '这款适合日常通勤吗？', '多久可以发货？']
+    : ['有什么值得买的推荐吗？', '怎么选合适的尺码？', '退换货政策是什么？']
+);
 function getHistoryThumb(session: ChatSession) {
   return session.productCover || pageImageMap.chat.historyThumb;
 }
@@ -52,11 +52,12 @@ function decodeTitle(title: unknown) {
 
 function normalizeQuery(query?: Record<string, any>): ChatPageQuery {
   const nextMode: ChatPageMode = query?.mode === 'history' ? 'history' : 'chat';
-  const nextTitle = decodeTitle(query?.title) || (nextMode === 'history' ? '咨询记录' : '当前商品');
+  const nextProductId = typeof query?.productId === 'string' ? query.productId : '';
+  const nextTitle = decodeTitle(query?.title) || (nextMode === 'history' ? '咨询记录' : (nextProductId ? '当前商品' : 'AI 购物助手'));
 
   return {
     mode: nextMode,
-    productId: typeof query?.productId === 'string' ? query.productId : '',
+    productId: nextProductId,
     title: nextTitle
   };
 }
@@ -93,11 +94,11 @@ function getH5Query() {
 }
 
 async function ensureSession(taskId: number) {
-  if (mode.value === 'history' || !productId.value || sessionId.value) {
+  if (mode.value === 'history' || sessionId.value) {
     return;
   }
 
-  const session = await createChatSession(productId.value);
+  const session = await createChatSession(productId.value || undefined);
 
   if (taskId !== initTaskId) {
     return;
@@ -164,6 +165,8 @@ async function initializePage(
   initialized.value = true;
 }
 
+const aiLoading = ref(false);
+
 async function handleSend(question?: string) {
   const finalQuestion = (question || inputValue.value).trim();
 
@@ -172,11 +175,21 @@ async function handleSend(question?: string) {
   }
 
   sending.value = true;
+  inputValue.value = '';
+
+  // 立即展示用户消息 + AI 加载占位
+  messages.value.push({ role: 'user', content: finalQuestion });
+  aiLoading.value = true;
 
   try {
     const result = await sendChatMessage(sessionId.value, finalQuestion);
+    aiLoading.value = false;
     messages.value = result.messages;
-    inputValue.value = '';
+  } catch {
+    aiLoading.value = false;
+    // 请求失败时移除用户刚发的消息，恢复输入
+    messages.value.pop();
+    inputValue.value = finalQuestion;
   } finally {
     sending.value = false;
   }
@@ -231,10 +244,10 @@ onUnmounted(() => {
       <view class="intro-card">
         <view class="intro-top">
           <view class="intro-copy">
-            <text class="intro-badge">{{ mode === 'history' ? '会话记录' : '商品上下文已接入' }}</text>
+            <text class="intro-badge">{{ mode === 'history' ? '会话记录' : (productId ? '商品上下文已接入' : 'AI 购物助手') }}</text>
             <text class="intro-title">{{ productTitle }}</text>
             <text class="intro-text">
-              {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' }}
+              {{ mode === 'history' ? '这里展示你最近的 AI 咨询会话摘要。' : (productId ? '你可以直接提问尺码、材质、物流、售后政策，AI 会结合当前商品信息回答。' : '你可以问我任何购物相关的问题，比如选购建议、尺码推荐、物流售后等。') }}
             </text>
           </view>
         </view>
@@ -260,6 +273,12 @@ onUnmounted(() => {
             :key="`${item.role}-${index}`"
             :role="item.role"
             :content="item.content"
+          />
+          <ChatBubble
+            v-if="aiLoading"
+            role="assistant"
+            content=""
+            :loading="true"
           />
         </view>
       </scroll-view>

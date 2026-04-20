@@ -4,6 +4,10 @@ import { chatRepository } from './chat.repository.js';
 
 export const chatService = {
   async createSession(userId, productId) {
+    if (!productId) {
+      return chatRepository.createSession(userId, null);
+    }
+
     const product = await chatRepository.getProductContext(productId);
 
     if (!product) {
@@ -24,7 +28,9 @@ export const chatService = {
     }
 
     await chatRepository.appendMessage(session.id, 'user', payload.question);
-    const product = await chatRepository.getProductContext(session.productId);
+    const product = session.productId
+      ? await chatRepository.getProductContext(session.productId)
+      : null;
     const aiResult = await askAi({
       question: payload.question,
       product

@@ -17,11 +17,10 @@ export async function request<T>(url: string, options: RequestOptions = {}): Pro
       url: `${BASE_URL}${url}`,
       method: method as any,
       data: options.data,
-      header: token
-        ? {
-            Authorization: `Bearer ${token}`
-          }
-        : {},
+      header: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(method !== 'GET' ? { 'Content-Type': 'application/json' } : {})
+      },
       success: (response) => {
         const payload = response.data as any;
 

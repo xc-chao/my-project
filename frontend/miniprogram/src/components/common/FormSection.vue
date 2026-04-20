@@ -21,6 +21,7 @@ defineProps<{
   flex-direction: column;
   padding: 28rpx;
   margin-bottom: 20rpx;
+  margin-top: 20px;
   border-radius: 40rpx;
   background: #ffffff;
 }

@@ -130,7 +130,10 @@ export const chatRepository = {
   },
   async createSession(userId, product) {
     const sessionId = createId('chat');
-    const openingMessage = `你好，这里是 AI 购物助手，我已经拿到 ${product.title} 的上下文，可以直接问我尺码、材质、物流和售后问题。`;
+    const hasProduct = product !== null;
+    const openingMessage = hasProduct
+      ? `你好，这里是 AI 购物助手，我已经拿到 ${product.title} 的上下文，可以直接问我尺码、材质、物流和售后问题。`
+      : '你好，我是 AI 购物助手，有什么可以帮你的？你可以问我任何购物相关的问题。';
 
     await withTransaction(async (connection) => {
       await connection.query(
@@ -138,7 +141,13 @@ export const chatRepository = {
           INSERT INTO chat_sessions (id, user_id, product_id, title, product_cover)
           VALUES (?, ?, ?, ?, ?)
         `,
-        [sessionId, userId, product.id, product.title, product.cover]
+        [
+          sessionId,
+          userId,
+          hasProduct ? product.id : null,
+          hasProduct ? product.title : 'AI 购物助手',
+          hasProduct ? product.cover : null
+        ]
       );
 
       await connection.query(

@@ -3,7 +3,6 @@ import { computed, reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import AppHeader from '../../components/AppHeader.vue';
 import FormSection from '../../components/common/FormSection.vue';
-import { assetCatalog } from '../../constants/page-image-map';
 import type { ProductItem } from '../../types/domain';
 import {
   createAdminProduct,
@@ -39,19 +38,7 @@ const saleStatusOptions: Array<{ key: AdminProductPayload['saleStatus']; label: 
   { key: 'on_sale', label: '在售' },
   { key: 'off_shelf', label: '下架' }
 ];
-const coverOptions = [
-  assetCatalog.products.featured[0],
-  assetCatalog.products.featured[3],
-  assetCatalog.products.featured[5],
-  assetCatalog.products.featured[8],
-  assetCatalog.products.featured[11],
-  assetCatalog.products.featured[15]
-].filter(Boolean);
-const galleryOptions = [
-  assetCatalog.details.featured[0],
-  assetCatalog.details.featured[2],
-  assetCatalog.details.featured[4],
-].filter(Boolean);
+const MAX_GALLERY = 6;
 
 const form = reactive({
   title: '',
@@ -60,7 +47,7 @@ const form = reactive({
   price: '',
   originalPrice: '',
   stock: '',
-  cover: coverOptions[0] || '',
+  cover: '',
   badgesText: '',
   sizesText: '',
   detail: '',
@@ -132,12 +119,6 @@ function resetGalleryDrag() {
   dragGalleryY.value = 0;
 }
 
-function fillDefaultGallery(cover = form.cover) {
-  const nextCover = cover.trim();
-  const gallery = [nextCover, ...galleryOptions.slice(0, 2)].filter(Boolean);
-  setGalleryList(gallery);
-}
-
 function fillForm(item?: ProductItem) {
   form.title = item?.title || '';
   form.subtitle = item?.subtitle || '';
@@ -145,17 +126,13 @@ function fillForm(item?: ProductItem) {
   form.price = item ? String(item.price) : '';
   form.originalPrice = item ? String(item.originalPrice) : '';
   form.stock = item ? String(item.stock) : '';
-  form.cover = item?.cover || coverOptions[0] || '';
+  form.cover = item?.cover || '';
   form.badgesText = item?.badges?.join('，') || '';
   form.sizesText = item?.sizes?.join('，') || '';
   form.detail = item?.detail || '';
   form.galleryText = item?.gallery?.length ? item.gallery.join('\n') : '';
   form.saleStatus = item?.saleStatus || 'on_sale';
   currentSales.value = item?.sales || 0;
-
-  if (!form.galleryText && form.cover) {
-    fillDefaultGallery(form.cover);
-  }
 }
 
 async function loadDetail(id: string) {
@@ -179,29 +156,6 @@ async function loadDetail(id: string) {
   }
 }
 
-function syncCoverToGallery(cover = form.cover) {
-  const nextCover = cover.trim();
-
-  if (!nextCover) {
-    uni.showToast({
-      title: '请先填写封面图地址',
-      icon: 'none'
-    });
-    return;
-  }
-
-  form.cover = nextCover;
-  const current = parseList(form.galleryText);
-
-  if (!current.length) {
-    fillDefaultGallery(nextCover);
-    return;
-  }
-
-  const rest = current.filter((item, index) => index !== 0 && item !== nextCover);
-  setGalleryList([nextCover, ...rest]);
-}
-
 function showConfirmModal(title: string, content: string) {
   return new Promise<UniApp.ShowModalRes>((resolve, reject) => {
     uni.showModal({
@@ -216,19 +170,15 @@ function showConfirmModal(title: string, content: string) {
 async function maybeSyncCoverToGallery(nextCover: string) {
   const current = parseList(form.galleryText);
 
-  if (!current.length) {
-    fillDefaultGallery(nextCover);
-    return;
-  }
-
-  if (current[0] === nextCover) {
+  if (!current.length || current[0] === nextCover) {
     return;
   }
 
   const result = await showConfirmModal('同步图集首图', '封面已变更，是否将图集第一张同步为新的封面图？');
 
   if (result.confirm) {
-    syncCoverToGallery(nextCover);
+    const rest = current.filter((item, index) => index !== 0 && item !== nextCover);
+    setGalleryList([nextCover, ...rest]);
   }
 }
 
@@ -263,35 +213,16 @@ function chooseImagesFromAlbum(count: number) {
   });
 }
 
-async function selectCover(image: string) {
-  if (!image || form.cover === image) {
-    return;
-  }
-
-  form.cover = image;
-  await maybeSyncCoverToGallery(image);
-}
-
-function appendGalleryImage(image: string) {
-  const next = parseList(form.galleryText);
-
-  if (!next.includes(image)) {
-    next.push(image);
-  }
-
-  setGalleryList(next);
-}
-
 function appendGalleryImages(images: string[]) {
   const next = parseList(form.galleryText);
 
-  images.forEach((image) => {
+  for (const image of images) {
     const normalized = image.trim();
-
     if (normalized && !next.includes(normalized)) {
       next.push(normalized);
     }
-  });
+    if (next.length >= MAX_GALLERY) break;
+  }
 
   setGalleryList(next);
 }
@@ -396,26 +327,28 @@ async function chooseGalleryFromAlbum() {
     return;
   }
 
+  const current = parseList(form.galleryText);
+  const remaining = MAX_GALLERY - current.length;
+
+  if (remaining <= 0) {
+    uni.showToast({ title: `最多上传 ${MAX_GALLERY} 张图`, icon: 'none' });
+    return;
+  }
+
   choosingGallery.value = true;
 
   try {
-    const images = await chooseImagesFromAlbum(6);
+    const images = await chooseImagesFromAlbum(remaining);
 
     if (!images.length) {
       return;
     }
 
     appendGalleryImages(images);
-    uni.showToast({
-      title: `已追加 ${images.length} 张图`,
-      icon: 'none'
-    });
+    uni.showToast({ title: `已追加 ${images.length} 张图`, icon: 'none' });
   } catch (error) {
     if (!isChooseImageCanceled(error)) {
-      uni.showToast({
-        title: '图集选择失败',
-        icon: 'none'
-      });
+      uni.showToast({ title: '图集选择失败', icon: 'none' });
     }
   } finally {
     choosingGallery.value = false;
@@ -478,7 +411,7 @@ function buildPayload() {
     badges: badges.length ? badges : ['后台新增'],
     sizes,
     detail,
-    gallery: gallery.length ? gallery : [cover, ...galleryOptions.slice(0, 2)],
+    gallery: gallery.length ? gallery : [cover],
     saleStatus: form.saleStatus
   } satisfies AdminProductPayload;
 }
@@ -602,55 +535,25 @@ onLoad((query) => {
         <textarea v-model="form.detail" class="field textarea" placeholder="商品说明" />
       </FormSection>
 
-      <FormSection title="封面与图集" desc="支持输入地址、使用预设素材，也支持从系统相册选择图片">
-        <input v-model="form.cover" class="field" placeholder="封面图地址" @blur="form.cover = form.cover.trim()" />
-        <image v-if="form.cover" class="preview-image" :src="form.cover" mode="aspectFill" />
-
-        <text class="sub-label">封面预设</text>
-        <view class="image-grid">
-          <image
-            v-for="item in coverOptions"
-            :key="item"
-            :class="['preset-image', { active: form.cover === item }]"
-            :src="item"
-            mode="aspectFill"
-            @tap="selectCover(item)"
-          />
-        </view>
-
-        <view class="helper-row">
+      <FormSection title="封面与图集" desc="从相册选择封面（1张）和图集（最多6张），每张可单独删除">
+        <view class="cover-area">
+          <image v-if="form.cover" class="preview-image" :src="form.cover" mode="aspectFill" />
+          <view v-else class="cover-placeholder">
+            <text>暂无封面</text>
+          </view>
           <view :class="['ghost-btn', { disabled: choosingCover }]" @tap="chooseCoverFromAlbum">
             <text>{{ choosingCover ? '选择中...' : '从相册选封面' }}</text>
           </view>
-          <view class="ghost-btn" @tap="syncCoverToGallery(form.cover)">
-            <text>同步为图集首图</text>
-          </view>
-          <view class="ghost-btn" @tap="fillDefaultGallery(form.cover)">
-            <text>生成默认图集</text>
-          </view>
         </view>
 
-        <textarea
-          v-model="form.galleryText"
-          class="field textarea gallery-textarea"
-          placeholder="图集地址，一行一张或用逗号分隔"
-        />
-
-        <text class="sub-label">细节图快捷追加</text>
-        <view class="image-grid">
-          <image
-            v-for="item in galleryOptions"
-            :key="`gallery-${item}`"
-            class="preset-image"
-            :src="item"
-            mode="aspectFill"
-            @tap="appendGalleryImage(item)"
-          />
-        </view>
-
-        <view class="helper-row">
-          <view :class="['ghost-btn', { disabled: choosingGallery }]" @tap="chooseGalleryFromAlbum">
-            <text>{{ choosingGallery ? '选择中...' : '从相册追加图集' }}</text>
+        <view class="gallery-header">
+          <text class="sub-label">图集（{{ galleryPreview.length }}/{{ MAX_GALLERY }}）</text>
+          <view
+            v-if="galleryPreview.length < MAX_GALLERY"
+            :class="['ghost-btn', 'ghost-btn--sm', { disabled: choosingGallery }]"
+            @tap="chooseGalleryFromAlbum"
+          >
+            <text>{{ choosingGallery ? '选择中...' : '+ 从相册添加' }}</text>
           </view>
         </view>
 
@@ -689,6 +592,10 @@ onLoad((query) => {
             </view>
           </movable-view>
         </movable-area>
+
+        <view v-else class="gallery-empty">
+          <text>暂无图集，点击上方按钮从相册添加</text>
+        </view>
       </FormSection>
 
       <view :class="['submit-btn', { disabled: saving || loading }]" @tap="handleSubmit">
@@ -735,15 +642,12 @@ onLoad((query) => {
 
 .hero-meta,
 .pill-row,
-.field-grid,
-.image-grid,
-.helper-row {
+.field-grid {
   display: flex;
 }
 
 .hero-meta,
-.pill-row,
-.image-grid {
+.pill-row {
   gap: 14rpx;
   flex-wrap: wrap;
 }
@@ -776,10 +680,6 @@ onLoad((query) => {
   padding: 24rpx;
 }
 
-.gallery-textarea {
-  min-height: 220rpx;
-}
-
 .meta-pill,
 .option-pill {
   padding: 12rpx 20rpx;
@@ -808,22 +708,9 @@ onLoad((query) => {
   margin-top: 18rpx;
 }
 
-.preset-image,
 .preview-thumb {
   border-radius: 24rpx;
   background: #eef0f4;
-}
-
-.preset-image {
-  width: calc((100% - 28rpx) / 3);
-  height: 160rpx;
-}
-
-.preset-image.active {
-  box-shadow: 0 0 0 4rpx rgba(23, 24, 28, 0.12);
-}
-
-.preview-thumb {
   width: 100%;
   height: 132rpx;
 }
@@ -832,12 +719,6 @@ onLoad((query) => {
   width: 100%;
   height: 100%;
   position: relative;
-}
-
-.helper-row {
-  margin-top: 18rpx;
-  gap: 14rpx;
-  flex-wrap: wrap;
 }
 
 .ghost-btn,
@@ -858,8 +739,51 @@ onLoad((query) => {
   color: #111111;
 }
 
+.ghost-btn--sm {
+  height: 64rpx;
+  min-width: 0;
+  padding: 0 22rpx;
+  font-size: 22rpx;
+}
+
 .ghost-btn.disabled {
   opacity: 0.6;
+}
+
+.cover-area {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 8rpx;
+}
+
+.gallery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+}
+
+.gallery-empty {
+  margin-top: 16rpx;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  background: #f7f7fa;
+  text-align: center;
+  font-size: 24rpx;
+  color: #9aa0aa;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 320rpx;
+  border-radius: 28rpx;
+  background: #f3f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: #9aa0aa;
 }
 
 .preview-guide {
