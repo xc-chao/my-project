@@ -116,6 +116,12 @@ function closeStockModal() {
   stockModal.value = { visible: false, item: null, value: '' };
 }
 
+function updateStockModalValue(event: Event) {
+  const detail = (event as Event & { detail?: { value?: string | number } }).detail;
+  const target = event.target as HTMLInputElement | null;
+  stockModal.value.value = String(detail?.value ?? target?.value ?? '');
+}
+
 async function confirmReplenish() {
   const item = stockModal.value.item;
   const addAmount = parseInt(stockModal.value.value, 10);
@@ -259,7 +265,7 @@ onShow(loadProducts);
           type="number"
           placeholder="请输入补货数量"
           :value="stockModal.value"
-          @input="stockModal.value = $event.detail.value"
+          @input="updateStockModalValue"
         />
         <view class="modal-actions">
           <view class="ghost-btn" @tap="closeStockModal"><text>取消</text></view>

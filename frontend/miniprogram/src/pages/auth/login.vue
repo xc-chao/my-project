@@ -9,10 +9,18 @@ const supportVisuals = pageImageMap.auth.support;
 const trustAvatars = pageImageMap.auth.trustAvatars;
 
 async function handleLogin(identity: UserRole = 'user') {
-  await userStore.login(identity);
-  uni.switchTab({
-    url: identity === 'admin' ? '/pages/profile/index' : '/pages/home/index'
-  });
+  try {
+    await userStore.login(identity);
+    uni.switchTab({
+      url: identity === 'admin' ? '/pages/profile/index' : '/pages/home/index'
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '登录失败';
+    uni.showToast({
+      title: message,
+      icon: 'none'
+    });
+  }
 }
 
 function handlePhoneLogin() {

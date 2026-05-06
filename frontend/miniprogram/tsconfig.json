@@ -5,6 +5,10 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "skipLibCheck": true,
+    "lib": ["ES2020", "DOM"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "jsx": "preserve",
     "types": [
       "@dcloudio/types",

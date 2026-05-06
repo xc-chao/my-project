@@ -230,7 +230,7 @@ function openChat() {
 <style scoped lang="scss">
 .detail-scroll {
   height: calc(100vh - 320rpx);
-  padding: 16rpx 40rpx 40rpx;
+  padding: 16rpx 40rpx 20rpx;
 }
 
 .cover {
