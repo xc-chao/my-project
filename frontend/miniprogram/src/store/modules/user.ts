@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAuthProfile, loginWithWechat, logoutAuth, updateAuthProfile } from '../../services/authService';
+import { getAuthProfile, loginForDevelopment, loginWithWechat, logoutAuth, updateAuthProfile } from '../../services/authService';
 import type { UserProfile, UserRole } from '../../types/domain';
 
 const TOKEN_KEY = 'shopping_access_token';
@@ -64,6 +64,19 @@ export const useUserStore = defineStore('user', {
 
         const result = await loginWithWechat({
           code: loginResult.code
+        });
+
+        this.setSession(result.user, result.accessToken);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async devLogin(role: UserRole = 'user') {
+      this.loading = true;
+
+      try {
+        const result = await loginForDevelopment({
+          role
         });
 
         this.setSession(result.user, result.accessToken);

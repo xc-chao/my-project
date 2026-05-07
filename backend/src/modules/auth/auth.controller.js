@@ -8,6 +8,11 @@ export const authController = {
     req.session.userId = result.user.id;
     return ok(res, result, '登录成功');
   }),
+  devLogin: asyncHandler(async (req, res) => {
+    const result = await authService.loginForDevelopment(req.validated.body);
+    req.session.userId = result.user.id;
+    return ok(res, result, '开发登录成功');
+  }),
   smsCode: asyncHandler(async (req, res) => {
     const result = await authService.sendSmsCode(req.validated.body.phone);
     return ok(res, result, '验证码已发送');

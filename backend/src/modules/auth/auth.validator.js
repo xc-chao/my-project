@@ -8,6 +8,14 @@ export const wechatLoginSchema = z.object({
   params: z.any()
 });
 
+export const devLoginSchema = z.object({
+  body: z.object({
+    role: z.enum(['user', 'admin']).default('user')
+  }),
+  query: z.any(),
+  params: z.any()
+});
+
 export const smsCodeSchema = z.object({
   body: z.object({
     phone: z.string().regex(/^1\d{10}$/)

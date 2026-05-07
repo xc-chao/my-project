@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useUserStore } from '../../store';
 import { pageImageMap } from '../../constants/page-image-map';
+import type { UserRole } from '../../types/domain';
 
 const userStore = useUserStore();
 const statusBarHeight = uni.getSystemInfoSync().statusBarHeight || 0;
 const supportVisuals = pageImageMap.auth.support;
 const trustAvatars = pageImageMap.auth.trustAvatars;
+const isH5 = process.env.UNI_PLATFORM === 'h5';
 
 async function handleLogin() {
   try {
@@ -13,6 +15,24 @@ async function handleLogin() {
     const target = userStore.isAdmin ? '/pages/admin/index' : '/pages/home/index';
     if (userStore.isAdmin) {
       uni.reLaunch({ url: target });
+    } else {
+      uni.switchTab({ url: target });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '登录失败';
+    uni.showToast({
+      title: message,
+      icon: 'none'
+    });
+  }
+}
+
+async function handleDevLogin(role: UserRole) {
+  try {
+    await userStore.devLogin(role);
+    const target = userStore.isAdmin ? '/pages/admin/index' : '/pages/home/index';
+    if (userStore.isAdmin) {
+      uni.navigateTo({ url: target });
     } else {
       uni.switchTab({ url: target });
     }
@@ -61,6 +81,15 @@ function goHome() {
 
       <view class="primary-btn" :class="{ loading: userStore.loading }" @tap="handleLogin">
         <text>{{ userStore.loading ? '登录中...' : '微信一键登录' }}</text>
+      </view>
+
+      <view v-if="isH5" class="dev-login-row">
+        <view class="dev-login-btn" @tap="handleDevLogin('user')">
+          <text>买家测试登录</text>
+        </view>
+        <view class="dev-login-btn admin" @tap="handleDevLogin('admin')">
+          <text>管理员测试登录</text>
+        </view>
       </view>
 
       <view class="secondary-btn" @tap="goHome">
@@ -206,6 +235,31 @@ function goHome() {
   border: 1px solid #e7e9ee;
   font-size: 30rpx;
   font-weight: 700;
+}
+
+.dev-login-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.dev-login-btn {
+  flex: 1;
+  height: 96rpx;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111111;
+  background: #ffffff;
+  border: 1px solid #dfe3ea;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.dev-login-btn.admin {
+  color: #ffffff;
+  background: #2f5cff;
+  border-color: #2f5cff;
 }
 
 .tips-title {

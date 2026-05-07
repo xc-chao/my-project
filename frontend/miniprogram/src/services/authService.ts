@@ -19,6 +19,13 @@ export function loginWithWechat(payload: { code: string; nickname?: string }) {
   });
 }
 
+export function loginForDevelopment(payload: { role: UserRole }) {
+  return request<LoginResponse>('/auth/dev-login', {
+    method: 'POST',
+    data: payload
+  });
+}
+
 export function getAuthProfile() {
   return request<UserProfile>('/auth/profile');
 }

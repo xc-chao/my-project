@@ -4,6 +4,7 @@ import { validate } from '../../middleware/validateMiddleware.js';
 import { createRateLimitMiddleware } from '../../middleware/rateLimitMiddleware.js';
 import { requireAuth } from '../../middleware/authMiddleware.js';
 import {
+  devLoginSchema,
   profileUpdateSchema,
   smsCodeSchema,
   smsLoginSchema,
@@ -17,6 +18,12 @@ authRouter.post(
   createRateLimitMiddleware('auth:wechat-login'),
   validate(wechatLoginSchema),
   authController.wechatLogin
+);
+authRouter.post(
+  '/dev-login',
+  createRateLimitMiddleware('auth:dev-login'),
+  validate(devLoginSchema),
+  authController.devLogin
 );
 authRouter.post(
   '/sms-code',

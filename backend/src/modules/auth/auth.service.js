@@ -65,6 +65,19 @@ async function fetchWechatSession(code) {
 }
 
 export const authService = {
+  async loginForDevelopment(payload) {
+    if (env.nodeEnv !== 'development') {
+      throw new AppError(403, 'DEV_LOGIN_DISABLED', '开发登录仅允许在开发环境使用');
+    }
+
+    const user = await authRepository.findByRole(payload.role || 'user');
+
+    if (!user) {
+      throw new AppError(404, 'USER_NOT_FOUND', '未找到可用的测试账号');
+    }
+
+    return buildSessionPayload(user);
+  },
   async loginWithWechat(payload) {
     const session = await fetchWechatSession(payload.code);
     const isAdmin = env.wechatAdminOpenids.includes(session.openid);
