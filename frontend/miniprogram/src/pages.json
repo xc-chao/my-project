@@ -7,13 +7,13 @@
   },
   "pages": [
     {
-      "path": "pages/auth/login",
+      "path": "pages/home/index",
       "style": {
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/home/index",
+      "path": "pages/auth/login",
       "style": {
         "navigationStyle": "custom"
       }

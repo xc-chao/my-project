@@ -61,10 +61,12 @@ function handleAdminLogin() {
         </view>
       </view>
 
-      <button class="primary-btn" :loading="userStore.loading" @tap="handleLogin('user')">
-        微信一键登录
-      </button>
-      <button class="secondary-btn" @tap="handlePhoneLogin">手机号验证码登录</button>
+      <view class="primary-btn" :class="{ loading: userStore.loading }" @tap="handleLogin('user')">
+        <text>{{ userStore.loading ? '登录中' : '微信一键登录' }}</text>
+      </view>
+      <view class="secondary-btn" @tap="handlePhoneLogin">
+        <text>手机号验证码登录</text>
+      </view>
       <view class="admin-entry" @tap="handleAdminLogin">
         <text class="admin-entry-title">管理员演示登录</text>
         <text class="admin-entry-desc">登录后可在“我的”页订单状态下方查看后台信息管理入口</text>
@@ -205,11 +207,18 @@ function handleAdminLogin() {
   font-size: 30rpx;
   font-weight: 700;
   line-height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primary-btn {
   color: #ffffff;
   background: #17181c;
+}
+
+.primary-btn.loading {
+  opacity: 0.75;
 }
 
 .secondary-btn {

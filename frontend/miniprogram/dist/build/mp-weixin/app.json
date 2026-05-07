@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/auth/login",
     "pages/home/index",
+    "pages/auth/login",
     "pages/search/index",
     "pages/product/detail",
     "pages/chat/index",
