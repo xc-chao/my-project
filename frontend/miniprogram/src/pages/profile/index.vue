@@ -263,7 +263,8 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   gap: 10rpx;
-  width: calc(50% - 9rpx);
+  width: calc((100% - 18rpx) / 2);
+  box-sizing: border-box;
   padding: 18rpx;
   border-radius: 28rpx;
   background: #f7f7fa;
