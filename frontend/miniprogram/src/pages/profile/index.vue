@@ -169,7 +169,7 @@ onShow(() => {
 }
 
 .content {
-  padding: 0 40rpx 180rpx;
+  padding: 0 40rpx calc(220rpx + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 24rpx;

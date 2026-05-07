@@ -1,6 +1,4 @@
 {
   "navigationStyle": "custom",
-  "usingComponents": {
-    "app-header": "../../components/AppHeader"
-  }
+  "usingComponents": {}
 }

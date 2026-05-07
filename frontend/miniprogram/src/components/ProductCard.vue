@@ -1,18 +1,30 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { productVisualMap } from '../constants/page-image-map';
 import type { ProductItem } from '../types/domain';
 
-defineProps<{
+const props = defineProps<{
   item: ProductItem;
 }>();
 
 const emit = defineEmits<{
   (event: 'select'): void;
 }>();
+
+const coverSrc = computed(() => {
+  const cover = props.item.cover || '';
+
+  if (cover.startsWith('/static/') || cover.startsWith('http://') || cover.startsWith('https://')) {
+    return cover;
+  }
+
+  return productVisualMap.p_001.cover;
+});
 </script>
 
 <template>
   <view class="card" @tap="emit('select')">
-    <image class="card-cover" :src="item.cover" mode="aspectFill" />
+    <image class="card-cover" :src="coverSrc" mode="aspectFill" />
     <view class="card-body">
       <view class="badge-row">
         <text v-for="badge in item.badges" :key="badge" class="badge">{{ badge }}</text>
@@ -29,7 +41,8 @@ const emit = defineEmits<{
 
 <style scoped lang="scss">
 .card {
-  width: calc(50% - 12rpx);
+  width: 100%;
+  box-sizing: border-box;
   border-radius: 24rpx;
   background: #ffffff;
   overflow: hidden;
@@ -37,11 +50,13 @@ const emit = defineEmits<{
 
 .card-cover {
   width: 100%;
+  box-sizing: border-box;
   height: 220rpx;
   background: #eef0f4;
 }
 
 .card-body {
+  box-sizing: border-box;
   padding: 18rpx 16rpx 20rpx;
 }
 

@@ -84,13 +84,15 @@ function getCurrentPageQuery() {
 }
 
 function getH5Query() {
-  if (typeof window === 'undefined') {
-    return getCurrentPageQuery();
-  }
-
+  // #ifdef H5
   const hash = window.location.hash || '';
   const [, search = ''] = hash.split('?');
   return Object.fromEntries(new URLSearchParams(search).entries());
+  // #endif
+
+  // #ifndef H5
+  return getCurrentPageQuery();
+  // #endif
 }
 
 async function ensureSession(taskId: number) {
@@ -210,29 +212,27 @@ onShow(() => {
 });
 
 function handleH5HashChange() {
-  if (typeof window === 'undefined' || !window.location.hash.includes('/pages/chat/index')) {
+  // #ifdef H5
+  if (!window.location.hash.includes('/pages/chat/index')) {
     return;
   }
 
   void initializePage(getH5Query(), {
     refreshHistory: true
   });
+  // #endif
 }
 
 onMounted(() => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
+  // #ifdef H5
   window.addEventListener('hashchange', handleH5HashChange);
+  // #endif
 });
 
 onUnmounted(() => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
+  // #ifdef H5
   window.removeEventListener('hashchange', handleH5HashChange);
+  // #endif
 });
 </script>
 

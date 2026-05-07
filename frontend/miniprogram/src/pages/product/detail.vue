@@ -7,6 +7,7 @@ import { getProductDetail } from '../../services/productService';
 import { getProductFeedbacks, type FeedbackItem } from '../../services/feedbackService';
 import { useCartStore, useUserStore } from '../../store';
 import type { ProductItem } from '../../types/domain';
+import { productVisualMap } from '../../constants/page-image-map';
 
 const product = ref<ProductItem | null>(null);
 const selectedSize = ref('');
@@ -20,6 +21,22 @@ const userStore = useUserStore();
 const totalPrice = computed(() => {
   return (product.value?.price || 0) * quantity.value;
 });
+
+const safePreviewImage = computed(() => {
+  return normalizeImageSrc(previewImage.value || product.value?.cover || '');
+});
+
+const safeGallery = computed(() => {
+  return (product.value?.gallery || []).map(normalizeImageSrc);
+});
+
+function normalizeImageSrc(src: string) {
+  if (src.startsWith('/static/') || src.startsWith('http://') || src.startsWith('https://')) {
+    return src;
+  }
+
+  return productVisualMap.p_001.cover;
+}
 
 async function loadDetail(id: string) {
   loading.value = true;
@@ -125,13 +142,13 @@ function openChat() {
     />
 
     <scroll-view scroll-y class="detail-scroll" v-if="product">
-      <image class="cover" :src="previewImage || product.cover" mode="aspectFill" />
+      <image class="cover" :src="safePreviewImage" mode="aspectFill" />
 
       <view class="thumb-row" v-if="product.gallery?.length">
         <image
-          v-for="item in product.gallery"
+          v-for="item in safeGallery"
           :key="item"
-          :class="['thumb-image', { active: previewImage === item }]"
+          :class="['thumb-image', { active: safePreviewImage === item }]"
           :src="item"
           mode="aspectFill"
           @tap="previewImage = item"
@@ -173,7 +190,7 @@ function openChat() {
         <text class="section-title">细节展示</text>
         <view class="detail-gallery">
           <image
-            v-for="item in product.gallery"
+            v-for="item in safeGallery"
             :key="`detail-${item}`"
             class="detail-image"
             :src="item"
@@ -228,8 +245,15 @@ function openChat() {
 </template>
 
 <style scoped lang="scss">
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .detail-scroll {
-  height: calc(100vh - 280rpx);
+  flex: 1;
+  height: 0;
   padding: 16rpx 40rpx 20rpx;
 }
 
@@ -429,7 +453,7 @@ function openChat() {
   display: flex;
   align-items: center;
   gap: 24rpx;
-  padding: 16rpx 40rpx 32rpx;
+  padding: 16rpx 40rpx calc(32rpx + env(safe-area-inset-bottom));
   background: #f7f7fa;
 }
 

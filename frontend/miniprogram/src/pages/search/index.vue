@@ -188,7 +188,7 @@ onShow(() => {
 
 <template>
   <view class="page-shell">
-    <scroll-view scroll-y class="page-scroll">
+    <scroll-view scroll-y enable-flex class="page-scroll">
       <view class="body">
         <view class="search-bar">
           <input
@@ -216,12 +216,16 @@ onShow(() => {
         <text class="page-desc">{{ resultTitle }} 共 {{ list.length }} 件商品</text>
 
         <view v-if="list.length" class="result-list">
-          <ProductCard
+          <view
             v-for="item in list"
             :key="item.id"
-            :item="item"
-            @select="openDetail(item.id)"
-          />
+            class="product-card-item"
+          >
+            <ProductCard
+              :item="item"
+              @select="openDetail(item.id)"
+            />
+          </view>
         </view>
 
         <view v-else class="empty-card-wrap">
@@ -249,7 +253,7 @@ onShow(() => {
 }
 
 .body {
-  padding: 20rpx 40rpx 100rpx;
+  padding: 20rpx 40rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .page-title {
@@ -336,12 +340,22 @@ onShow(() => {
 }
 
 .result-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 24rpx;
+  display: block;
   margin-top: 22rpx;
   padding-bottom: 30rpx;
+  font-size: 0;
+}
+
+.product-card-item {
+  display: inline-block;
+  vertical-align: top;
+  width: 311rpx;
+  margin-right: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.product-card-item:nth-child(2n) {
+  margin-right: 0;
 }
 
 .empty-card-wrap {

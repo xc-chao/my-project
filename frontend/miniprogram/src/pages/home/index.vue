@@ -4,6 +4,7 @@ import { onShow } from "@dcloudio/uni-app";
 import UniIcons from "@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue";
 import ProductCard from "../../components/ProductCard.vue";
 import PillTabBar from "../../components/PillTabBar.vue";
+import EmptyStateCard from "../../components/common/EmptyStateCard.vue";
 import { getProductList } from "../../services/productService";
 import type { ProductItem } from "../../types/domain";
 import { pageImageMap } from "../../constants/page-image-map";
@@ -15,6 +16,8 @@ import {
 
 const loading = ref(false);
 const products = ref<ProductItem[]>([]);
+const loadError = ref('');
+const hasLoaded = ref(false);
 const heroSlides = pageImageMap.home.carousel;
 const currentHeroIndex = ref(0);
 const agentX = ref(0);
@@ -47,10 +50,21 @@ const metricCards = computed(() => {
 
 async function loadData() {
   loading.value = true;
+  loadError.value = '';
 
   try {
     const result = await getProductList();
     products.value = result.list.slice(0, 50);
+    hasLoaded.value = true;
+  } catch (error) {
+    hasLoaded.value = true;
+    products.value = [];
+    loadError.value = error instanceof Error ? error.message : '商品加载失败，请检查后端接口是否可访问';
+    console.error('[home] loadData failed', error);
+    uni.showToast({
+      title: '商品加载失败',
+      icon: 'none'
+    });
   } finally {
     loading.value = false;
   }
@@ -140,7 +154,7 @@ onShow(() => {
       </view>
     </view>
 
-    <scroll-view scroll-y class="content">
+    <scroll-view scroll-y enable-flex class="content">
       <view class="hero-panel">
         <text class="hero-title">{{ currentHero.title }}</text>
         <view class="hero-copy">
@@ -204,13 +218,33 @@ onShow(() => {
         </view>
       </view>
 
-      <view class="product-grid">
-        <ProductCard
+      <EmptyStateCard
+        v-if="hasLoaded && !loading && loadError"
+        title="商品加载失败"
+        :desc="loadError"
+        action-text="重新加载"
+        @action="loadData"
+      />
+
+      <EmptyStateCard
+        v-else-if="hasLoaded && !loading && !products.length"
+        title="暂无商品"
+        desc="后端已连接，但当前没有返回可展示的商品数据。"
+        action-text="重新加载"
+        @action="loadData"
+      />
+
+      <view v-else class="product-grid">
+        <view
           v-for="item in products"
           :key="item.id"
-          :item="item"
-          @select="openDetail(item.id)"
-        />
+          class="product-card-item"
+        >
+          <ProductCard
+            :item="item"
+            @select="openDetail(item.id)"
+          />
+        </view>
       </view>
     </scroll-view>
 
@@ -235,6 +269,11 @@ onShow(() => {
 </template>
 
 <style scoped lang="scss">
+.page-shell {
+  min-height: 100vh;
+  background: #f7f7fa;
+}
+
 .header {
   padding: 20rpx 30rpx 20rpx;
 }
@@ -293,7 +332,7 @@ onShow(() => {
 }
 
 .content {
-  padding: 0 40rpx 70rpx;
+  padding: 0 40rpx calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .hero-copy {
@@ -501,11 +540,21 @@ onShow(() => {
 }
 
 .product-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 24rpx;
+  display: block;
   margin-top: 22rpx;
+  font-size: 0;
+}
+
+.product-card-item {
+  display: inline-block;
+  vertical-align: top;
+  width: 311rpx;
+  margin-right: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.product-card-item:nth-child(2n) {
+  margin-right: 0;
 }
 
 .agent-area {

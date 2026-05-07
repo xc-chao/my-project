@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useUserStore } from '../../store';
-import AppHeader from '../../components/AppHeader.vue';
 import { pageImageMap } from '../../constants/page-image-map';
 import type { UserRole } from '../../types/domain';
 
 const userStore = useUserStore();
+const statusBarHeight = uni.getSystemInfoSync().statusBarHeight || 0;
 const supportVisuals = pageImageMap.auth.support;
 const trustAvatars = pageImageMap.auth.trustAvatars;
 
@@ -33,8 +33,7 @@ function handleAdminLogin() {
 </script>
 
 <template>
-  <view class="page-shell">
-    <AppHeader title="" />
+  <view class="page-shell login-shell" :style="{ paddingTop: `${statusBarHeight}px` }">
 
     <view class="body">
       <view class="hero-card">
@@ -83,6 +82,10 @@ function handleAdminLogin() {
 </template>
 
 <style scoped lang="scss">
+.login-shell {
+  min-height: 100vh;
+}
+
 .body {
   padding: 40rpx;
   display: flex;

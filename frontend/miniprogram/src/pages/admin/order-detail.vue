@@ -140,13 +140,15 @@ function getCurrentPageQuery() {
 }
 
 function getH5Query() {
-  if (typeof window === 'undefined') {
-    return getCurrentPageQuery();
-  }
-
+  // #ifdef H5
   const hash = window.location.hash || '';
   const [, search = ''] = hash.split('?');
   return Object.fromEntries(new URLSearchParams(search).entries());
+  // #endif
+
+  // #ifndef H5
+  return getCurrentPageQuery();
+  // #endif
 }
 
 async function loadDetail() {
@@ -307,20 +309,28 @@ onLoad((query) => {
 });
 
 onShow(() => {
-  const query = typeof window === 'undefined' ? getCurrentPageQuery() : getH5Query();
+  let query: Record<string, any>;
+
+  // #ifdef H5
+  query = getH5Query();
+  // #endif
+  // #ifndef H5
+  query = getCurrentPageQuery();
+  // #endif
+
   void initializePage(query);
 });
 
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('hashchange', handleH5RouteChange);
-  }
+  // #ifdef H5
+  window.addEventListener('hashchange', handleH5RouteChange);
+  // #endif
 });
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('hashchange', handleH5RouteChange);
-  }
+  // #ifdef H5
+  window.removeEventListener('hashchange', handleH5RouteChange);
+  // #endif
 });
 </script>
 

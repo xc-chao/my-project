@@ -144,8 +144,15 @@ onMounted(loadPreview);
 </template>
 
 <style scoped lang="scss">
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .body {
-  height: calc(100vh - 260rpx);
+  flex: 1;
+  height: 0;
   padding: 8rpx 40rpx 20rpx;
   display: flex;
   flex-direction: column;
@@ -285,7 +292,7 @@ onMounted(loadPreview);
 .bottom-bar {
   justify-content: space-between;
   gap: 24rpx;
-  padding: 24rpx 40rpx 32rpx;
+  padding: 24rpx 40rpx calc(32rpx + env(safe-area-inset-bottom));
 }
 
 .price-wrap {

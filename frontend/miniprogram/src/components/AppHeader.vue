@@ -1,17 +1,23 @@
 <script setup lang="ts">
+import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
+
 const props = withDefaults(
   defineProps<{
     title: string;
     back?: boolean;
     darkAction?: string;
     actionPath?: string;
+    visible?: boolean;
   }>(),
   {
     back: false,
     darkAction: '',
-    actionPath: ''
+    actionPath: '',
+    visible: true
   }
 );
+
+const statusBarHeight = uni.getSystemInfoSync().statusBarHeight || 0;
 
 function handleBack() {
   if (getCurrentPages().length > 1) {
@@ -36,37 +42,43 @@ function handleAction() {
 </script>
 
 <template>
-  <view class="header-wrap">
+  <view v-if="props.visible" class="header-wrap" :style="{ paddingTop: `${statusBarHeight}px` }">
     <view class="nav-row">
-      <view class="nav-btn" @tap="props.back ? handleBack() : undefined">
-        <text v-if="props.back" class="nav-btn-text">&lt;</text>
+      <view v-if="props.back" class="nav-btn" @tap="handleBack">
+        <UniIcons type="left" :size="18" color="#111111" />
       </view>
+      <view v-else class="nav-spacer" />
+
       <text class="nav-title">{{ props.title }}</text>
-      <view :class="['nav-btn', { dark: props.darkAction }]" @tap="handleAction">
+
+      <view v-if="props.darkAction || props.actionPath" :class="['nav-btn', { dark: props.darkAction }]" @tap="handleAction">
         <text class="nav-btn-text">{{ props.darkAction }}</text>
       </view>
+      <view v-else class="nav-spacer" />
     </view>
   </view>
 </template>
 
 <style scoped lang="scss">
 .header-wrap {
-  padding: 20rpx 20rpx 0;
+  padding: 0 20rpx;
 }
 
 .nav-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.nav-row {
   height: 108rpx;
 }
 
-.nav-btn {
+.nav-btn,
+.nav-spacer {
   width: 80rpx;
   height: 80rpx;
+  flex-shrink: 0;
+}
+
+.nav-btn {
   border-radius: 40rpx;
   background: #ffffff;
   display: flex;
@@ -89,8 +101,11 @@ function handleAction() {
 }
 
 .nav-title {
-  font-size: 48rpx;
+  min-width: 0;
+  flex: 1;
+  font-size: 34rpx;
   font-weight: 700;
   color: #111111;
+  text-align: center;
 }
 </style>

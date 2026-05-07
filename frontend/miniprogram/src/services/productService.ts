@@ -8,29 +8,33 @@ interface ProductListResponse {
 }
 
 function buildProductQueryString(query: ProductSearchQuery = {}) {
-  const params = new URLSearchParams();
+  const params: string[] = [];
+
+  function appendParam(key: string, value: string) {
+    params.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
+  }
 
   if (query.keyword?.trim()) {
-    params.set('keyword', query.keyword.trim());
+    appendParam('keyword', query.keyword.trim());
   }
 
   if (query.sort && query.sort !== 'comprehensive') {
-    params.set('sort', query.sort);
+    appendParam('sort', query.sort);
   }
 
   if (query.scene) {
-    params.set('scene', query.scene);
+    appendParam('scene', query.scene);
   }
 
   if (query.category?.trim()) {
-    params.set('category', query.category.trim());
+    appendParam('category', query.category.trim());
   }
 
   if (query.onSaleOnly) {
-    params.set('onSaleOnly', '1');
+    appendParam('onSaleOnly', '1');
   }
 
-  const queryString = params.toString();
+  const queryString = params.join('&');
   return queryString ? `?${queryString}` : '';
 }
 
