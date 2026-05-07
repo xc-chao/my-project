@@ -9,6 +9,7 @@
     "pages/order/list",
     "pages/address/index",
     "pages/after-sale/index",
+    "pages/feedback/index",
     "pages/admin/index",
     "pages/admin/products",
     "pages/admin/product-form",
