@@ -229,7 +229,7 @@ function openChat() {
 
 <style scoped lang="scss">
 .detail-scroll {
-  height: calc(100vh - 320rpx);
+  height: calc(100vh - 280rpx);
   padding: 16rpx 40rpx 20rpx;
 }
 
@@ -429,7 +429,7 @@ function openChat() {
   display: flex;
   align-items: center;
   gap: 24rpx;
-  padding: 24rpx 40rpx 32rpx;
+  padding: 16rpx 40rpx 32rpx;
   background: #f7f7fa;
 }
 
