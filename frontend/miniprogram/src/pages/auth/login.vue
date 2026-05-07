@@ -12,7 +12,7 @@ async function handleLogin(identity: UserRole = 'user') {
   try {
     await userStore.login(identity);
     uni.switchTab({
-      url: identity === 'admin' ? '/pages/profile/index' : '/pages/home/index'
+      url: '/pages/home/index'
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : '登录失败';
