@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import PillTabBar from '../../components/PillTabBar.vue';
 import EmptyStateCard from '../../components/common/EmptyStateCard.vue';
@@ -9,6 +9,12 @@ import { useCartStore, useUserStore } from '../../store';
 
 const cartStore = useCartStore();
 const userStore = useUserStore();
+const safeBottomRpx = ref(0);
+
+const layoutStyle = computed(() => ({
+  '--cart-tabbar-offset': `${140 + safeBottomRpx.value}rpx`,
+  '--cart-scroll-bottom': `${300 + safeBottomRpx.value}rpx`
+}));
 
 async function loadCart() {
   if (!userStore.isLoggedIn) {
@@ -40,15 +46,26 @@ function goHome() {
   });
 }
 
+function updateSafeBottom() {
+  const systemInfo = uni.getSystemInfoSync();
+  const windowWidth = systemInfo.windowWidth || 375;
+  const safeAreaInsets = systemInfo.safeAreaInsets;
+  const safeAreaBottom = systemInfo.safeArea?.bottom;
+  const bottomInsetPx = safeAreaInsets?.bottom ?? Math.max(0, systemInfo.screenHeight - (safeAreaBottom || systemInfo.screenHeight));
+
+  safeBottomRpx.value = Math.round((bottomInsetPx * 750) / windowWidth);
+}
+
 onMounted(loadCart);
 onShow(() => {
   uni.hideTabBar();
+  updateSafeBottom();
   loadCart();
 });
 </script>
 
 <template>
-  <view class="page-shell">
+  <view class="page-shell" :style="layoutStyle">
     <view v-if="!userStore.isLoggedIn" class="empty-wrap">
       <EmptyStateCard
         title="登录后查看购物车"
@@ -115,6 +132,9 @@ onShow(() => {
 <style scoped lang="scss">
 
 .page-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding-top: 20rpx;
 }
 
@@ -136,8 +156,9 @@ onShow(() => {
 }
 
 .cart-scroll {
-  height: calc(100vh - 270rpx);
-  padding: 0 30rpx 180rpx;
+  flex: 1;
+  height: 0;
+  padding: 0 30rpx var(--cart-scroll-bottom);
 }
 
 .cart-list {
@@ -308,12 +329,19 @@ onShow(() => {
 }
 
 .bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--cart-tabbar-offset);
+  z-index: 30;
   display: flex;
   align-items: center;
   gap: 24rpx;
-  padding: 12rpx 32rpx;
+  min-height: 112rpx;
+  padding: 18rpx 32rpx;
   background: #f7f7fa;
   border-top: 1px solid #eceef2;
+  box-shadow: 0 -10rpx 28rpx rgba(17, 17, 17, 0.04);
 }
 
 .total-wrap {

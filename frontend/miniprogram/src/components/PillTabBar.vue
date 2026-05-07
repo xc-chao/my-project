@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { onShow } from '@dcloudio/uni-app';
 import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
   current: 'home' | 'search' | 'cart' | 'profile';
 }>();
+
+const safeBottomRpx = ref(0);
+
+const tabbarStyle = computed(() => ({
+  '--tabbar-safe-bottom': `${safeBottomRpx.value}rpx`
+}));
 
 const tabs = [
   { key: 'home', label: '首页', icon: 'home', activeIcon: 'home-filled', url: '/pages/home/index' },
@@ -17,13 +24,26 @@ function switchPage(url: string) {
   uni.switchTab({ url });
 }
 
+function updateSafeBottom() {
+  const systemInfo = uni.getSystemInfoSync();
+  const windowWidth = systemInfo.windowWidth || 375;
+  const safeAreaInsets = systemInfo.safeAreaInsets;
+  const safeAreaBottom = systemInfo.safeArea?.bottom;
+  const bottomInsetPx = safeAreaInsets?.bottom ?? Math.max(0, systemInfo.screenHeight - (safeAreaBottom || systemInfo.screenHeight));
+
+  safeBottomRpx.value = Math.round((bottomInsetPx * 750) / windowWidth);
+}
+
+onMounted(updateSafeBottom);
+
 onShow(() => {
   uni.hideTabBar();
+  updateSafeBottom();
 });
 </script>
 
 <template>
-  <view class="tabbar safe-bottom">
+  <view class="tabbar" :style="tabbarStyle">
     <view class="pill">
       <view
         v-for="tab in tabs"
@@ -47,10 +67,13 @@ onShow(() => {
 <style scoped lang="scss">
 .tabbar {
   position: fixed;
-  left: 42rpx;
-  right: 42rpx;
-  bottom: 20rpx;
-  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8rpx 42rpx calc(8rpx + var(--tabbar-safe-bottom));
+  background: rgba(247, 247, 250, 0.96);
+  border-top: 1px solid rgba(231, 233, 238, 0.8);
+  z-index: 40;
 }
 
 .pill {
