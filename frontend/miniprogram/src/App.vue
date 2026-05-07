@@ -11,9 +11,4 @@ page {
   color: #111111;
   font-family: 'Inter', sans-serif;
 }
-
-.page-shell,
-.page-shell * {
-  box-sizing: border-box;
-}
 </style>
