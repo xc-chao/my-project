@@ -1,99 +1,171 @@
-#!/bin/bash
-# 启动前后端项目脚本
-# MySQL + 后端 Express + 前端 UniApp
+#!/usr/bin/env bash
 
-PROJECT_ROOT="/Users/qq/Desktop/UniAppPencil"
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 FRONTEND_DIR="$PROJECT_ROOT/frontend/miniprogram"
-MYSQL_BIN="/usr/local/mysql/bin"
+ACTION="${1:-start}"
+MODE="${2:-h5}"
 
-# 从 .env 读取数据库密码
-DB_PASSWORD=$(grep '^DB_PASSWORD=' "$BACKEND_DIR/.env" 2>/dev/null | cut -d'=' -f2)
-if [ -z "$DB_PASSWORD" ]; then
-  echo -e "${RED}未找到数据库密码，请检查 backend/.env${NC}"
-  exit 1
-fi
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[1;33m'
+NC=$'\033[0m'
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+BACKEND_PID=""
+FRONTEND_PID=""
 
 cleanup() {
-  echo ""
-  echo -e "${YELLOW}正在停止所有服务...${NC}"
-  if [ -n "$BACKEND_PID" ]; then
-    kill "$BACKEND_PID" 2>/dev/null
-    echo -e "${GREEN}后端已停止${NC}"
+  echo
+  echo -e "${YELLOW}Stopping services...${NC}"
+
+  if [[ -n "$BACKEND_PID" ]] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+    kill "$BACKEND_PID" 2>/dev/null || true
+    echo -e "${GREEN}Backend stopped${NC}"
   fi
-  if [ -n "$FRONTEND_PID" ]; then
-    kill "$FRONTEND_PID" 2>/dev/null
-    echo -e "${GREEN}前端已停止${NC}"
+
+  if [[ -n "$FRONTEND_PID" ]] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
+    kill "$FRONTEND_PID" 2>/dev/null || true
+    echo -e "${GREEN}Frontend stopped${NC}"
   fi
-  # 注意：MySQL 不随脚本停止，保持后台运行
-  exit 0
 }
 
-trap cleanup SIGINT SIGTERM
+trap cleanup INT TERM EXIT
 
-echo "========================================"
-echo "       UniAppPencil 项目启动脚本"
-echo "========================================"
-echo ""
+require_dir() {
+  local dir="$1"
+  local label="$2"
+  if [[ ! -d "$dir" ]]; then
+    echo -e "${RED}${label} directory not found: $dir${NC}"
+    exit 1
+  fi
+}
 
-# 检查并启动 MySQL
-echo -e "${YELLOW}[MySQL] 检查数据库状态...${NC}"
-if "$MYSQL_BIN/mysqladmin" ping -u root -p$DB_PASSWORD &>/dev/null; then
-  echo -e "${GREEN}[MySQL] 已在运行${NC}"
-else
-  echo -e "${YELLOW}[MySQL] 未运行，正在启动...${NC}"
-  sudo /usr/local/mysql/support-files/mysql.server start
-  # 等待 MySQL 就绪
-  for i in $(seq 1 10); do
-    if "$MYSQL_BIN/mysqladmin" ping -u root -p$DB_PASSWORD &>/dev/null; then
-      echo -e "${GREEN}[MySQL] 启动成功${NC}"
-      break
-    fi
-    if [ "$i" -eq 10 ]; then
-      echo -e "${RED}[MySQL] 启动失败，请手动检查${NC}"
-      exit 1
-    fi
-    sleep 1
-  done
-fi
-echo ""
+check_command() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo -e "${RED}Missing required command: $cmd${NC}"
+    exit 1
+  fi
+}
 
-# 检查 node_modules
-if [ ! -d "$BACKEND_DIR/node_modules" ]; then
-  echo -e "${YELLOW}后端依赖未安装，正在安装...${NC}"
+ensure_node_modules() {
+  local dir="$1"
+  local label="$2"
+  if [[ ! -d "$dir/node_modules" ]]; then
+    echo -e "${YELLOW}${label} dependencies missing, running npm install...${NC}"
+    (cd "$dir" && npm install)
+  fi
+}
+
+install_deps() {
+  echo -e "${GREEN}[Backend] Installing dependencies...${NC}"
   (cd "$BACKEND_DIR" && npm install)
-fi
 
-if [ ! -d "$FRONTEND_DIR/node_modules" ]; then
-  echo -e "${YELLOW}前端依赖未安装，正在安装...${NC}"
+  echo -e "${GREEN}[Frontend] Installing dependencies...${NC}"
   (cd "$FRONTEND_DIR" && npm install)
+}
+
+check_backend_health() {
+  if command -v curl >/dev/null 2>&1; then
+    curl --silent --fail http://localhost:3001/health >/dev/null 2>&1
+  else
+    return 1
+  fi
+}
+
+print_header() {
+  echo "========================================"
+  echo "      UniAppPencil Startup Script"
+  echo "========================================"
+  echo "Project root : $PROJECT_ROOT"
+  echo "Action       : $ACTION"
+  echo "Frontend mode: $MODE"
+  echo
+}
+
+require_dir "$BACKEND_DIR" "Backend"
+require_dir "$FRONTEND_DIR" "Frontend"
+check_command npm
+check_command node
+
+print_header
+
+case "$ACTION" in
+  install)
+    install_deps
+    echo
+    echo -e "${GREEN}Dependencies installed.${NC}"
+    exit 0
+    ;;
+  start)
+    ;;
+  *)
+    echo -e "${RED}Unsupported action: $ACTION${NC}"
+    echo "Use one of: start, install"
+    exit 1
+    ;;
+esac
+
+echo -e "${YELLOW}[MySQL] This script does not start MySQL on Windows.${NC}"
+echo -e "${YELLOW}[MySQL] Make sure your local MySQL service is already running.${NC}"
+echo
+
+ensure_node_modules "$BACKEND_DIR" "Backend"
+ensure_node_modules "$FRONTEND_DIR" "Frontend"
+
+if check_backend_health; then
+  echo -e "${YELLOW}[Backend] Port 3001 is already serving health checks, skipping backend start.${NC}"
+else
+  echo -e "${GREEN}[Backend] Starting Express service...${NC}"
+  (
+    cd "$BACKEND_DIR"
+    npm run dev
+  ) &
+  BACKEND_PID=$!
+
+  sleep 3
+
+  if check_backend_health; then
+    echo -e "${GREEN}[Backend] Health check passed: http://localhost:3001/health${NC}"
+  else
+    echo -e "${YELLOW}[Backend] Started, but health check is not ready yet.${NC}"
+  fi
 fi
 
-# 启动后端
-echo -e "${GREEN}[后端] 启动 Express 服务...${NC}"
-(cd "$BACKEND_DIR" && npm run dev) &
-BACKEND_PID=$!
+case "$MODE" in
+  h5)
+    FRONTEND_SCRIPT="dev:h5"
+    ;;
+  mp-weixin)
+    FRONTEND_SCRIPT="dev:mp-weixin"
+    ;;
+  *)
+    echo -e "${RED}Unsupported frontend mode: $MODE${NC}"
+    echo "Use one of: h5, mp-weixin"
+    exit 1
+    ;;
+esac
 
-# 等一秒让后端先跑起来
-sleep 1
-
-# 启动前端（默认微信小程序模式，可通过参数切换）
-MODE="${1:-mp-weixin}"
-echo -e "${GREEN}[前端] 启动 UniApp ($MODE)...${NC}"
-(cd "$FRONTEND_DIR" && npm run "dev:$MODE") &
+echo -e "${GREEN}[Frontend] Starting UniApp with npm run $FRONTEND_SCRIPT ...${NC}"
+(
+  cd "$FRONTEND_DIR"
+  npm run "$FRONTEND_SCRIPT"
+) &
 FRONTEND_PID=$!
 
-echo ""
-echo -e "${GREEN}所有服务已启动${NC}"
-echo -e "后端 PID: $BACKEND_PID"
-echo -e "前端 PID: $FRONTEND_PID"
-echo -e "${YELLOW}按 Ctrl+C 停止所有服务${NC}"
-echo ""
+echo
+echo -e "${GREEN}Services started.${NC}"
+if [[ -n "$BACKEND_PID" ]]; then
+  echo "Backend PID : $BACKEND_PID"
+else
+  echo "Backend PID : already running"
+fi
+echo "Frontend PID: $FRONTEND_PID"
+echo "Backend URL : http://localhost:3001/health"
+echo -e "${YELLOW}Press Ctrl+C to stop services started by this script.${NC}"
+echo
 
-# 等待子进程
 wait

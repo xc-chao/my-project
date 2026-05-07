@@ -5,5 +5,38 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Start UniAppPencil H5",
+				"type": "shell",
+				"command": "powershell",
+				"args": [
+					"-ExecutionPolicy",
+					"Bypass",
+					"-File",
+					"${workspaceFolder}\\script\\start.ps1",
+					"h5"
+				],
+				"problemMatcher": [],
+				"isBackground": true
+			},
+			{
+				"label": "Start UniAppPencil Weixin",
+				"type": "shell",
+				"command": "powershell",
+				"args": [
+					"-ExecutionPolicy",
+					"Bypass",
+					"-File",
+					"${workspaceFolder}\\script\\start.ps1",
+					"mp-weixin"
+				],
+				"problemMatcher": [],
+				"isBackground": true
+			}
+		]
+	}
 }
