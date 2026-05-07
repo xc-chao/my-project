@@ -1,1 +1,0 @@
-"use strict";const e=require("../../common/vendor.js"),o=e.defineComponent({__name:"ChatBubble",props:{role:{},content:{},loading:{type:Boolean}},setup:o=>(o,n)=>e.e({a:o.loading},o.loading?{}:{b:e.t(o.content)},{c:e.n(o.role)})}),n=e._export_sfc(o,[["__scopeId","data-v-ee3ca962"]]);wx.createComponent(n);

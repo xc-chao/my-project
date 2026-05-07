@@ -2,9 +2,7 @@ import { z } from 'zod';
 
 export const wechatLoginSchema = z.object({
   body: z.object({
-    code: z.string().min(1),
-    nickname: z.string().min(1).max(20).optional(),
-    identity: z.enum(['user', 'admin']).optional()
+    code: z.string().min(1)
   }),
   query: z.any(),
   params: z.any()

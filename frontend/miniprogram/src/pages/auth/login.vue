@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { useUserStore } from '../../store';
 import { pageImageMap } from '../../constants/page-image-map';
-import type { UserRole } from '../../types/domain';
 
 const userStore = useUserStore();
 const statusBarHeight = uni.getSystemInfoSync().statusBarHeight || 0;
 const supportVisuals = pageImageMap.auth.support;
 const trustAvatars = pageImageMap.auth.trustAvatars;
 
-async function handleLogin(identity: UserRole = 'user') {
+async function handleLogin() {
   try {
-    await userStore.login(identity);
-    uni.switchTab({
-      url: '/pages/home/index'
-    });
+    await userStore.login();
+    const target = userStore.isAdmin ? '/pages/admin/index' : '/pages/home/index';
+    if (userStore.isAdmin) {
+      uni.reLaunch({ url: target });
+    } else {
+      uni.switchTab({ url: target });
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : '登录失败';
     uni.showToast({
@@ -23,18 +25,15 @@ async function handleLogin(identity: UserRole = 'user') {
   }
 }
 
-function handlePhoneLogin() {
-  handleLogin('user');
-}
-
-function handleAdminLogin() {
-  handleLogin('admin');
+function goHome() {
+  uni.switchTab({
+    url: '/pages/home/index'
+  });
 }
 </script>
 
 <template>
   <view class="page-shell login-shell" :style="{ paddingTop: `${statusBarHeight}px` }">
-
     <view class="body">
       <view class="hero-card">
         <image class="hero-image" :src="pageImageMap.auth.hero" mode="aspectFill" />
@@ -50,32 +49,29 @@ function handleAdminLogin() {
         <text class="hero-label">欢迎回来</text>
         <text class="hero-title">智能购物小程序</text>
         <text class="hero-text">
-          覆盖商品浏览、智能咨询、购物车与订单闭环，首轮实现先按 Pencil 页面逐步落地。
+          微信一键登录后自动识别身份，管理员进入后台，普通用户进入买家端。
         </text>
         <view class="trust-row">
           <view class="trust-avatars">
             <image v-for="item in trustAvatars" :key="item" class="trust-avatar" :src="item" mode="aspectFill" />
           </view>
-          <text class="trust-text">12k+ 校园用户正在浏览球鞋与街头单品</text>
+          <text class="trust-text">登录即用，无需再选角色。</text>
         </view>
       </view>
 
-      <view class="primary-btn" :class="{ loading: userStore.loading }" @tap="handleLogin('user')">
-        <text>{{ userStore.loading ? '登录中' : '微信一键登录' }}</text>
+      <view class="primary-btn" :class="{ loading: userStore.loading }" @tap="handleLogin">
+        <text>{{ userStore.loading ? '登录中...' : '微信一键登录' }}</text>
       </view>
-      <view class="secondary-btn" @tap="handlePhoneLogin">
-        <text>手机号验证码登录</text>
-      </view>
-      <view class="admin-entry" @tap="handleAdminLogin">
-        <text class="admin-entry-title">管理员演示登录</text>
-        <text class="admin-entry-desc">登录后可在“我的”页订单状态下方查看后台信息管理入口</text>
+
+      <view class="secondary-btn" @tap="goHome">
+        <text>先逛一逛</text>
       </view>
 
       <view class="tips-card">
         <text class="tips-title">登录后可获得</text>
-        <text class="tips-item">商品上下文 AI 咨询</text>
+        <text class="tips-item">商品浏览、AI 咨询</text>
         <text class="tips-item">购物车和订单同步</text>
-        <text class="tips-item">地址管理与售后记录</text>
+        <text class="tips-item">管理员自动进入后台</text>
       </view>
     </view>
   </view>
@@ -102,28 +98,6 @@ function handleAdminLogin() {
 
 .tips-card {
   background: #ffffff;
-}
-
-.admin-entry {
-  display: flex;
-  flex-direction: column;
-  gap: 10rpx;
-  padding: 24rpx 28rpx;
-  border-radius: 32rpx;
-  background: rgba(23, 24, 28, 0.04);
-  border: 1px solid rgba(23, 24, 28, 0.08);
-}
-
-.admin-entry-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #111111;
-}
-
-.admin-entry-desc {
-  font-size: 22rpx;
-  line-height: 1.6;
-  color: #6e7380;
 }
 
 .hero-image {
@@ -202,8 +176,7 @@ function handleAdminLogin() {
   color: #6e7380;
 }
 
-.primary-btn,
-.secondary-btn {
+.primary-btn {
   width: 100%;
   height: 112rpx;
   border-radius: 56rpx;
@@ -213,9 +186,6 @@ function handleAdminLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.primary-btn {
   color: #ffffff;
   background: #17181c;
 }
@@ -225,9 +195,17 @@ function handleAdminLogin() {
 }
 
 .secondary-btn {
+  width: 100%;
+  height: 112rpx;
+  border-radius: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #111111;
   background: #ffffff;
   border: 1px solid #e7e9ee;
+  font-size: 30rpx;
+  font-weight: 700;
 }
 
 .tips-title {

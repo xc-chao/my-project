@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "pill-tab-bar": "../../components/PillTabBar",
-    "empty-state-card": "../../components/common/EmptyStateCard"
-  }
-}

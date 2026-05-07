@@ -1,8 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "app-header": "../../components/AppHeader",
-    "chat-bubble": "../../components/common/ChatBubble",
-    "empty-state-card": "../../components/common/EmptyStateCard"
-  }
-}

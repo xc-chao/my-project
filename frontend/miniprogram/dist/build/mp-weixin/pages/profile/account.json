@@ -1,8 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "app-header": "../../components/AppHeader",
-    "empty-state-card": "../../components/common/EmptyStateCard",
-    "form-section": "../../components/common/FormSection"
-  }
-}

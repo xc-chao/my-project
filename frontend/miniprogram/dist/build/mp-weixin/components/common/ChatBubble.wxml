@@ -1,1 +1,0 @@
-<view class="{{['data-v-ee3ca962', 'msg-bubble', c]}}"><view wx:if="{{a}}" class="loading-dots data-v-ee3ca962"><view class="dot data-v-ee3ca962"/><view class="dot data-v-ee3ca962"/><view class="dot data-v-ee3ca962"/></view><text wx:else class="data-v-ee3ca962">{{b}}</text></view>

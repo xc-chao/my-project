@@ -1,1 +1,0 @@
-"use strict";const e=require("./request.js");exports.createAfterSale=function(t){return e.request("/after-sales",{method:"POST",data:t})},exports.getAfterSaleList=function(){return e.request("/after-sales")};

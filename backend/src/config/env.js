@@ -5,6 +5,12 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   sessionSecret: process.env.SESSION_SECRET || 'dev-session-secret',
   jwtSecret: process.env.JWT_SECRET || 'dev-jwt-secret',
+  wechatAppId: process.env.WECHAT_APP_ID || '',
+  wechatAppSecret: process.env.WECHAT_APP_SECRET || '',
+  wechatAdminOpenids: (process.env.WECHAT_ADMIN_OPENIDS || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean),
   aiProvider: process.env.AI_PROVIDER || 'deepseek',
   openAiApiKey: process.env.OPENAI_API_KEY || '',
   deepseekApiKey: process.env.DEEPSEEK_API_KEY || '',

@@ -1,1 +1,0 @@
-<view class="section data-v-5537d73c"><view class="head data-v-5537d73c"><text class="title data-v-5537d73c">{{a}}</text><text wx:if="{{b}}" class="desc data-v-5537d73c">{{c}}</text></view><slot/></view>

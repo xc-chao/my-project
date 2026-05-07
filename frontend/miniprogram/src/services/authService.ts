@@ -19,13 +19,6 @@ export function loginWithWechat(payload: { code: string; nickname?: string }) {
   });
 }
 
-export function loginWithIdentity(payload: { code: string; nickname?: string; identity?: UserRole }) {
-  return request<LoginResponse>('/auth/wechat-login', {
-    method: 'POST',
-    data: payload
-  });
-}
-
 export function getAuthProfile() {
   return request<UserProfile>('/auth/profile');
 }

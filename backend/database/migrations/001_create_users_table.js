@@ -4,6 +4,7 @@ export async function up({ pool }) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id VARCHAR(64) NOT NULL,
+      openid VARCHAR(128) NULL DEFAULT NULL,
       nickname VARCHAR(100) NOT NULL,
       avatar VARCHAR(500) NOT NULL,
       phone VARCHAR(32) NOT NULL,
@@ -11,6 +12,7 @@ export async function up({ pool }) {
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
+      UNIQUE KEY uk_users_openid (openid),
       UNIQUE KEY uk_users_phone (phone),
       KEY idx_users_role (role)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAuthProfile, loginWithIdentity, logoutAuth, updateAuthProfile } from '../../services/authService';
+import { getAuthProfile, loginWithWechat, logoutAuth, updateAuthProfile } from '../../services/authService';
 import type { UserProfile, UserRole } from '../../types/domain';
 
 const TOKEN_KEY = 'shopping_access_token';
@@ -46,14 +46,24 @@ export const useUserStore = defineStore('user', {
         uni.removeStorageSync(USER_KEY);
       }
     },
-    async login(identity: UserRole = 'user') {
+    async login() {
       this.loading = true;
 
       try {
-        const result = await loginWithIdentity({
-          code: 'wechat_dev_code',
-          nickname: identity === 'admin' ? '系统管理员' : '校园买手',
-          identity
+        const loginResult = await new Promise<{ code?: string }>((resolve, reject) => {
+          uni.login({
+            provider: 'weixin',
+            success: resolve,
+            fail: reject
+          });
+        });
+
+        if (!loginResult.code) {
+          throw new Error('微信登录失败');
+        }
+
+        const result = await loginWithWechat({
+          code: loginResult.code
         });
 
         this.setSession(result.user, result.accessToken);

@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "app-header": "../../components/AppHeader",
-    "quantity-stepper": "../../components/common/QuantityStepper"
-  }
-}

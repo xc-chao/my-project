@@ -27,26 +27,68 @@ function buildSessionPayload(user) {
   };
 }
 
+function buildWechatPhone(openid) {
+  return `wx_${openid.slice(0, 28)}`;
+}
+
+function buildUserDataFromWechat(user, openid, role) {
+  return {
+    openid,
+    nickname: user.nickname,
+    avatar: user.avatar,
+    phone: buildWechatPhone(openid),
+    role
+  };
+}
+
+async function fetchWechatSession(code) {
+  if (!env.wechatAppId || !env.wechatAppSecret) {
+    throw new AppError(500, 'WECHAT_CONFIG_MISSING', '微信登录配置未完成');
+  }
+
+  const url = new URL('https://api.weixin.qq.com/sns/jscode2session');
+  url.searchParams.set('appid', env.wechatAppId);
+  url.searchParams.set('secret', env.wechatAppSecret);
+  url.searchParams.set('js_code', code);
+  url.searchParams.set('grant_type', 'authorization_code');
+
+  const response = await fetch(url, {
+    method: 'GET'
+  });
+  const data = await response.json();
+
+  if (!response.ok || data.errcode) {
+    throw new AppError(502, 'WECHAT_LOGIN_FAILED', data.errmsg || '微信登录失败');
+  }
+
+  return data;
+}
+
 export const authService = {
   async loginWithWechat(payload) {
-    const user = await authRepository.findByRole(payload.identity || 'user');
+    const session = await fetchWechatSession(payload.code);
+    const isAdmin = env.wechatAdminOpenids.includes(session.openid);
+    const role = isAdmin ? 'admin' : 'user';
+    let user = await authRepository.findByOpenid(session.openid);
+
+    if (user) {
+      if (user.role !== role) {
+        user = await authRepository.updateById(user.id, buildUserDataFromWechat(user, session.openid, role));
+      }
+
+      return buildSessionPayload(user);
+    }
+
+    user = await authRepository.findOrCreateByOpenid({
+      openid: session.openid,
+      role
+    });
 
     if (!user) {
-      throw new AppError(404, 'USER_NOT_FOUND', '未找到可用的演示账号');
+      throw new AppError(500, 'USER_CREATE_FAILED', '登录用户创建失败');
     }
 
-    const profile = {
-      ...user,
-      nickname: payload.nickname || user.nickname
-    };
-
-    if (payload.nickname && payload.nickname !== user.nickname) {
-      await authRepository.updateById(user.id, {
-        nickname: payload.nickname
-      });
-    }
-
-    return buildSessionPayload(profile);
+    return buildSessionPayload(user);
   },
   async sendSmsCode(phone) {
     return {
@@ -85,8 +127,10 @@ export const authService = {
         ? currentUser
         : await authRepository.findByRole(targetRole)) || currentUser;
     const updated = await authRepository.updateById(targetUser.id, {
+      openid: targetUser.openid || '',
       nickname: payload.nickname || targetUser.nickname,
       avatar: payload.avatar || targetUser.avatar,
+      phone: targetUser.phone || buildWechatPhone(targetUser.openid || ''),
       role: targetRole
     });
 
