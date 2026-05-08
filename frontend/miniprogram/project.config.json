@@ -17,7 +17,9 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      "src/static/local-images/**"
+    ],
     "include": []
   },
   "appid": "touristappid",

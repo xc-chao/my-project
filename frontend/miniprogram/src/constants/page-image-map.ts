@@ -1,30 +1,50 @@
-function buildSeries(category: string, prefix: string, count: number) {
+import sourceManifest from '../static/local-images/source-manifest.json';
+
+type SourceImage = {
+  filename: string;
+  imageUrl: string;
+};
+
+const sourceUrlByFilename = new Map(
+  (sourceManifest as SourceImage[]).map(({ filename, imageUrl }) => [filename, imageUrl] as const)
+);
+
+const fallbackUrls = {
+  storeBanner: 'https://images.unsplash.com/photo-1760302318620-261f5e4d1940?fm=jpg&q=80&w=1600&auto=format&fit=crop',
+  productCover: 'https://images.unsplash.com/photo-1622760807301-4d2351a5a942?fm=jpg&q=80&w=1600&auto=format&fit=crop'
+} as const;
+
+function asset(filename: string, fallback: string) {
+  return sourceUrlByFilename.get(filename) || fallback;
+}
+
+function buildSeries(prefix: string, count: number, fallback: string) {
   return Array.from({ length: count }, (_, index) => {
-    return `/static/local-images/${category}/${prefix}-${String(index + 1).padStart(2, '0')}.jpg`;
+    return asset(`${prefix}-${String(index + 1).padStart(2, '0')}.jpg`, fallback);
   });
 }
 
 export const assetCatalog = {
   hero: {
-    store: '/static/local-images/hero/store-banner.jpg',
-    featured: buildSeries('hero', 'hero-dewu-style', 20)
+    store: asset('store-banner.jpg', fallbackUrls.storeBanner),
+    featured: buildSeries('hero-dewu-style', 20, fallbackUrls.storeBanner)
   },
   lifestyle: {
-    login: '/static/local-images/lifestyle/login-style.jpg',
-    denim: '/static/local-images/lifestyle/denim-style.jpg',
-    featured: buildSeries('lifestyle', 'lifestyle-dewu-style', 20)
+    login: asset('login-style.jpg', fallbackUrls.productCover),
+    denim: asset('denim-style.jpg', fallbackUrls.productCover),
+    featured: buildSeries('lifestyle-dewu-style', 20, fallbackUrls.productCover)
   },
   products: {
-    shoeBlack: '/static/local-images/products/shoe-black.jpg',
-    shirtBlue: '/static/local-images/products/shirt-blue.jpg',
-    jacketBrown: '/static/local-images/products/jacket-brown.jpg',
-    featured: buildSeries('products', 'products-dewu-style', 20)
+    shoeBlack: asset('shoe-black.jpg', fallbackUrls.productCover),
+    shirtBlue: asset('shirt-blue.jpg', fallbackUrls.productCover),
+    jacketBrown: asset('jacket-brown.jpg', fallbackUrls.productCover),
+    featured: buildSeries('products-dewu-style', 20, fallbackUrls.productCover)
   },
   details: {
-    featured: buildSeries('details', 'details-dewu-style', 20)
+    featured: buildSeries('details-dewu-style', 20, fallbackUrls.productCover)
   },
   avatars: {
-    featured: buildSeries('avatars', 'avatars-dewu-style', 20)
+    featured: buildSeries('avatars-dewu-style', 20, fallbackUrls.productCover)
   }
 };
 

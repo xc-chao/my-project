@@ -1,3 +1,4 @@
+import { normalizeImageList, normalizeImageUrl } from '../../common/utils/image-assets.js';
 import { query } from '../../config/db.js';
 
 function parseJsonArray(value) {
@@ -34,12 +35,12 @@ function mapProductRow(row, gallery = []) {
     stock: Number(row.stock),
     sales: Number(row.sales),
     category: row.category,
-    cover: row.cover,
+    cover: normalizeImageUrl(row.cover),
     detail: row.detail,
     saleStatus: row.sale_status,
     badges: parseJsonArray(row.badges_json),
     sizes: parseJsonArray(row.sizes_json),
-    gallery,
+    gallery: normalizeImageList(gallery),
     marketing: {
       isNewIn48h: Boolean(row.is_new_in_48h),
       praiseRate

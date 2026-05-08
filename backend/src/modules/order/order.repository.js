@@ -1,6 +1,7 @@
 import { getPool, query, withTransaction } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
 import { cartRepository } from '../cart/cart.repository.js';
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 
 function mapAddressRow(row) {
   if (!row) {
@@ -26,7 +27,7 @@ function mapOrderItemRow(row) {
     product: {
       id: row.productId,
       title: row.productTitle,
-      cover: row.productCover,
+      cover: normalizeImageUrl(row.productCover),
       price: Number(row.productPrice)
     }
   };

@@ -8,6 +8,7 @@ const statusBarHeight = uni.getSystemInfoSync().statusBarHeight || 0;
 const supportVisuals = pageImageMap.auth.support;
 const trustAvatars = pageImageMap.auth.trustAvatars;
 const isH5 = process.env.UNI_PLATFORM === 'h5';
+const isDev = process.env.NODE_ENV !== 'production';
 
 async function handleLogin() {
   try {
@@ -83,7 +84,7 @@ function goHome() {
         <text>{{ userStore.loading ? '登录中...' : '微信一键登录' }}</text>
       </view>
 
-      <view v-if="isH5" class="dev-login-row">
+      <view v-if="isDev || isH5" class="dev-login-row">
         <view class="dev-login-btn" @tap="handleDevLogin('user')">
           <text>买家测试登录</text>
         </view>

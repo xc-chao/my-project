@@ -1,3 +1,4 @@
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 import { query } from '../../config/db.js';
 
 const USER_FIELDS = `
@@ -18,7 +19,7 @@ function mapUserRow(row) {
     id: row.id,
     openid: row.openid,
     nickname: row.nickname,
-    avatar: row.avatar,
+    avatar: normalizeImageUrl(row.avatar),
     phone: row.phone,
     role: row.role
   };
@@ -103,9 +104,11 @@ export const authRepository = {
 
     const id = `u_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
     const nickname = role === 'admin' ? '系统管理员' : '微信用户';
-    const avatar = role === 'admin'
-      ? '/static/local-images/avatars/avatars-dewu-style-04.jpg'
-      : '/static/local-images/avatars/avatars-dewu-style-14.jpg';
+    const avatar = normalizeImageUrl(
+      role === 'admin'
+        ? '/static/local-images/avatars/avatars-dewu-style-04.jpg'
+        : '/static/local-images/avatars/avatars-dewu-style-14.jpg'
+    );
     const phone = `wx_${openid.slice(0, 28)}`;
 
     await query(

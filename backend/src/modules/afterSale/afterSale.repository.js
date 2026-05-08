@@ -1,5 +1,6 @@
 import { query } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 
 function mapAfterSaleRow(row) {
   if (!row) {
@@ -11,7 +12,7 @@ function mapAfterSaleRow(row) {
     orderId: row.orderId,
     productId: row.productId || '',
     productTitle: row.productTitle,
-    productCover: row.productCover || '',
+    productCover: normalizeImageUrl(row.productCover || ''),
     reason: row.reason,
     status: row.status,
     createdAt: row.createdAt

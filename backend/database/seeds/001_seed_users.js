@@ -1,3 +1,5 @@
+import { normalizeImageUrl } from '../../src/common/utils/image-assets.js';
+
 export const name = '001_seed_users';
 
 const seedUsers = [
@@ -5,7 +7,7 @@ const seedUsers = [
     id: 'u_001',
     openid: null,
     nickname: '校园买手',
-    avatar: '/static/local-images/avatars/avatars-dewu-style-14.jpg',
+    avatar: normalizeImageUrl('/static/local-images/avatars/avatars-dewu-style-14.jpg'),
     phone: '13800000000',
     role: 'user'
   },
@@ -13,7 +15,7 @@ const seedUsers = [
     id: 'u_admin_001',
     openid: null,
     nickname: '系统管理员',
-    avatar: '/static/local-images/avatars/avatars-dewu-style-04.jpg',
+    avatar: normalizeImageUrl('/static/local-images/avatars/avatars-dewu-style-04.jpg'),
     phone: '13900000000',
     role: 'admin'
   }

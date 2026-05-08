@@ -1,3 +1,4 @@
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 import { query, withTransaction } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
 
@@ -32,7 +33,7 @@ function mapProductRow(row, gallery = []) {
     stock: Number(row.stock),
     sales: Number(row.sales),
     category: row.category,
-    cover: row.cover,
+    cover: normalizeImageUrl(row.cover),
     detail: row.detail,
     badges: parseJsonArray(row.badges_json),
     sizes: parseJsonArray(row.sizes_json),
@@ -58,7 +59,7 @@ function mapOrderItemRow(row) {
     product: {
       id: row.productId,
       title: row.productTitle,
-      cover: row.productCover,
+      cover: normalizeImageUrl(row.productCover),
       price: Number(row.productPrice)
     }
   };

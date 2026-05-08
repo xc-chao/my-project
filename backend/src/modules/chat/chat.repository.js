@@ -1,5 +1,6 @@
 import { query, withTransaction } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 
 function parseJsonArray(value) {
   if (!value) {
@@ -46,7 +47,7 @@ function mapSessionRow(row, messages = []) {
     id: row.id,
     productId: row.productId,
     title: row.title,
-    productCover: row.productCover || '',
+    productCover: normalizeImageUrl(row.productCover || ''),
     messages
   };
 }
@@ -118,7 +119,7 @@ export const chatRepository = {
       title: rows[0].title,
       subtitle: rows[0].subtitle,
       category: rows[0].category,
-      cover: rows[0].cover,
+      cover: normalizeImageUrl(rows[0].cover),
       detail: rows[0].detail,
       price: Number(rows[0].price),
       badges: parseJsonArray(rows[0].badgesJson),

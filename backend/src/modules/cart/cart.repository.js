@@ -1,5 +1,6 @@
 import { getPool, query, withTransaction } from '../../config/db.js';
 import { createId } from '../../common/utils/id.js';
+import { normalizeImageUrl } from '../../common/utils/image-assets.js';
 
 function mapCartRow(row) {
   return {
@@ -12,7 +13,7 @@ function mapCartRow(row) {
       title: row.productTitle,
       subtitle: row.productSubtitle,
       price: Number(row.productPrice),
-      cover: row.productCover,
+      cover: normalizeImageUrl(row.productCover),
       category: row.productCategory,
       saleStatus: row.productSaleStatus
     }

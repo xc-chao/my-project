@@ -1,3 +1,5 @@
+import { normalizeImageUrl } from '../../src/common/utils/image-assets.js';
+
 export const name = '002_seed_products';
 
 function pad(num) {
@@ -5,7 +7,9 @@ function pad(num) {
 }
 
 function buildPool(folder, prefix, count) {
-  return Array.from({ length: count }, (_, index) => `/static/local-images/${folder}/${prefix}-${pad(index + 1)}.jpg`);
+  return Array.from({ length: count }, (_, index) =>
+    normalizeImageUrl(`/static/local-images/${folder}/${prefix}-${pad(index + 1)}.jpg`)
+  );
 }
 
 const coverPool = buildPool('products', 'products-dewu-style', 20);
