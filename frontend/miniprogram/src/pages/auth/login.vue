@@ -84,14 +84,14 @@ function goHome() {
         <text>{{ userStore.loading ? '登录中...' : '微信一键登录' }}</text>
       </view>
 
-      <view v-if="isDev || isH5" class="dev-login-row">
+      <!-- <view v-if="isDev || isH5" class="dev-login-row">
         <view class="dev-login-btn" @tap="handleDevLogin('user')">
           <text>买家测试登录</text>
         </view>
         <view class="dev-login-btn admin" @tap="handleDevLogin('admin')">
           <text>管理员测试登录</text>
         </view>
-      </view>
+      </view> -->
 
       <view class="secondary-btn" @tap="goHome">
         <text>先逛一逛</text>
